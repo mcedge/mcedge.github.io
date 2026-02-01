@@ -729,6 +729,143 @@
             }
         });
     </script>
+    <script>
+  // 主题切换功能 - 修复版本
+  document.addEventListener('DOMContentLoaded', function() {
+    // 创建主题切换按钮
+    const themeToggle = document.createElement('button');
+    themeToggle.className = 'theme-toggle nav-link';
+    themeToggle.setAttribute('aria-label', '切换主题模式');
+    
+    // 插入到导航链接后面
+    const navLinks = document.querySelector('.nav-links');
+    navLinks.appendChild(themeToggle);
+    
+    // 主题状态
+    let currentTheme = 'auto'; // 当前主题状态，刷新后重置为auto
+    
+    // 检查系统当前主题
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    // 初始化主题
+    function initTheme() {
+      // 重置为自动模式
+      currentTheme = 'auto';
+      updateTheme();
+    }
+    
+    // 更新主题
+    function updateTheme() {
+      const root = document.documentElement;
+      
+      // 移除所有主题类
+      root.classList.remove('light', 'dark');
+      
+      if (currentTheme === 'light') {
+        // 强制浅色模式
+        root.classList.add('light');
+        themeToggle.innerHTML = '☀️';
+        themeToggle.title = '浅色模式 - 点击切换到深色模式';
+      } else if (currentTheme === 'dark') {
+        // 强制深色模式
+        root.classList.add('dark');
+        themeToggle.innerHTML = '🌙';
+        themeToggle.title = '深色模式 - 点击切换到自动模式';
+      } else {
+        // 自动模式 - 跟随系统
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        themeToggle.innerHTML = '🌓';
+        themeToggle.title = '自动模式（跟随系统） - 点击切换到浅色模式';
+      }
+    }
+    
+    // 切换主题
+    function toggleTheme() {
+      if (currentTheme === 'auto') {
+        currentTheme = 'light';
+      } else if (currentTheme === 'light') {
+        currentTheme = 'dark';
+      } else {
+        currentTheme = 'auto';
+      }
+      
+      updateTheme();
+    }
+    
+    // 监听系统主题变化（仅在自动模式下有效）
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+      if (currentTheme === 'auto') {
+        updateTheme();
+      }
+    });
+    
+    // 绑定点击事件
+    themeToggle.addEventListener('click', toggleTheme);
+    
+    // 初始化
+    initTheme();
+  });
+</script>
+
+<style>
+  /* 主题切换按钮样式 */
+  .theme-toggle {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 8px 12px !important;
+    margin-left: 8px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--md-sys-shape-corner-medium);
+  }
+  
+  .theme-toggle:hover {
+    transform: scale(1.1);
+    background-color: rgba(var(--md-sys-color-primary), 0.08) !important;
+  }
+  
+  /* 强制浅色主题 */
+  :root.light {
+    --md-sys-color-primary: #2962FF;
+    --md-sys-color-on-primary: #FFFFFF;
+    --md-sys-color-primary-container: #DCE2FF;
+    --md-sys-color-on-primary-container: #001A43;
+    
+    --md-sys-color-background: #F8FAFF;
+    --md-sys-color-on-background: #1B1B1F;
+    --md-sys-color-surface: #F8FAFF;
+    --md-sys-color-on-surface: #1B1B1F;
+    --md-sys-color-surface-variant: #E1E2EC;
+    --md-sys-color-on-surface-variant: #45464F;
+    
+    --md-sys-color-outline: #757780;
+    --md-sys-color-shadow: #000000;
+  }
+  
+  /* 强制深色主题 */
+  :root.dark {
+    --md-sys-color-primary: #B1C5FF;
+    --md-sys-color-on-primary: #002A71;
+    --md-sys-color-primary-container: #00439F;
+    --md-sys-color-on-primary-container: #DCE2FF;
+    
+    --md-sys-color-background: #11131A;
+    --md-sys-color-on-background: #E2E2E6;
+    --md-sys-color-surface: #11131A;
+    --md-sys-color-on-surface: #E2E2E6;
+    --md-sys-color-surface-variant: #45464F;
+    --md-sys-color-on-surface-variant: #C5C6D0;
+    
+    --md-sys-color-outline: #8F9099;
+    --md-sys-color-shadow: #000000;
+  }
+</style>
 </body>
 
 </html>
