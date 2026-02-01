@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>我的世界Edge的网站</title>
+    <base href=".">
+
+    <style>
+        html {
+            height: 100%;
+            width: 100%;
+            background-color: #288282;
+        }
+
+        .container {
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            max-width: 500px;
+            margin-top: 15%;
+            margin-top: 20vh; /* if we support view height, use that */
+        }
+
+        .info {
+            background-color: #FFFFE3;
+            border: 1px solid;
+            border-top-color: #fff;
+            border-left-color: #fff;
+            padding: 20px;
+            font-family: "Microsoft Sans Serif", sans-serif;
+        }
+
+        .info .tip-img {
+            float: left; 
+            margin-top: 14px;
+        }
+
+        .info p {
+            text-align: left;
+            font-family: "Microsoft Sans Serif", sans-serif;
+            padding: 0 50px;
+            font-size: 14px;
+        }
+
+        [dir="rtl"] .info p {
+            text-align: right;
+        }
+
+        .dialog {
+            border: 2px solid white;
+            border-style: groove;
+            padding-bottom: 12px;
+            border-right-color: #000;
+            border-bottom-color: #000;
+            background-color: #bfbfbf;
+            margin-top: 20px;
+        }
+
+        .title-bar {
+            background-color: #000178;
+            color: #fff;
+            text-align: left;
+            padding: 5px;
+            font-size: 12px;
+            font-family: "Microsoft Sans Serif", sans-serif;
+            font-weight: bold;
+            margin-top: 0;
+        }
+
+        [dir="rtl"] .title-bar {
+            text-align: right;
+        }
+
+        .dialog-body {
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 10px;
+            font-family: "Microsoft Sans Serif", sans-serif;
+            font-size: 14px;
+            padding: 5px;
+        }
+
+        .dialog-body p {
+            text-align: center;  
+        }
+
+        .warning-img {
+            vertical-align: middle;
+            margin-right: 20px;
+        }
+
+        a.browser-btn {
+            text-decoration: none;
+            padding: 4px;
+            font-family: "Microsoft Sans Serif", sans-serif;
+            color: #000;
+            border: 2px solid;
+            border-color: #fff #000 #000 #fff;
+            border-style: outset;
+            font-size: 12px;
+            min-width: 100px;
+            display: inline-block;
+            margin: 5px;
+            cursor: pointer;
+            background-color: #bfbfbf;
+        }
+
+        a.browser-btn:active {
+            border-color: #000 #fff #fff #000;
+            border-style: inset;
+        }
+
+        a.browser-btn::first-letter {
+            text-decoration: underline;
+        }
+
+        a.browser-btn:focus-visible {
+            outline-style: dotted;
+        }
+        
+        .more-browsers {
+            margin-top: 15px;
+            font-family: "Microsoft Sans Serif", sans-serif;
+            font-size: 12px;
+            color: #000;
+        }
+        
+        .browser-link {
+            border: none;
+            display: inline;
+            padding: 0;
+            margin: 0 5px;
+            font-size: 12px;
+            text-decoration: underline;
+            color: #0000EE;
+            min-width: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="info">
+            <img class="tip-img" src="./image/win95-tip.png" alt="" width="32" height="32" role="presentation">
+            <p>
+                <b>非常抱歉</b>
+            </p>
+            <p>此网站需要更新的浏览器才能正常工作。</p>
+            <p>你正在通过网页访问 我的世界Edge的网站</p>
+        </div>
+        
+        <div class="dialog">
+            <p class="title-bar">
+                浏览器版本过旧
+            </p>
+            <div class="dialog-body">
+                <p>
+                    <img class="warning-img" src="./image/win95-warning.png" alt="" width="32" height="32" role="presentation">
+                    更新浏览器以访问我的网站。
+                </p>
+            </div>
+            <a class="browser-btn" target="_blank" href="https://www.microsoft.com/edge/download">安装/升级Edge</a>
+            <a class="browser-btn" target="_blank" href="https://www.google.cn/chrome/">安装/升级chrome</a>
+            
+            <div class="more-browsers">
+                更多浏览器：
+                <a class="browser-link" target="_blank" href="https://www.mozilla.org/zh-CN/firefox/new/">Firefox</a> |
+                <a class="browser-link" target="_blank" href="https://www.win32subsystem.live/supermium/">supermium</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

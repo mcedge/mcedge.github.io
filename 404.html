@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>页面未找到 | 404</title>
+    
+    <!-- 使用与主站相同的 Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="./image/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./image/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./image/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="./image/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="./image/android-chrome-512x512.png">
+    <link rel="shortcut icon" href="./image/favicon.ico" type="image/x-icon">
+    
+    <style>
+        /* Material Design 3 蓝色主题变量 */
+        :root {
+            --md-sys-color-primary: #2962FF;
+            --md-sys-color-on-primary: #FFFFFF;
+            --md-sys-color-primary-container: #DCE2FF;
+            --md-sys-color-on-primary-container: #001A43;
+            
+            --md-sys-color-background: #F8FAFF;
+            --md-sys-color-on-background: #1B1B1F;
+            --md-sys-color-surface: #FFFFFF;
+            --md-sys-color-on-surface: #1B1B1F;
+            --md-sys-color-surface-variant: #E1E2EC;
+            --md-sys-color-on-surface-variant: #45464F;
+            
+            --md-sys-color-outline: #757780;
+            --md-sys-color-shadow: #000000;
+            
+            --md-sys-shape-corner-extra-large: 28px;
+            --md-sys-shape-corner-large: 16px;
+            --md-sys-shape-corner-medium: 12px;
+            --md-sys-shape-corner-small: 8px;
+            
+            --md-sys-elevation-1: 0 1px 3px rgba(41, 98, 255, 0.12), 0 1px 2px rgba(41, 98, 255, 0.24);
+            --md-sys-elevation-2: 0 3px 6px rgba(41, 98, 255, 0.15), 0 3px 6px rgba(41, 98, 255, 0.25);
+            --md-sys-elevation-3: 0 10px 20px rgba(41, 98, 255, 0.15), 0 6px 6px rgba(41, 98, 255, 0.2);
+            
+            --md-sys-typescale-font-family: 'Roboto', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --md-sys-color-primary: #B1C5FF;
+                --md-sys-color-on-primary: #002A71;
+                --md-sys-color-primary-container: #00439F;
+                --md-sys-color-on-primary-container: #DCE2FF;
+                
+                --md-sys-color-background: #11131A;
+                --md-sys-color-on-background: #E2E2E6;
+                --md-sys-color-surface: #11131A;
+                --md-sys-color-on-surface: #E2E2E6;
+                --md-sys-color-surface-variant: #45464F;
+                --md-sys-color-on-surface-variant: #C5C6D0;
+                
+                --md-sys-color-outline: #8F9099;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--md-sys-typescale-font-family);
+        }
+
+        body {
+            background-color: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-background);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .error-container {
+            max-width: 800px;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .error-emoji {
+            font-size: 120px;
+            margin-bottom: 30px;
+        }
+
+        .error-code {
+            font-size: 100px;
+            font-weight: 700;
+            color: var(--md-sys-color-primary);
+            margin-bottom: 10px;
+            line-height: 1;
+        }
+
+        .error-title {
+            font-size: 32px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .error-message {
+            font-size: 18px;
+            color: var(--md-sys-color-on-surface-variant);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .error-card {
+            background-color: var(--md-sys-color-surface);
+            border-radius: var(--md-sys-shape-corner-large);
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: var(--md-sys-elevation-2);
+            border: 1px solid var(--md-sys-color-surface-variant);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background-color: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            padding: 14px 32px;
+            border-radius: var(--md-sys-shape-corner-medium);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+            transition: all 0.2s;
+            box-shadow: var(--md-sys-elevation-1);
+            border: none;
+            cursor: pointer;
+            min-width: 180px;
+        }
+
+        .action-btn:hover {
+            background-color: var(--md-sys-color-on-primary-container);
+            color: var(--md-sys-color-primary-container);
+            transform: translateY(-2px);
+            box-shadow: var(--md-sys-elevation-2);
+        }
+
+        .action-btn.secondary {
+            background-color: var(--md-sys-color-surface-variant);
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        .action-btn.secondary:hover {
+            background-color: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+        }
+
+        .suggestions {
+            text-align: left;
+            margin-top: 40px;
+            padding: 30px;
+            background-color: var(--md-sys-color-surface-variant);
+            border-radius: var(--md-sys-shape-corner-large);
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        .suggestions h3 {
+            color: var(--md-sys-color-on-surface);
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .suggestions ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .suggestions li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .suggestions li:last-child {
+            border-bottom: none;
+        }
+
+        .home-link {
+            margin-top: 30px;
+            font-size: 14px;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        .home-link a {
+            color: var(--md-sys-color-primary);
+            text-decoration: none;
+        }
+
+        .home-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .error-emoji {
+                font-size: 80px;
+            }
+            
+            .error-code {
+                font-size: 70px;
+            }
+            
+            .error-title {
+                font-size: 24px;
+            }
+            
+            .error-message {
+                font-size: 16px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .action-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .error-card {
+                padding: 30px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .error-container {
+                padding: 20px 10px;
+            }
+            
+            .error-emoji {
+                font-size: 60px;
+            }
+            
+            .error-code {
+                font-size: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-card">
+            <div class="error-emoji">😕</div>
+            <div class="error-code">404</div>
+            <h1 class="error-title">页面未找到</h1>
+            <p class="error-message">
+                抱歉，您访问的页面不存在或已被移动。这可能是因为链接错误、页面已被删除，或者您输入的URL不正确。
+            </p>
+            
+            <div class="action-buttons">
+                <a href="index.html" class="action-btn">
+                    <span>🏠</span> 返回首页
+                </a>
+                <a href="https://vlink.cc/mcedge" class="action-btn secondary">
+                    <span>🔗</span> 查看网址导航
+                </a>
+                <button onclick="window.history.back()" class="action-btn secondary">
+                    <span>↩️</span> 返回上一页
+                </button>
+            </div>
+        </div>
+        
+        <div class="suggestions">
+            <h3>您可以尝试：</h3>
+            <ul>
+                <li>检查网址是否拼写正确</li>
+                <li>使用搜索功能查找内容</li>
+                <li>返回首页浏览其他内容</li>
+                <li>通过联系方式向我反馈</li>
+            </ul>
+        </div>
+        
+        <div class="home-link">
+            或者直接访问 <a href="index.html">个人主页</a>
+        </div>
+    </div>
+
+    <script>
+        // 自动记录404错误（可选）
+        console.log('404页面被访问，路径：' + window.location.pathname);
+        
+        // 添加一些交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            const emoji = document.querySelector('.error-emoji');
+            const emojis = ['🤔', '😕', '😟', '🤔', '😞', '😅', '😂', '🤣', '💀', '🔍'];
+            let currentIndex = 0;
+            
+            // 每3秒切换一个表情
+            setInterval(() => {
+                currentIndex = (currentIndex + 1) % emojis.length;
+                emoji.textContent = emojis[currentIndex];
+            }, 3000);
+            
+            // 按钮点击动画
+            const buttons = document.querySelectorAll('.action-btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 200);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

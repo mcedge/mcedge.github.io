@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="msvalidate.01" content="E3E2DC2D5086DF7E59004140075B111B" />
+    <title>我的世界Edge的网站</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="./image/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./image/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./image/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="./image/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="./image/android-chrome-512x512.png">
+    <!-- 兼容旧浏览器的 ICO 格式 -->
+    <link rel="shortcut icon" href="./image/favicon.ico" type="image/x-icon">
+    <script>
+        // 简化版IE检测 - 适用于所有IE版本
+        (function () {
+            // 获取用户代理字符串
+            var ua = navigator.userAgent || '';
+            var isIE = false;
+            var ieVersion = 0;
+
+            // 检测MSIE标识（IE4-IE10）
+            if (ua.indexOf('MSIE') > -1) {
+                isIE = true;
+                // 提取版本号
+                var match = /MSIE\s+(\d+\.?\d*)/.exec(ua);
+                if (match && match[1]) {
+                    ieVersion = parseFloat(match[1]);
+                }
+            }
+            // 检测Trident标识（IE11）
+            else if (ua.indexOf('Trident/') > -1) {
+                isIE = true;
+                ieVersion = 11;
+                // 尝试提取rv版本号
+                var rvMatch = /rv:(\d+\.?\d*)/.exec(ua);
+                if (rvMatch && rvMatch[1]) {
+                    ieVersion = parseFloat(rvMatch[1]);
+                }
+            }
+            // 检测Edge（旧版EdgeHTML）
+            else if (ua.indexOf('Edge/') > -1) {
+                isIE = true;
+                var edgeMatch = /Edge\/(\d+\.?\d*)/.exec(ua);
+                if (edgeMatch && edgeMatch[1]) {
+                    ieVersion = parseFloat(edgeMatch[1]);
+                }
+            }
+
+            // 如果是IE浏览器，进行重定向
+            if (isIE) {
+                // 记录检测到的IE版本
+                console.log('检测到IE浏览器，版本：' + (ieVersion || '未知'));
+
+                // 避免无限重定向
+                if (window.location.pathname.indexOf('IE.html') === -1) {
+                    // 对于IE3-IE5，使用document.write确保能显示提示
+                    if (ieVersion < 6 || ieVersion === 0) {
+                        document.write('<meta http-equiv="refresh" content="0;url=./IE.html">');
+                        document.write('<div style="font-family:Arial;padding:20px;text-align:center;">正在重定向到兼容页面...</div>');
+                    } else {
+                        // 对于IE6+，使用标准重定向
+                        setTimeout(function () {
+                            window.location.replace('./IE.html');
+                        }, 100);
+                    }
+                }
+            }
+        })();
+    </script>
+    <style>
+        /* Material Design 3 核心变量定义 */
+        :root {
+            /* 蓝色主色调 */
+            --md-sys-color-primary: #2962FF;
+            --md-sys-color-on-primary: #FFFFFF;
+            --md-sys-color-primary-container: #DCE2FF;
+            --md-sys-color-on-primary-container: #001A43;
+
+            /* 中性色 - 浅色主题 */
+            --md-sys-color-background: #F8FAFF;
+            --md-sys-color-on-background: #1B1B1F;
+            --md-sys-color-surface: #F8FAFF;
+            --md-sys-color-on-surface: #1B1B1F;
+            --md-sys-color-surface-variant: #E1E2EC;
+            --md-sys-color-on-surface-variant: #45464F;
+
+            /* 轮廓与阴影 */
+            --md-sys-color-outline: #757780;
+            --md-sys-color-shadow: #000000;
+
+            /* 形状 */
+            --md-sys-shape-corner-extra-large: 28px;
+            --md-sys-shape-corner-large: 16px;
+            --md-sys-shape-corner-medium: 12px;
+            --md-sys-shape-corner-small: 8px;
+
+            /* 高程阴影 */
+            --md-sys-elevation-1: 0 1px 3px rgba(41, 98, 255, 0.12), 0 1px 2px rgba(41, 98, 255, 0.24);
+            --md-sys-elevation-2: 0 3px 6px rgba(41, 98, 255, 0.15), 0 3px 6px rgba(41, 98, 255, 0.25);
+            --md-sys-elevation-3: 0 10px 20px rgba(41, 98, 255, 0.15), 0 6px 6px rgba(41, 98, 255, 0.2);
+
+            /* 字体栈 */
+            --md-sys-typescale-font-family: 'Roboto', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --md-sys-color-primary: #B1C5FF;
+                --md-sys-color-on-primary: #002A71;
+                --md-sys-color-primary-container: #00439F;
+                --md-sys-color-on-primary-container: #DCE2FF;
+
+                --md-sys-color-background: #11131A;
+                --md-sys-color-on-background: #E2E2E6;
+                --md-sys-color-surface: #11131A;
+                --md-sys-color-on-surface: #E2E2E6;
+                --md-sys-color-surface-variant: #45464F;
+                --md-sys-color-on-surface-variant: #C5C6D0;
+
+                --md-sys-color-outline: #8F9099;
+                --md-sys-color-shadow: #000000;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--md-sys-typescale-font-family);
+        }
+
+        body {
+            background-color: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-background);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        /* 导航栏 */
+        .app-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            padding: 16px 24px;
+            box-shadow: var(--md-sys-elevation-1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .app-bar-title {
+            font-size: 22px;
+            font-weight: 500;
+            letter-spacing: 0.15px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-link {
+            color: var(--md-sys-color-on-surface-variant);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.1px;
+            padding: 8px 12px;
+            border-radius: var(--md-sys-shape-corner-medium);
+            transition: background-color 0.2s;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(var(--md-sys-color-primary), 0.08);
+            color: var(--md-sys-color-primary);
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* 英雄区域 */
+        .hero {
+            text-align: center;
+            padding: 64px 0 48px;
+            margin-bottom: 32px;
+        }
+
+        .avatar-container {
+            margin: 0 auto 24px;
+            width: 160px;
+            height: 160px;
+            position: relative;
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            box-shadow: var(--md-sys-elevation-2);
+            border: 4px solid var(--md-sys-color-primary-container);
+            transition: transform 0.3s ease;
+        }
+
+        .avatar-img:hover {
+            transform: scale(1.05);
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            font-weight: 400;
+            margin-bottom: 8px;
+            color: var(--md-sys-color-on-surface);
+            letter-spacing: 0.25px;
+        }
+
+        .hero p {
+            font-size: 16px;
+            color: var(--md-sys-color-on-surface-variant);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        /* 卡片 */
+        .card {
+            background-color: var(--md-sys-color-surface);
+            border-radius: var(--md-sys-shape-corner-large);
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--md-sys-elevation-1);
+            border: 1px solid transparent;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+
+        .card:hover {
+            box-shadow: var(--md-sys-elevation-2);
+            transform: translateY(-2px);
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: 400;
+            margin-bottom: 24px;
+            color: var(--md-sys-color-on-surface);
+            letter-spacing: 0.15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-title::before {
+            font-size: 28px;
+        }
+
+        .card-content {
+            color: var(--md-sys-color-on-surface-variant);
+            line-height: 1.8;
+        }
+
+        .card-content p {
+            margin-bottom: 16px;
+        }
+
+        /* 联系方式 - 紧凑的 2x2 网格 */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+        }
+
+        /* 紧凑的联系卡片 */
+        .contact-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 16px;
+            background-color: var(--md-sys-color-surface-variant);
+            border-radius: var(--md-sys-shape-corner-medium);
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+            border: 1px solid transparent;
+            min-height: 120px;
+        }
+
+        .contact-item:hover {
+            background-color: var(--md-sys-color-primary-container);
+            border-color: var(--md-sys-color-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--md-sys-elevation-1);
+        }
+
+        /* 更小的图标 */
+        .contact-emoji {
+            font-size: 28px;
+            margin-bottom: 8px;
+            width: 48px;
+            height: 48px;
+            background-color: rgba(var(--md-sys-color-primary), 0.08);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 更紧凑的文字 */
+        .contact-info h3 {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            letter-spacing: 0.1px;
+            line-height: 1.2;
+        }
+
+        .contact-text {
+            font-size: 14px;
+            color: var(--md-sys-color-on-surface-variant);
+            word-break: break-all;
+            margin-bottom: 4px;
+            min-height: 20px;
+        }
+
+        .contact-hint {
+            font-size: 12px;
+            color: var(--md-sys-color-primary);
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        /* 复制成功提示 */
+        .copied-notification {
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--md-sys-color-on-surface);
+            color: var(--md-sys-color-surface);
+            padding: 6px 12px;
+            border-radius: var(--md-sys-shape-corner-small);
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            white-space: nowrap;
+            box-shadow: var(--md-sys-elevation-1);
+            z-index: 10;
+        }
+
+        .copied-notification.show {
+            opacity: 1;
+        }
+
+        .copied-notification::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: var(--md-sys-color-on-surface);
+        }
+
+        /* 网址导航 */
+        .nav-simple {
+            text-align: center;
+            padding: 30px;
+            background-color: var(--md-sys-color-primary-container);
+            border-radius: var(--md-sys-shape-corner-large);
+            margin-top: 40px;
+        }
+
+        .nav-simple h2 {
+            font-size: 24px;
+            font-weight: 400;
+            margin-bottom: 16px;
+            color: var(--md-sys-color-on-primary-container);
+            letter-spacing: 0.15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .nav-simple h2::before {
+            font-size: 28px;
+        }
+
+        .nav-simple p {
+            color: var(--md-sys-color-on-primary-container);
+            margin-bottom: 24px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .nav-btn {
+            display: inline-block;
+            background-color: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            padding: 12px 32px;
+            border-radius: var(--md-sys-shape-corner-medium);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+            transition: all 0.2s;
+            box-shadow: var(--md-sys-elevation-1);
+        }
+
+        .nav-btn:hover {
+            background-color: var(--md-sys-color-on-primary-container);
+            color: var(--md-sys-color-primary-container);
+            transform: translateY(-2px);
+            box-shadow: var(--md-sys-elevation-2);
+        }
+
+        /* 页脚 */
+        footer {
+            text-align: center;
+            padding: 40px 0 32px;
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 14px;
+            border-top: 1px solid var(--md-sys-color-outline);
+            margin-top: 48px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .app-bar {
+                flex-direction: column;
+                gap: 16px;
+                padding: 16px;
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .card {
+                padding: 24px;
+            }
+
+            .avatar-container {
+                width: 140px;
+                height: 140px;
+            }
+
+            body {
+                padding-top: 120px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .hero {
+                padding: 48px 0 32px;
+            }
+
+            .card-title {
+                font-size: 20px;
+            }
+
+            .avatar-container {
+                width: 120px;
+                height: 120px;
+            }
+        }
+    </style>
+    <meta name="msvalidate.01" content="E3E2DC2D5086DF7E59004140075B111B" />
+</head>
+
+<body>
+    <!-- 顶部应用栏 -->
+    <header class="app-bar">
+        <div class="app-bar-title">我的世界Edge的网站</div>
+        <nav class="nav-links">
+            <a href="#about" class="nav-link">关于我</a>
+            <a href="#contact" class="nav-link">联系方式</a>
+            <a href="https://vlink.cc/mcedge" class="nav-link">网址导航</a>
+            <!-- <a href="link.html" class="nav-link">网址导航</a> -->
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- 英雄区域 -->
+        <section class="hero">
+            <div class="avatar-container">
+                <img src="./image/Profile.jpg" alt="头像" class="avatar-img">
+            </div>
+            <h1>我的世界Edge</h1>
+        </section>
+
+        <!-- 关于我简介 -->
+        <section id="about" class="card">
+            <h2 class="card-title">👤 关于我</h2>
+            <div class="card-content">
+                <p>👋 你好，我是 <strong>我的世界Edge</strong></p>
+                <p>📍 来自中国 🇨🇳 广东东莞</p>
+                <p>🎂 生日 2007.09.22 · 18 岁</p>
+                <p>🎓 东莞市机电工程学校 高三学生</p>
+
+                <div
+                    style="margin: 20px 0; padding: 20px; background-color: var(--md-sys-color-surface-variant); border-radius: var(--md-sys-shape-corner-medium);">
+                    <p style="margin-bottom: 15px;"><strong>个人介绍</strong></p>
+                    <p style="margin-bottom: 10px;">我是一个普通的高职高三学生。对计算机技术，特别是操作系统、网络安全领域很感兴趣。</p>
+                    <p style="margin-bottom: 10px;">喜欢骑行和快走，这项运动让我保持活力。在技术方面，我对运行与测试电脑病毒/恶意软件很感兴趣，通过安全的环境学习和研究这些内容。</p>
+                    <p>作为一名 UP 主，我在哔哩哔哩、抖音、YouTube 等平台分享我的学习心得和技术发现。</p>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <p><strong>当前状态：</strong>努力学习更多有关计算机或者网络方面的知识</p>
+                    <p style="margin-top: 15px; font-style: italic; color: var(--md-sys-color-on-surface-variant);">
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 联系方式 -->
+        <section id="contact" class="card">
+            <h2 class="card-title">📱 联系方式</h2>
+            <div class="contact-grid">
+                <!-- 微信 -->
+                <div class="contact-item" data-type="wechat">
+                    <div class="contact-emoji">💬</div>
+                    <div class="contact-info">
+                        <h3>微信</h3>
+                        <p class="contact-text">点击显示并复制</p>
+                        <p class="contact-hint">点击查看微信号</p>
+                    </div>
+                </div>
+
+                <!-- QQ邮箱 -->
+                <div class="contact-item" data-type="qq-email">
+                    <div class="contact-emoji">📧</div>
+                    <div class="contact-info">
+                        <h3>QQ邮箱</h3>
+                        <p class="contact-text">点击显示并复制</p>
+                        <p class="contact-hint">点击查看QQ邮箱</p>
+                    </div>
+                </div>
+
+                <!-- 电话 -->
+                <div class="contact-item" data-type="phone">
+                    <div class="contact-emoji">📞</div>
+                    <div class="contact-info">
+                        <h3>电话</h3>
+                        <p class="contact-text">点击显示并复制</p>
+                        <p class="contact-hint">点击查看手机号</p>
+                    </div>
+                </div>
+
+                <!-- QQ群号 -->
+                <div class="contact-item" data-type="qq-group">
+                    <div class="contact-emoji">👥</div>
+                    <div class="contact-info">
+                        <h3>QQ群号</h3>
+                        <p class="contact-text">点击显示并复制</p>
+                        <p class="contact-hint">点击查看QQ群号</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 网址导航 -->
+        <section class="nav-simple">
+            <h2>🔗 网址导航</h2>
+            <p>我整理了所有社交链接和常用网站，包括病毒库链接、更多有关我的链接、网页版Windows等各种实用网页。</p>
+            <a href="https://vlink.cc/mcedge" class="nav-btn">查看完整网址导航 →</a>
+            <!-- <a href="link.html" class="nav-btn">查看完整网址导航 →</a> -->
+        </section>
+    </main>
+
+    <footer>
+        <p>© 我的世界Edge. 保留所有权利.</p>
+        <p style="margin-top: 8px; font-size: 13px;">采用 Material Design 3 设计语言 · 无需外部依赖</p>
+    </footer>
+
+    <script>
+        // 平滑滚动导航
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function (e) {
+                const targetId = this.getAttribute('href');
+                if (targetId.startsWith('#')) {
+                    e.preventDefault();
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 100,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+
+        // 联系方式点击复制功能
+        document.addEventListener('DOMContentLoaded', function () {
+            // 真实联系信息（需要替换为你的真实信息）
+            const realInfo = {
+                'wechat': 'MC_Edge',
+                'qq-email': '1938400382@qq.com',
+                'phone': '0012484345508 或 12121',
+                'qq-group': '316373321'
+            };
+
+            // 所有联系卡片的点击事件
+            document.querySelectorAll('.contact-item').forEach(item => {
+                item.addEventListener('click', function () {
+                    const type = this.getAttribute('data-type');
+                    const textElement = this.querySelector('.contact-text');
+                    const hintElement = this.querySelector('.contact-hint');
+
+                    // 检查是否已经显示真实信息
+                    const alreadyRevealed = textElement.textContent !== '点击显示并复制';
+
+                    if (!alreadyRevealed) {
+                        // 第一次点击：显示真实信息
+                        textElement.textContent = realInfo[type];
+                        hintElement.textContent = '已显示，点击可再次复制';
+                    }
+
+                    // 复制到剪贴板
+                    copyToClipboard(textElement.textContent, this);
+
+                    // 视觉反馈
+                    this.style.backgroundColor = 'var(--md-sys-color-primary)';
+                    this.style.color = 'var(--md-sys-color-on-primary)';
+                    this.style.borderColor = 'var(--md-sys-color-primary)';
+
+                    setTimeout(() => {
+                        this.style.backgroundColor = '';
+                        this.style.color = '';
+                        this.style.borderColor = '';
+                    }, 300);
+                });
+            });
+
+            // 复制到剪贴板的函数
+            function copyToClipboard(text, element) {
+                // 创建提示元素（如果不存在）
+                let notification = element.querySelector('.copied-notification');
+                if (!notification) {
+                    notification = document.createElement('div');
+                    notification.className = 'copied-notification';
+                    notification.textContent = '已复制到剪贴板！';
+                    element.appendChild(notification);
+                }
+
+                // 使用现代 Clipboard API
+                navigator.clipboard.writeText(text).then(() => {
+                    // 显示复制成功提示
+                    notification.classList.add('show');
+
+                    // 2秒后隐藏提示
+                    setTimeout(() => {
+                        notification.classList.remove('show');
+                    }, 2000);
+
+                }).catch(err => {
+                    console.error('复制失败: ', err);
+                    // 备用复制方法
+                    fallbackCopyTextToClipboard(text, notification);
+                });
+            }
+
+            // 传统复制方法作为备用
+            function fallbackCopyTextToClipboard(text, notificationElement) {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+
+                try {
+                    const successful = document.execCommand('copy');
+                    if (successful) {
+                        notificationElement.textContent = '已复制到剪贴板！';
+                        notificationElement.classList.add('show');
+                        setTimeout(() => notificationElement.classList.remove('show'), 2000);
+                    } else {
+                        notificationElement.textContent = '复制失败，请手动复制';
+                        notificationElement.classList.add('show');
+                        setTimeout(() => notificationElement.classList.remove('show'), 2000);
+                    }
+                } catch (err) {
+                    console.error('传统复制方法失败: ', err);
+                    notificationElement.textContent = '复制失败，请手动复制';
+                    notificationElement.classList.add('show');
+                    setTimeout(() => notificationElement.classList.remove('show'), 2000);
+                }
+
+                document.body.removeChild(textArea);
+            }
+        });
+    </script>
+</body>
+
+</html>
