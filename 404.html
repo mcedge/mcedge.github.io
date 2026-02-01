@@ -3,61 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>页面未找到 | 404</title>
+    <title>404 | 页面未找到</title>
     
-    <!-- 使用与主站相同的 Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="./image/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="./image/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="./image/favicon-16x16.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="./image/android-chrome-192x192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="./image/android-chrome-512x512.png">
-    <link rel="shortcut icon" href="./image/favicon.ico" type="image/x-icon">
+    <!-- 使用根路径引用资源 -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/image/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/image/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/image/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/image/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/image/android-chrome-512x512.png">
+    <link rel="shortcut icon" href="/image/favicon.ico" type="image/x-icon">
     
     <style>
         /* Material Design 3 蓝色主题变量 */
         :root {
-            --md-sys-color-primary: #2962FF;
-            --md-sys-color-on-primary: #FFFFFF;
-            --md-sys-color-primary-container: #DCE2FF;
-            --md-sys-color-on-primary-container: #001A43;
+            --primary-color: #2962FF;
+            --primary-light: #DCE2FF;
+            --primary-dark: #00439F;
+            --text-primary: #1B1B1F;
+            --text-secondary: #45464F;
+            --background: #F8FAFF;
+            --surface: #FFFFFF;
+            --surface-variant: #E1E2EC;
             
-            --md-sys-color-background: #F8FAFF;
-            --md-sys-color-on-background: #1B1B1F;
-            --md-sys-color-surface: #FFFFFF;
-            --md-sys-color-on-surface: #1B1B1F;
-            --md-sys-color-surface-variant: #E1E2EC;
-            --md-sys-color-on-surface-variant: #45464F;
+            --shadow-1: 0 1px 3px rgba(41, 98, 255, 0.12);
+            --shadow-2: 0 3px 6px rgba(41, 98, 255, 0.15);
+            --shadow-3: 0 10px 20px rgba(41, 98, 255, 0.15);
             
-            --md-sys-color-outline: #757780;
-            --md-sys-color-shadow: #000000;
+            --radius-large: 16px;
+            --radius-medium: 12px;
+            --radius-small: 8px;
             
-            --md-sys-shape-corner-extra-large: 28px;
-            --md-sys-shape-corner-large: 16px;
-            --md-sys-shape-corner-medium: 12px;
-            --md-sys-shape-corner-small: 8px;
-            
-            --md-sys-elevation-1: 0 1px 3px rgba(41, 98, 255, 0.12), 0 1px 2px rgba(41, 98, 255, 0.24);
-            --md-sys-elevation-2: 0 3px 6px rgba(41, 98, 255, 0.15), 0 3px 6px rgba(41, 98, 255, 0.25);
-            --md-sys-elevation-3: 0 10px 20px rgba(41, 98, 255, 0.15), 0 6px 6px rgba(41, 98, 255, 0.2);
-            
-            --md-sys-typescale-font-family: 'Roboto', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+            --font-family: 'Roboto', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
-                --md-sys-color-primary: #B1C5FF;
-                --md-sys-color-on-primary: #002A71;
-                --md-sys-color-primary-container: #00439F;
-                --md-sys-color-on-primary-container: #DCE2FF;
-                
-                --md-sys-color-background: #11131A;
-                --md-sys-color-on-background: #E2E2E6;
-                --md-sys-color-surface: #11131A;
-                --md-sys-color-on-surface: #E2E2E6;
-                --md-sys-color-surface-variant: #45464F;
-                --md-sys-color-on-surface-variant: #C5C6D0;
-                
-                --md-sys-color-outline: #8F9099;
+                --primary-color: #00439F; /* 更深的蓝色，确保白色文字清晰 */
+                --primary-light: #002A71;
+                --primary-dark: #001A4B;
+                --primary-color-hover: #005BCA; /* 悬停时的蓝色 */
+                --text-primary: #E2E2E6;
+                --text-secondary: #C5C6D0;
+                --background: #11131A;
+                --surface: #1E2028;
+                --surface-variant: #45464F;
+            }
+            
+            /* 深色模式下增强按钮文字清晰度 */
+            .action-btn.primary {
+                background-color: var(--primary-color);
+                border-color: var(--primary-color);
+                color: white;
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+            }
+            
+            .action-btn.primary:hover {
+                background-color: var(--primary-color-hover);
+                border-color: var(--primary-color-hover);
+            }
+            
+            .action-btn.primary .action-label {
+                text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+                font-weight: 700;
+            }
+            
+            .action-btn.primary .action-description {
+                color: rgba(255, 255, 255, 0.95);
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+            }
+            
+            .action-btn.primary .action-icon {
+                filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.6));
             }
         }
 
@@ -65,153 +81,370 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: var(--md-sys-typescale-font-family);
         }
 
         body {
-            background-color: var(--md-sys-color-background);
-            color: var(--md-sys-color-on-background);
+            font-family: var(--font-family);
+            background-color: var(--background);
+            color: var(--text-primary);
             line-height: 1.6;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(41, 98, 255, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(41, 98, 255, 0.05) 0%, transparent 20%);
         }
 
         .error-container {
             max-width: 800px;
+            width: 100%;
             text-align: center;
-            padding: 40px;
+        }
+
+        /* 表情轮播区域 */
+        .emoji-container {
+            margin-bottom: 40px;
+            position: relative;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .error-emoji {
             font-size: 120px;
-            margin-bottom: 30px;
+            line-height: 1;
+            animation: float 3s ease-in-out infinite;
+            transition: opacity 0.5s ease;
         }
 
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-10px) scale(1.05); }
+        }
+
+        /* 404 数字样式 - 清晰可见 */
         .error-code {
-            font-size: 100px;
-            font-weight: 700;
-            color: var(--md-sys-color-primary);
-            margin-bottom: 10px;
+            font-size: 120px;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 20px;
             line-height: 1;
+            text-shadow: 0 4px 8px rgba(41, 98, 255, 0.2);
+            letter-spacing: 5px;
         }
 
         .error-title {
-            font-size: 32px;
-            font-weight: 500;
+            font-size: 36px;
+            font-weight: 600;
             margin-bottom: 20px;
-            color: var(--md-sys-color-on-surface);
+            color: var(--text-primary);
         }
 
-        .error-message {
+        .error-description {
             font-size: 18px;
-            color: var(--md-sys-color-on-surface-variant);
+            color: var(--text-secondary);
             margin-bottom: 40px;
             max-width: 600px;
             margin-left: auto;
             margin-right: auto;
         }
 
-        .error-card {
-            background-color: var(--md-sys-color-surface);
-            border-radius: var(--md-sys-shape-corner-large);
-            padding: 40px;
+        .path-display {
+            background-color: var(--surface-variant);
+            padding: 12px 20px;
+            border-radius: var(--radius-medium);
+            font-family: monospace;
+            font-size: 14px;
+            color: var(--text-secondary);
             margin-bottom: 30px;
-            box-shadow: var(--md-sys-elevation-2);
-            border: 1px solid var(--md-sys-color-surface-variant);
+            display: inline-block;
+            word-break: break-all;
+            max-width: 100%;
         }
 
-        .action-buttons {
+        .error-content {
+            background-color: var(--surface);
+            border-radius: var(--radius-large);
+            padding: 60px 40px;
+            box-shadow: var(--shadow-3);
+            border: 1px solid var(--surface-variant);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .error-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+        }
+
+        /* 按钮容器 - 改为水平一行布局 */
+        .action-row {
             display: flex;
-            gap: 20px;
             justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
             flex-wrap: wrap;
-            margin-top: 40px;
         }
 
         .action-btn {
-            display: inline-flex;
+            display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            background-color: var(--md-sys-color-primary);
-            color: var(--md-sys-color-on-primary);
-            padding: 14px 32px;
-            border-radius: var(--md-sys-shape-corner-medium);
+            gap: 12px;
+            padding: 24px 20px;
+            background-color: var(--surface);
+            border: 2px solid var(--surface-variant);
+            border-radius: var(--radius-medium);
             text-decoration: none;
+            color: var(--text-primary);
             font-weight: 500;
-            font-size: 16px;
-            transition: all 0.2s;
-            box-shadow: var(--md-sys-elevation-1);
-            border: none;
+            transition: all 0.3s ease;
             cursor: pointer;
-            min-width: 180px;
+            min-height: 140px;
+            min-width: 200px;
+            flex: 1;
+            max-width: 300px;
         }
 
         .action-btn:hover {
-            background-color: var(--md-sys-color-on-primary-container);
-            color: var(--md-sys-color-primary-container);
-            transform: translateY(-2px);
-            box-shadow: var(--md-sys-elevation-2);
+            transform: translateY(-4px);
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-2);
         }
 
-        .action-btn.secondary {
-            background-color: var(--md-sys-color-surface-variant);
-            color: var(--md-sys-color-on-surface-variant);
+        .action-btn.primary {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            /* 增强文字清晰度 */
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
-        .action-btn.secondary:hover {
-            background-color: var(--md-sys-color-primary-container);
-            color: var(--md-sys-color-on-primary-container);
+        .action-btn.primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .action-icon {
+            font-size: 32px;
+            width: 64px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            border-radius: 50%;
+        }
+
+        .action-btn.primary .action-icon {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            /* 增强图标对比度 */
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+        }
+
+        .action-label {
+            font-size: 16px;
+            font-weight: 600;
+            /* 增强按钮文字清晰度 */
+            letter-spacing: 0.5px;
+        }
+
+        .action-btn.primary .action-label {
+            /* 为蓝色按钮文字添加更强对比度 */
+            font-weight: 700;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .action-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            opacity: 0.8;
+        }
+
+        .action-btn.primary .action-description {
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .suggestions {
             text-align: left;
-            margin-top: 40px;
             padding: 30px;
-            background-color: var(--md-sys-color-surface-variant);
-            border-radius: var(--md-sys-shape-corner-large);
-            color: var(--md-sys-color-on-surface-variant);
+            background-color: var(--surface-variant);
+            border-radius: var(--radius-large);
+            margin-top: 40px;
         }
 
         .suggestions h3 {
-            color: var(--md-sys-color-on-surface);
-            margin-bottom: 15px;
+            color: var(--text-primary);
+            margin-bottom: 20px;
             font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .suggestions h3::before {
+            content: '💡';
         }
 
         .suggestions ul {
-            list-style-type: none;
-            padding-left: 0;
+            list-style: none;
+            padding: 0;
         }
 
         .suggestions li {
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .suggestions li:last-child {
             border-bottom: none;
         }
 
-        .home-link {
-            margin-top: 30px;
+        .suggestions li::before {
+            content: '•';
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        /* Android风格Toast提示 */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background-color: var(--surface);
+            color: var(--text-primary);
+            padding: 16px 24px;
+            border-radius: var(--radius-medium);
+            box-shadow: var(--shadow-3);
+            font-size: 15px;
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 90%;
+            border: 1px solid var(--surface-variant);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast-icon {
+            font-size: 20px;
+            color: var(--primary-color);
+        }
+
+        .toast.success .toast-icon {
+            color: #4CAF50;
+        }
+
+        .toast.error .toast-icon {
+            color: #FF5252;
+        }
+
+        /* 页脚样式 */
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px 0;
+            color: var(--text-secondary);
             font-size: 14px;
-            color: var(--md-sys-color-on-surface-variant);
+            border-top: 1px solid var(--surface-variant);
+            width: 100%;
         }
 
-        .home-link a {
-            color: var(--md-sys-color-primary);
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: var(--primary-color);
             text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+            cursor: pointer;
         }
 
-        .home-link a:hover {
+        .footer-link:hover {
             text-decoration: underline;
         }
 
+        /* 哔哩哔哩特色样式 */
+        .bilibili-link {
+            color: #FB7299;
+            font-weight: 600;
+        }
+
+        .bilibili-link:hover {
+            color: #FF2D61;
+        }
+
+        /* 响应式设计 */
         @media (max-width: 768px) {
+            .error-emoji {
+                font-size: 100px;
+            }
+            
+            .error-code {
+                font-size: 90px;
+            }
+            
+            .error-title {
+                font-size: 28px;
+            }
+            
+            .error-description {
+                font-size: 16px;
+            }
+            
+            .error-content {
+                padding: 40px 20px;
+            }
+            
+            .action-row {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .action-btn {
+                min-width: 250px;
+                max-width: 100%;
+                width: 100%;
+            }
+            
+            .toast {
+                width: calc(100% - 40px);
+                max-width: none;
+                bottom: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
             .error-emoji {
                 font-size: 80px;
             }
@@ -224,104 +457,311 @@
                 font-size: 24px;
             }
             
-            .error-message {
-                font-size: 16px;
+            .suggestions {
+                padding: 20px;
             }
             
-            .action-buttons {
+            .suggestions li {
+                font-size: 14px;
+            }
+            
+            .footer-links {
                 flex-direction: column;
-                align-items: center;
-            }
-            
-            .action-btn {
-                width: 100%;
-                max-width: 300px;
-            }
-            
-            .error-card {
-                padding: 30px 20px;
+                gap: 10px;
             }
         }
 
-        @media (max-width: 480px) {
-            .error-container {
-                padding: 20px 10px;
-            }
-            
-            .error-emoji {
-                font-size: 60px;
-            }
-            
-            .error-code {
-                font-size: 50px;
-            }
+        /* 404文字跳动效果 */
+        .error-code span {
+            display: inline-block;
+            animation: bounce 1s ease infinite alternate;
+        }
+
+        .error-code span:nth-child(2) { animation-delay: 0.1s; }
+        .error-code span:nth-child(3) { animation-delay: 0.2s; }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
         }
     </style>
 </head>
 <body>
     <div class="error-container">
-        <div class="error-card">
-            <div class="error-emoji">😕</div>
-            <div class="error-code">404</div>
+        <!-- 表情轮播区域 -->
+        <div class="emoji-container">
+            <div class="error-emoji" id="error-emoji">🤔</div>
+        </div>
+        
+        <div class="error-content">
+            <!-- 404 数字 -->
+            <div class="error-code">
+                <span>4</span><span>0</span><span>4</span>
+            </div>
+            
             <h1 class="error-title">页面未找到</h1>
-            <p class="error-message">
-                抱歉，您访问的页面不存在或已被移动。这可能是因为链接错误、页面已被删除，或者您输入的URL不正确。
+            
+            <p class="error-description">
+                抱歉，您访问的页面不存在。这可能是因为链接错误、页面已被删除，或者您输入的URL不正确。
             </p>
             
-            <div class="action-buttons">
-                <a href="index.html" class="action-btn">
-                    <span>🏠</span> 返回首页
+            <div class="path-display" id="current-path"></div>
+            
+            <!-- 水平一行按钮布局 -->
+            <div class="action-row">
+                <!-- 返回首页按钮 - 排第一 -->
+                <a href="/" class="action-btn primary">
+                    <div class="action-icon">🏠</div>
+                    <div class="action-label">返回首页</div>
+                    <div class="action-description">回到个人主页</div>
                 </a>
-                <a href="https://vlink.cc/mcedge" class="action-btn secondary">
-                    <span>🔗</span> 查看网址导航
+                
+                <!-- 网址导航按钮 - 排第二 -->
+                <a href="http://vlink.cc/mcedge" class="action-btn">
+                    <div class="action-icon">🔗</div>
+                    <div class="action-label">网址导航</div>
+                    <div class="action-description">查看所有链接</div>
                 </a>
-                <button onclick="window.history.back()" class="action-btn secondary">
-                    <span>↩️</span> 返回上一页
+                
+                <!-- 报告问题按钮 - 排第三 -->
+                <button onclick="reportError()" class="action-btn">
+                    <div class="action-icon">📧</div>
+                    <div class="action-label">报告问题</div>
+                    <div class="action-description">复制邮箱反馈</div>
                 </button>
             </div>
         </div>
         
+        <!-- 只有3条建议 -->
         <div class="suggestions">
             <h3>您可以尝试：</h3>
             <ul>
                 <li>检查网址是否拼写正确</li>
-                <li>使用搜索功能查找内容</li>
                 <li>返回首页浏览其他内容</li>
                 <li>通过联系方式向我反馈</li>
             </ul>
         </div>
         
-        <div class="home-link">
-            或者直接访问 <a href="index.html">个人主页</a>
-        </div>
+        <!-- 页脚 -->
+        <footer>
+            <p>© 我的世界Edge. 保留所有权利.</p>
+            <p style="margin-top: 8px; font-size: 13px;">采用 Material Design 3 设计语言 · 无需外部依赖</p>
+            <div class="footer-links">
+                <span class="footer-link" onclick="copyQQ()">复制QQ</span>
+                <span class="footer-link" onclick="copyEmail()">复制邮箱</span>
+                <a href="https://message.bilibili.com/?spm_id_from=333.1387.0.0#/whisper/mid576823848" 
+                   class="footer-link bilibili-link" 
+                   target="_blank" 
+                   rel="noopener noreferrer">去哔哩哔哩私信</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast提示容器 -->
+    <div class="toast" id="toast">
+        <div class="toast-icon" id="toast-icon">✓</div>
+        <div id="toast-message">已复制到剪贴板</div>
     </div>
 
     <script>
-        // 自动记录404错误（可选）
-        console.log('404页面被访问，路径：' + window.location.pathname);
+        // 表情轮播数组 - 使用新的表情
+        const emojis = ['🤔', '😅', '😂', '🤣', '😱', '😨', '🥵', '😕', '😟', '😞', '💀', '🔍', '❓', '🚫'];
+        let emojiIndex = 0;
+        let emojiInterval;
         
-        // 添加一些交互效果
-        document.addEventListener('DOMContentLoaded', function() {
-            const emoji = document.querySelector('.error-emoji');
-            const emojis = ['🤔', '😕', '😟', '🤔', '😞', '😅', '😂', '🤣', '💀', '🔍'];
-            let currentIndex = 0;
+        // 获取当前路径信息
+        const currentPath = window.location.pathname;
+        const currentHost = window.location.hostname;
+        const fullUrl = window.location.href;
+        
+        // 显示当前访问路径
+        document.getElementById('current-path').textContent = `访问路径: ${currentPath}`;
+        
+        // Toast提示函数
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastIcon = document.getElementById('toast-icon');
+            const toastMessage = document.getElementById('toast-message');
             
-            // 每3秒切换一个表情
-            setInterval(() => {
-                currentIndex = (currentIndex + 1) % emojis.length;
-                emoji.textContent = emojis[currentIndex];
+            // 设置内容和样式
+            toastMessage.textContent = message;
+            toast.className = 'toast ' + type;
+            toastIcon.textContent = type === 'success' ? '✓' : '✗';
+            
+            // 显示toast
+            toast.classList.add('show');
+            
+            // 3秒后隐藏
+            setTimeout(() => {
+                toast.classList.remove('show');
             }, 3000);
+        }
+        
+        // 表情轮播函数
+        function startEmojiRotation() {
+            const emojiElement = document.getElementById('error-emoji');
             
-            // 按钮点击动画
+            emojiInterval = setInterval(() => {
+                emojiIndex = (emojiIndex + 1) % emojis.length;
+                emojiElement.style.opacity = 0;
+                
+                setTimeout(() => {
+                    emojiElement.textContent = emojis[emojiIndex];
+                    emojiElement.style.opacity = 1;
+                }, 250);
+            }, 3000);
+        }
+        
+        // 返回上一页或首页 (保留函数，可能键盘快捷键用)
+        function goBack() {
+            if (document.referrer && document.referrer.includes(currentHost)) {
+                window.history.back();
+            } else {
+                window.location.href = '/';
+            }
+        }
+        
+        // 报告问题 - 复制邮箱
+        function reportError() {
+            const email = '1938400382@qq.com';
+            copyToClipboard(email, '邮箱地址已复制，请粘贴到邮件客户端发送问题反馈');
+        }
+        
+        // 复制QQ
+        function copyQQ() {
+            copyToClipboard('1938400382', 'QQ号已复制');
+        }
+        
+        // 复制邮箱
+        function copyEmail() {
+            copyToClipboard('1938400382@qq.com', '邮箱地址已复制');
+        }
+        
+        // 复制到剪贴板通用函数
+        function copyToClipboard(text, successMessage) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast(successMessage, 'success');
+                }).catch(err => {
+                    console.error('复制失败:', err);
+                    // 备用方法
+                    fallbackCopyTextToClipboard(text, successMessage);
+                });
+            } else {
+                // 使用传统方法
+                fallbackCopyTextToClipboard(text, successMessage);
+            }
+        }
+        
+        // 传统复制方法作为备用
+        function fallbackCopyTextToClipboard(text, successMessage) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast(successMessage, 'success');
+                } else {
+                    showToast('复制失败，请手动复制', 'error');
+                }
+            } catch (err) {
+                console.error('传统复制方法失败:', err);
+                showToast('复制失败，请手动复制', 'error');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+        
+        // 自动修复路径的函数
+        function fixPathIssues() {
+            console.log('当前路径:', currentPath);
+            console.log('路径层级:', currentPath.split('/').filter(s => s).length);
+            
+            // 如果路径层级过深，显示提示
+            const pathDepth = currentPath.split('/').filter(s => s).length;
+            if (pathDepth > 2) {
+                const description = document.querySelector('.error-description');
+                if (description) {
+                    description.innerHTML += `<br><br><small style="color: #FF5252;">注意：您访问的路径层级过深 (${pathDepth} 层)，这可能是链接错误导致的。</small>`;
+                }
+            }
+        }
+        
+        // 键盘快捷键
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'Escape':
+                    goBack();
+                    break;
+                case 'h':
+                case 'H':
+                    if (e.ctrlKey) {
+                        window.location.href = '/';
+                    }
+                    break;
+            }
+        });
+        
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', () => {
+            startEmojiRotation();
+            fixPathIssues();
+            
+            // 记录404访问（可选）
+            console.log('404页面访问记录:', {
+                path: currentPath,
+                referrer: document.referrer,
+                timestamp: new Date().toISOString()
+            });
+            
+            // 添加按钮点击动画
             const buttons = document.querySelectorAll('.action-btn');
-            buttons.forEach(button => {
-                button.addEventListener('click', function() {
-                    this.style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        this.style.transform = '';
-                    }, 200);
+            buttons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    if (this.getAttribute('href') || this.onclick) {
+                        this.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            this.style.transform = '';
+                        }, 200);
+                    }
                 });
             });
+            
+            // 添加页脚链接点击动画
+            const footerLinks = document.querySelectorAll('.footer-link');
+            footerLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    this.style.color = 'var(--primary-dark)';
+                    setTimeout(() => {
+                        this.style.color = '';
+                    }, 300);
+                });
+            });
+            
+            // 哔哩哔哩链接特殊效果
+            const bilibiliLink = document.querySelector('.bilibili-link');
+            if (bilibiliLink) {
+                bilibiliLink.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                });
+                bilibiliLink.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            }
+        });
+        
+        // 页面卸载时清理定时器
+        window.addEventListener('beforeunload', () => {
+            if (emojiInterval) {
+                clearInterval(emojiInterval);
+            }
         });
     </script>
 </body>
