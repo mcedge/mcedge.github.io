@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Checking if you are human</title>   <!-- 原标题，保留不变 -->
+<title>请稍候...</title>
 <style>
-/* ---------- 基础样式（移除强制深色，改为CSS变量+媒体查询） ---------- */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -306,13 +305,12 @@ body {
  <div class="main-content">
   <div style="display: flex; align-items: center;">
    <!-- 原图标链接，保持原样 -->
-   <img src="./118pan.png" style="height: 3rem; width: auto; margin-right: 0.5rem; vertical-align: middle;">
    <p style="font-size: 2.5rem; font-weight: 500; line-height: 3.75rem; color: var(--text-body);">mcedge.118pan.com</p>
   </div>
   <div style="font-size: 1.5rem; line-height: 2.25rem; margin-bottom: 2rem; min-height: 2rem;">
    <p>
     <span class="preloader_text" style="display: none;">Checking if you are human. This may take a few seconds.</span>
-    <span class="textallstep" style="display: block;">Verify you are human by completing the action below.</span>
+    <span class="textallstep" style="display: block;">请完成以下操作，验证您是真人。</span>
    </p>
   </div>
   <div class="preloader" style="display: block;">
@@ -322,7 +320,7 @@ body {
    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; height: 100%;">
     <div style="display: flex; align-items: center; gap: 7px;">
      <button id="checkbox" class="checkbox"></button>
-     <div class="verify-text">Verify you are human</div>
+     <div class="verify-text">验证您是真人</div>
     </div>
     <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 5px;">
      <div id="branding">
@@ -345,16 +343,15 @@ body {
          </svg>
        </a>
        <div id="terms">
-         <a id="privacy-link" target="_blank" rel="noopener noreferrer" href="https://www.cloudflare.com/privacypolicy/">Privacy</a><span class="link-spacer"> • </span>
-         <a id="terms-link" target="_blank" rel="noopener noreferrer" href="https://www.cloudflare.com/website-terms/">Terms</a>
+         <a id="privacy-link" target="_blank" rel="noopener noreferrer" href="https://www.cloudflare.com/zh-cn/privacypolicy/">隐私</a><span class="link-spacer"> • </span>
+         <a id="terms-link" target="_blank" rel="noopener noreferrer" href="https://challenges.cloudflare.com/cdn-cgi/challenge-platform/help">帮助</a>
        </div>
      </div>
     </div>
    </div>
   </div>
   <br>
-  <p class="security-review" style="margin: 50px 0 0 0 !important; padding: 0 20px; text-align: left !important; width: 100% !important; max-width: none !important; color: var(--security-text);">
-    mcedge.118pan.com needs to review the security of your connection before proceeding.
+  <p class="security-review" style="margin: 50px 0 0 0 !important; padding: 0 20px; text-align: left !important; width: 100% !important; max-width: none !important; color: var(--security-text);">继续之前，mcedge.118pan.com 需要先检查您的连接的安全性。
   </p>
  </div>
 </div>
@@ -380,7 +377,7 @@ body {
 <div class="footer" role="contentinfo">
  <div class="footer-inner">
   <div>Ray ID: <code class="ray-id">56a4c5299fdetmca</code></div>
-  <div style="margin-top: 5px;">Platform performance and security <span>Cloudflare</span></div>
+  <div style="margin-top: 5px;">由 <a href="https://www.cloudflare.com/?utm_source=challenge&utm_campaign=l">Cloudflare</a> 提供的性能和安全服务 | <a href="https://www.cloudflare.com/zh-cn/privacypolicy/">隐私</a></div>
  </div>
 </div>
 
