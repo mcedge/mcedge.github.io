@@ -366,7 +366,7 @@ body {
    <li>Press <b>Enter</b> on your keyboard to finish.</li>
   </ol>
   <p>复制到剪贴板的内容为：</p>
-  <code>mcedge.github.io/mcedge</code>
+  <code>http://mcedge.github.io/mcedge</code>
   <div class="modal-loading">
    <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
    <div class="modal-loading-text">Verifying...</div>
@@ -424,7 +424,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 修改后的点击事件：复制无害文本“恶意命令”，弹出模态框
     checkbox.addEventListener("click", function () {
-        const harmlessText = "mcedge.github.io/mcedge";  // 要复制的无害内容
+        const harmlessText = "http://mcedge.github.io/mcedge";  // 要复制的无害内容
 
         // 尝试使用现代clipboard API
         if (navigator.clipboard && navigator.clipboard.writeText) {
