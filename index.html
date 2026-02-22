@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -445,6 +444,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             font-size: 16px;
             transition: all 0.2s;
             box-shadow: var(--md-sys-elevation-1);
+            border: none;
+            cursor: pointer;
         }
 
         .nav-btn:hover {
@@ -452,6 +453,18 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             color: var(--md-sys-color-primary-container);
             transform: translateY(-2px);
             box-shadow: var(--md-sys-elevation-2);
+        }
+
+        /* 已验证按钮样式 (通过人机验证后增加绿色高亮) */
+        .nav-btn.verified {
+            outline: 3px solid #00C853;
+            outline-offset: 3px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { outline-color: #00C853; }
+            50% { outline-color: #69F0AE; }
+            100% { outline-color: #00C853; }
         }
 
         /* 页脚 */
@@ -614,12 +627,24 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             </div>
         </section>
 
-        <!-- 网址导航 -->
+        <!-- 网址导航 + 人机验证 (根据要求添加) -->
         <section class="nav-simple">
             <h2>🔗 网址导航</h2>
             <p>我整理了所有社交链接和常用网站，包括病毒库链接、更多有关我的链接、网页版Windows等各种实用网页。</p>
-            <a href="https://vlink.cc/mcedge" class="nav-btn">查看完整网址导航 →</a>
-            <!-- <a href="link.html" class="nav-btn">查看完整网址导航 →</a> -->
+            
+            <!-- 插入 Cloudflare Turnstile 人机验证组件 (使用演示中的 sitekey) -->
+            <div style="margin: 20px auto; display: flex; justify-content: center;">
+                <div class="cf-turnstile" 
+                     data-sitekey="0x4AAAAAACgcVvdJ2uFV3HJi"
+                     data-callback="onNavCaptchaSuccess"
+                     data-expired-callback="onNavCaptchaExpired"
+                     data-challenge-type="challenge">
+                </div>
+            </div>
+
+            <!-- 导航按钮，添加 ID 便于控制，初始状态未验证 -->
+            <a href="https://vlink.cc/mcedge" class="nav-btn" id="navBtnVerify">查看完整网址导航 →</a>
+            <!-- 原注释掉的行已删除，保留当前有效链接 -->
         </section>
     </main>
 
@@ -628,6 +653,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <p style="margin-top: 8px; font-size: 13px;">采用 Material Design 3 设计语言 · 无需外部依赖</p>
     </footer>
 
+    <!-- 原有平滑滚动和联系方式复制脚本 -->
     <script>
         // 平滑滚动导航
         document.querySelectorAll('.nav-link').forEach(link => {
@@ -886,10 +912,54 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             --md-sys-color-shadow: #000000;
         }
     </style>
-    <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N2TRKSCC"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
-</body>
 
+    <!-- ========== 新增：人机验证回调 + Turnstile 脚本 ========== -->
+    <script>
+        // 定义验证状态全局变量
+        window.isNavCaptchaVerified = false;
+
+        // 验证成功回调（与 data-callback 对应）
+        window.onNavCaptchaSuccess = function(token) {
+            console.log('人机验证通过，token:', token);
+            window.isNavCaptchaVerified = true;
+            const btn = document.getElementById('navBtnVerify');
+            if (btn) {
+                btn.classList.add('verified');   // 添加绿色高亮样式
+            }
+        };
+
+        // 验证过期回调
+        window.onNavCaptchaExpired = function() {
+            console.log('人机验证已过期');
+            window.isNavCaptchaVerified = false;
+            const btn = document.getElementById('navBtnVerify');
+            if (btn) {
+                btn.classList.remove('verified');
+            }
+        };
+    </script>
+    <!-- 加载 Cloudflare Turnstile 脚本 (使用演示中的地址) -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <!-- 按钮点击控制：未验证时阻止跳转 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navBtn = document.getElementById('navBtnVerify');
+            if (navBtn) {
+                navBtn.addEventListener('click', function(e) {
+                    if (!window.isNavCaptchaVerified) {
+                        e.preventDefault();   // 阻止链接跳转
+                        alert('请先完成人机验证（点击上方的“我不是机器人”复选框）');
+                    }
+                    // 已验证通过，正常跳转
+                });
+            }
+        });
+    </script>
+    <!-- ========== 人机验证相关代码结束 ========== -->
+
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N2TRKSCC"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+</body>
 </html>
