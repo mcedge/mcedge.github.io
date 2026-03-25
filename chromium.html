@@ -294,7 +294,7 @@
             color: var(--md-sys-color-on-surface-variant);
         }
 
-        /* 报告问题按钮（位于卡片内部，宽度与卡片内容一致） */
+        /* 报告问题按钮（位于卡片内部，宽度与卡片内容一致，样式与404页普通按钮相同） */
         .report-button-wrapper {
             margin-top: 24px;
             width: 100%;
@@ -307,11 +307,11 @@
             justify-content: center;
             gap: 12px;
             padding: 20px 20px;
-            background-color: var(--md-sys-color-primary);
-            border: 2px solid var(--md-sys-color-primary);
+            background-color: var(--md-sys-color-surface);
+            border: 2px solid var(--md-sys-color-surface-variant);
             border-radius: var(--md-sys-shape-corner-medium);
             text-decoration: none;
-            color: var(--md-sys-color-on-primary);
+            color: var(--md-sys-color-on-surface);
             font-weight: 500;
             transition: all 0.3s ease;
             cursor: pointer;
@@ -321,9 +321,7 @@
 
         .action-btn:hover {
             transform: translateY(-4px);
-            background-color: var(--md-sys-color-on-primary-container);
-            border-color: var(--md-sys-color-on-primary-container);
-            color: var(--md-sys-color-primary-container);
+            border-color: var(--md-sys-color-primary);
             box-shadow: var(--md-sys-elevation-2);
         }
 
@@ -334,14 +332,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
+            background-color: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-primary);
             border-radius: 50%;
             margin: 0 auto;
-        }
-
-        .action-btn:hover .action-icon {
-            background-color: rgba(0, 0, 0, 0.1);
         }
 
         .action-label {
@@ -351,7 +345,7 @@
 
         .action-description {
             font-size: 14px;
-            color: rgba(255, 255, 255, 0.9);
+            color: var(--md-sys-color-on-surface-variant);
         }
 
         /* Toast 提示样式（与404一致） */
@@ -508,7 +502,7 @@
                 <script>document.write(navigator.userAgent);</script>
             </div>
 
-            <!-- 报告问题按钮（位于卡片内部，宽度与卡片内容一致） -->
+            <!-- 报告问题按钮（位于卡片内部，宽度与卡片内容一致，样式与404页普通按钮相同） -->
             <div class="report-button-wrapper">
                 <button onclick="reportError()" class="action-btn">
                     <div class="action-icon">📧</div>
