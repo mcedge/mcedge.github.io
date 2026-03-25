@@ -502,7 +502,7 @@
                 <script>document.write(navigator.userAgent);</script>
             </div>
 
-            <!-- 报告问题按钮（位于卡片内部，宽度与卡片内容一致，样式与404页普通按钮相同） -->
+            <!-- 报告问题按钮（位于卡片内部，宽度与卡片内容一致） -->
             <div class="report-button-wrapper">
                 <button onclick="reportError()" class="action-btn">
                     <div class="action-icon">📧</div>
@@ -615,6 +615,45 @@
                 osDetailDiv.innerHTML = osHTML;
             }
         }
+    </script>
+
+    <!-- Firefox 检测修正脚本（不修改 core.js，仅覆盖显示） -->
+    <script>
+        function fixFirefoxDetection() {
+            const versionDiv = document.getElementById('version');
+            const suggestionDiv = document.getElementById('suggestion');
+            if (!versionDiv || !suggestionDiv) return;
+
+            const originalText = versionDiv.innerText;
+            // 如果 core.js 已经检测到版本（不是“未能检测到”），则无需修正
+            if (!originalText.includes('未能检测到极速内核版本号')) return;
+
+            const ua = navigator.userAgent.toLowerCase();
+            // 判断是否为 Firefox（且不是基于 Chromium 的伪装）
+            const isFirefox = ua.indexOf('firefox') > -1 && ua.indexOf('chrome') === -1;
+            if (!isFirefox) return;
+
+            // 提取 Firefox 版本号
+            let firefoxVersion = '';
+            const match = ua.match(/firefox\/(\d+\.\d+)/);
+            if (match) firefoxVersion = match[1];
+            else firefoxVersion = '未知版本';
+
+            // 获取完整 UA 中的 Gecko 版本（可选）
+            let geckoVersion = '';
+            const geckoMatch = ua.match(/gecko\/(\d+)/);
+            if (geckoMatch) geckoVersion = geckoMatch[1];
+
+            // 构建显示内容
+            versionDiv.innerHTML = `版本号：<strong>Firefox ${firefoxVersion}</strong> (Gecko 内核)`;
+            let suggestionHtml = `您的浏览器使用的是 <strong>Gecko</strong> 内核，这是 Firefox 浏览器。`;
+            if (geckoVersion) suggestionHtml += `<br>Gecko 版本：${geckoVersion}`;
+            suggestionHtml += `<br><br>Firefox 版本发布信息请参考 <a href="https://www.mozilla.org/firefox/releases/" target="_blank" rel="noopener noreferrer">Mozilla 官方发布说明</a>。`;
+            suggestionDiv.innerHTML = suggestionHtml;
+        }
+
+        // 等待 core.js 执行完毕（异步获取完整版本可能延迟，使用 setTimeout 确保修正）
+        setTimeout(fixFirefoxDetection, 300);
     </script>
 
     <!-- Toast & 复制功能脚本 -->
