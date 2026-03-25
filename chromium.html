@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浏览器内核版本检测 - 我的世界Edge的网站</title>
+    <!-- 引入原有的内核检测核心脚本（不修改） -->
+    <script type="text/javascript" src="https://www.index0.cn/core/js/core.js"></script>
+    <style>
+        /* ========== Material Design 3 核心变量定义（与主页完全一致） ========== */
+        :root {
+            --md-sys-color-primary: #2962FF;
+            --md-sys-color-on-primary: #FFFFFF;
+            --md-sys-color-primary-container: #DCE2FF;
+            --md-sys-color-on-primary-container: #001A43;
+
+            --md-sys-color-background: #F8FAFF;
+            --md-sys-color-on-background: #1B1B1F;
+            --md-sys-color-surface: #F8FAFF;
+            --md-sys-color-on-surface: #1B1B1F;
+            --md-sys-color-surface-variant: #E1E2EC;
+            --md-sys-color-on-surface-variant: #45464F;
+
+            --md-sys-color-outline: #757780;
+            --md-sys-color-shadow: #000000;
+
+            --md-sys-shape-corner-extra-large: 28px;
+            --md-sys-shape-corner-large: 16px;
+            --md-sys-shape-corner-medium: 12px;
+            --md-sys-shape-corner-small: 8px;
+
+            --md-sys-elevation-1: 0 1px 3px rgba(41, 98, 255, 0.12), 0 1px 2px rgba(41, 98, 255, 0.24);
+            --md-sys-elevation-2: 0 3px 6px rgba(41, 98, 255, 0.15), 0 3px 6px rgba(41, 98, 255, 0.25);
+            --md-sys-elevation-3: 0 10px 20px rgba(41, 98, 255, 0.15), 0 6px 6px rgba(41, 98, 255, 0.2);
+
+            --md-sys-typescale-font-family: 'Roboto', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --md-sys-color-primary: #B1C5FF;
+                --md-sys-color-on-primary: #002A71;
+                --md-sys-color-primary-container: #00439F;
+                --md-sys-color-on-primary-container: #DCE2FF;
+
+                --md-sys-color-background: #11131A;
+                --md-sys-color-on-background: #E2E2E6;
+                --md-sys-color-surface: #11131A;
+                --md-sys-color-on-surface: #E2E2E6;
+                --md-sys-color-surface-variant: #45464F;
+                --md-sys-color-on-surface-variant: #C5C6D0;
+
+                --md-sys-color-outline: #8F9099;
+                --md-sys-color-shadow: #000000;
+            }
+        }
+
+        /* 强制浅色主题 */
+        :root.light {
+            --md-sys-color-primary: #2962FF;
+            --md-sys-color-on-primary: #FFFFFF;
+            --md-sys-color-primary-container: #DCE2FF;
+            --md-sys-color-on-primary-container: #001A43;
+
+            --md-sys-color-background: #F8FAFF;
+            --md-sys-color-on-background: #1B1B1F;
+            --md-sys-color-surface: #F8FAFF;
+            --md-sys-color-on-surface: #1B1B1F;
+            --md-sys-color-surface-variant: #E1E2EC;
+            --md-sys-color-on-surface-variant: #45464F;
+
+            --md-sys-color-outline: #757780;
+            --md-sys-color-shadow: #000000;
+        }
+
+        /* 强制深色主题 */
+        :root.dark {
+            --md-sys-color-primary: #B1C5FF;
+            --md-sys-color-on-primary: #002A71;
+            --md-sys-color-primary-container: #00439F;
+            --md-sys-color-on-primary-container: #DCE2FF;
+
+            --md-sys-color-background: #11131A;
+            --md-sys-color-on-background: #E2E2E6;
+            --md-sys-color-surface: #11131A;
+            --md-sys-color-on-surface: #E2E2E6;
+            --md-sys-color-surface-variant: #45464F;
+            --md-sys-color-on-surface-variant: #C5C6D0;
+
+            --md-sys-color-outline: #8F9099;
+            --md-sys-color-shadow: #000000;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--md-sys-typescale-font-family);
+        }
+
+        body {
+            background-color: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-background);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        /* 简化的应用栏：只保留标题和主题切换按钮 */
+        .app-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            padding: 16px 24px;
+            box-shadow: var(--md-sys-elevation-1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .app-bar-title {
+            font-size: 22px;
+            font-weight: 500;
+            letter-spacing: 0.15px;
+        }
+
+        /* 主题切换按钮样式 */
+        .theme-toggle {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--md-sys-shape-corner-medium);
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            background-color: rgba(var(--md-sys-color-primary), 0.08);
+            color: var(--md-sys-color-primary);
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* 卡片 */
+        .card {
+            background-color: var(--md-sys-color-surface);
+            border-radius: var(--md-sys-shape-corner-large);
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--md-sys-elevation-1);
+            border: 1px solid transparent;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+
+        .card:hover {
+            box-shadow: var(--md-sys-elevation-2);
+            transform: translateY(-2px);
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: 400;
+            margin-bottom: 24px;
+            color: var(--md-sys-color-on-surface);
+            letter-spacing: 0.15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-title img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        /* 检测结果区域 - 强制覆盖 core.js 动态添加的样式 */
+        #in {
+            background-color: transparent !important;
+            border-color: transparent !important;
+        }
+
+        #version {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-surface);
+        }
+
+        #version strong {
+            color: var(--md-sys-color-primary);
+            font-weight: 600;
+        }
+
+        #suggestion {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--md-sys-color-on-surface-variant);
+            background-color: var(--md-sys-color-surface-variant);
+            padding: 16px;
+            border-radius: var(--md-sys-shape-corner-medium);
+            margin-top: 16px;
+        }
+
+        #suggestion a {
+            color: var(--md-sys-color-primary);
+            text-decoration: none;
+        }
+
+        #suggestion a:hover {
+            text-decoration: underline;
+        }
+
+        /* 操作系统信息卡片样式 */
+        .os-info {
+            background-color: var(--md-sys-color-surface-variant);
+            border-radius: var(--md-sys-shape-corner-medium);
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .os-info h3 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: var(--md-sys-color-on-surface);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .os-detail {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        .os-detail p {
+            margin-bottom: 8px;
+        }
+
+        .os-detail strong {
+            color: var(--md-sys-color-primary);
+        }
+
+        /* 表格样式（保留兼容 core.js 动态表格） */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: var(--md-sys-color-surface);
+            border-radius: var(--md-sys-shape-corner-medium);
+            overflow: hidden;
+        }
+
+        .info-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--md-sys-color-outline);
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .info-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* UA 显示区域 */
+        .ua-box {
+            background-color: var(--md-sys-color-surface-variant);
+            border-radius: var(--md-sys-shape-corner-medium);
+            padding: 16px;
+            font-family: monospace;
+            font-size: 13px;
+            word-break: break-all;
+            margin-top: 16px;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        /* 页脚 */
+        footer {
+            text-align: center;
+            padding: 40px 0 32px;
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 14px;
+            border-top: 1px solid var(--md-sys-color-outline);
+            margin-top: 48px;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 100px;
+            }
+            .app-bar {
+                padding: 12px 20px;
+            }
+            .card {
+                padding: 24px;
+            }
+            .card-title {
+                font-size: 20px;
+            }
+            .card-title img {
+                width: 28px;
+                height: 28px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 16px;
+            }
+        }
+    </style>
+</head>
+<body onload="whatBrowser(); detectOS();">
+    <!-- 简化的顶部栏：只显示标题和主题切换按钮 -->
+    <header class="app-bar">
+        <div class="app-bar-title">浏览器内核版本检测</div>
+        <button class="theme-toggle" id="themeToggle" aria-label="切换主题模式">🌓</button>
+    </header>
+
+    <main class="container">
+        <div class="card">
+            <h2 class="card-title">
+                <img src="image/chromium.png" alt="Chromium 图标" onerror="this.style.display='none'; this.nextSibling?.style?.setProperty('display', 'inline');">
+                <span>内核版本信息</span>
+            </h2>
+            <!-- 原本的 #in 容器，core.js 会操作它 -->
+            <div id="in">
+                <div id="version">正在检测内核版本…</div>
+                <table id="tb" class="info-table" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td>
+                            <div id="suggestion">请稍候，正在获取浏览器内核信息。</div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- 新增操作系统信息区域 -->
+            <div class="os-info" id="osInfo">
+                <h3>
+                    <span>🖥️</span> 操作系统信息
+                </h3>
+                <div class="os-detail" id="osDetail">
+                    正在检测操作系统…
+                </div>
+            </div>
+
+            <!-- 完整 UA 显示区域 -->
+            <div class="ua-box">
+                <strong>浏览器完整 UA（JavaScript 获取）</strong><br>
+                <script>document.write(navigator.userAgent);</script>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 我的世界Edge. 保留所有权利.</p>
+        <p style="margin-top: 8px; font-size: 13px;">Chromium发布日期由index0.cn提供 · 采用 Material Design 3</p>
+    </footer>
+
+    <!-- 操作系统检测脚本（Windows 统一显示为 Windows，Linux 统一显示 Linux，Android 保留） -->
+    <script>
+        function detectOS() {
+            const osDetailDiv = document.getElementById('osDetail');
+            const userAgent = navigator.userAgent;
+            const platform = navigator.platform;
+            let osName = "未知";
+            let osIcon = "🖥️";
+
+            // 检测 Windows（统一显示为 Windows，不再区分版本）
+            if (userAgent.indexOf("Windows NT") !== -1) {
+                osName = "Windows";
+                osIcon = "🪟";
+            }
+            // 检测 macOS
+            else if (userAgent.indexOf("Mac OS X") !== -1) {
+                const macVersion = userAgent.match(/Mac OS X (\d+[._]\d+[._]?\d*)/);
+                if (macVersion) {
+                    let ver = macVersion[1].replace(/_/g, '.');
+                    // 转换为可读版本
+                    const versionMap = {
+                        "10.15": "Catalina",
+                        "11.0": "Big Sur",
+                        "12.0": "Monterey",
+                        "13.0": "Ventura",
+                        "14.0": "Sonoma",
+                        "15.0": "Sequoia"
+                    };
+                    const majorVer = ver.split('.')[0] + '.' + ver.split('.')[1];
+                    osName = `macOS ${versionMap[majorVer] || ver}`;
+                } else {
+                    osName = "macOS";
+                }
+                osIcon = "🍎";
+            }
+            // 检测 Linux（统一显示为 Linux，Android 单独处理）
+            else if (userAgent.indexOf("Linux") !== -1) {
+                // 优先检测 Android
+                if (userAgent.indexOf("Android") !== -1) {
+                    const androidVer = userAgent.match(/Android (\d+\.\d+)/);
+                    osName = androidVer ? `Android ${androidVer[1]}` : "Android";
+                    osIcon = "📱";
+                } else {
+                    // 其他 Linux 系统统一显示为 Linux
+                    osName = "Linux";
+                    osIcon = "🐧";
+                }
+            }
+            // 检测 iOS
+            else if (userAgent.indexOf("iPhone") !== -1 || userAgent.indexOf("iPad") !== -1 || userAgent.indexOf("iPod") !== -1) {
+                const iosVersion = userAgent.match(/OS (\d+[._]\d+)/);
+                if (iosVersion) {
+                    osName = `iOS ${iosVersion[1].replace(/_/g, '.')}`;
+                } else {
+                    osName = "iOS";
+                }
+                osIcon = "📱";
+            }
+            // 检测 Chrome OS
+            else if (userAgent.indexOf("CrOS") !== -1) {
+                osName = "Chrome OS";
+                osIcon = "📚";
+            }
+            // 回退使用 platform
+            else if (platform) {
+                if (platform.indexOf("Win") !== -1) osName = "Windows";
+                else if (platform.indexOf("Mac") !== -1) osName = "macOS";
+                else if (platform.indexOf("Linux") !== -1) osName = "Linux";
+                else osName = platform;
+                if (osName === "Linux") osIcon = "🐧";
+                else if (osName === "Windows") osIcon = "🪟";
+                else if (osName === "macOS") osIcon = "🍎";
+            }
+
+            // 构建显示内容
+            let osHTML = `<p><strong>操作系统：</strong> ${osIcon} ${osName}</p>`;
+            osHTML += `<p><strong>平台标识：</strong> ${platform}</p>`;
+            
+            // 显示架构信息（如果可用）
+            if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
+                navigator.userAgentData.getHighEntropyValues(["architecture", "bitness"]).then(values => {
+                    if (values.architecture) {
+                        const archText = values.bitness ? `${values.architecture} (${values.bitness}-bit)` : values.architecture;
+                        osDetailDiv.innerHTML = osHTML + `<p><strong>系统架构：</strong> ${archText}</p>`;
+                    } else {
+                        osDetailDiv.innerHTML = osHTML;
+                    }
+                }).catch(() => {
+                    osDetailDiv.innerHTML = osHTML;
+                });
+            } else {
+                osDetailDiv.innerHTML = osHTML;
+            }
+        }
+    </script>
+
+    <!-- 主题切换功能（独立版本） -->
+    <script>
+        (function() {
+            const themeToggle = document.getElementById('themeToggle');
+            let currentTheme = 'auto'; // auto, light, dark
+
+            function updateTheme() {
+                const root = document.documentElement;
+                root.classList.remove('light', 'dark');
+
+                if (currentTheme === 'light') {
+                    root.classList.add('light');
+                    themeToggle.innerHTML = '☀️';
+                    themeToggle.title = '浅色模式 - 点击切换到深色模式';
+                } else if (currentTheme === 'dark') {
+                    root.classList.add('dark');
+                    themeToggle.innerHTML = '🌙';
+                    themeToggle.title = '深色模式 - 点击切换到自动模式';
+                } else {
+                    // 自动模式：跟随系统
+                    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    themeToggle.innerHTML = '🌓';
+                    themeToggle.title = '自动模式（跟随系统） - 点击切换到浅色模式';
+                }
+            }
+
+            function toggleTheme() {
+                if (currentTheme === 'auto') currentTheme = 'light';
+                else if (currentTheme === 'light') currentTheme = 'dark';
+                else currentTheme = 'auto';
+                updateTheme();
+            }
+
+            themeToggle.addEventListener('click', toggleTheme);
+            // 监听系统主题变化（自动模式下生效）
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
+                if (currentTheme === 'auto') updateTheme();
+            });
+            // 初始化
+            currentTheme = 'auto';
+            updateTheme();
+        })();
+    </script>
+</body>
+</html>
