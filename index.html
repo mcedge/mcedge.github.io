@@ -56,14 +56,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                     ieVersion = parseFloat(rvMatch[1]);
                 }
             }
-            // 检测Edge（旧版EdgeHTML）
-            else if (ua.indexOf('Edge/') > -1) {
-                isIE = true;
-                var edgeMatch = /Edge\/(\d+\.?\d*)/.exec(ua);
-                if (edgeMatch && edgeMatch[1]) {
-                    ieVersion = parseFloat(edgeMatch[1]);
-                }
-            }
 
             // 如果是IE浏览器，进行重定向
             if (isIE) {
@@ -961,5 +953,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N2TRKSCC"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
+     
 </body>
 </html>
