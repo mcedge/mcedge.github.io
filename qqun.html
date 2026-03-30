@@ -148,7 +148,7 @@
             color: var(--md-sys-color-primary);
         }
 
-        /* 主内容区域：占满剩余空间，并让卡片居中 */
+        /* 主内容区域 */
         .main-content {
             flex: 1;
             display: flex;
@@ -209,9 +209,71 @@
             background-color: var(--md-sys-color-surface-variant);
             border-radius: var(--md-sys-shape-corner-medium);
             display: inline-block;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        /* 页脚（固定在底部，水平居中） */
+        /* 通用按钮样式（与404页普通按钮一致） */
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 20px 20px;
+            background-color: var(--md-sys-color-surface);
+            border: 2px solid var(--md-sys-color-surface-variant);
+            border-radius: var(--md-sys-shape-corner-medium);
+            color: var(--md-sys-color-on-surface);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .action-btn:hover:not(:disabled) {
+            transform: translateY(-4px);
+            border-color: var(--md-sys-color-primary);
+            box-shadow: var(--md-sys-elevation-2);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(0.2);
+        }
+
+        .btn-icon {
+            font-size: 32px;
+            width: 64px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-primary);
+            border-radius: 50%;
+            margin: 0 auto;
+        }
+
+        .btn-label {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .btn-description {
+            font-size: 14px;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        /* 两个按钮之间的间距 */
+        .button-group {
+            margin-top: 16px;
+        }
+
+        /* 页脚 */
         footer {
             text-align: center;
             padding: 24px 0;
@@ -245,7 +307,7 @@
         <div class="container">
             <div class="card">
                 <h1 class="card-title">🔐 安全验证</h1>
-                <p class="card-description">请完成下方人机验证，验证通过后将自动跳转。</p>
+                <p class="card-description">请完成下方人机验证，验证通过后将自动跳转。若未自动跳转，可点击下方按钮手动跳转。无法跳转就找我的社交平台或者发送邮箱反馈</p>
                 
                 <!-- Cloudflare Turnstile 验证组件 -->
                 <div class="turnstile-wrapper">
@@ -259,6 +321,20 @@
                 </div>
                 
                 <div id="status-message" class="info-message">等待验证…</div>
+
+                <!-- 手动跳转按钮（初始禁用） -->
+                <button id="manual-redirect-btn" class="action-btn" disabled>
+                    <div class="btn-icon">🔗</div>
+                    <div class="btn-label">手动跳转</div>
+                    <div class="btn-description">验证通过后即可点击</div>
+                </button>
+
+                <!-- 新增：复制邮箱反馈按钮（始终可用） -->
+                <button id="copy-email-btn" class="action-btn" onclick="copyEmail()">
+                    <div class="btn-icon">📧</div>
+                    <div class="btn-label">复制邮箱反馈</div>
+                    <div class="btn-description">点击复制邮箱，反馈问题</div>
+                </button>
             </div>
         </div>
     </div>
@@ -271,32 +347,124 @@
     <!-- Cloudflare Turnstile 脚本 -->
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
-    <!-- 自定义回调函数 -->
+    <!-- Toast 提示容器（复制成功时显示） -->
+    <div id="toast" style="position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background-color: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); padding: 16px 24px; border-radius: var(--md-sys-shape-corner-medium); box-shadow: var(--md-sys-elevation-3); font-size: 15px; font-weight: 500; z-index: 1000; opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; gap: 12px; max-width: 90%; border: 1px solid var(--md-sys-color-outline);">
+        <span id="toast-icon" style="font-size: 20px;">✓</span>
+        <span id="toast-message">已复制到剪贴板</span>
+    </div>
+
     <script>
+        const manualBtn = document.getElementById('manual-redirect-btn');
+        const statusDiv = document.getElementById('status-message');
+        let verified = false;
+
+        // 跳转函数
+        function redirectToBaidu() {
+            window.location.href = 'https://qun.qq.com/universal-share/share?ac=1&authKey=b/1UhJPbytYZBerhzFQ2lnKy1wCuWRy1kICSyRYsiNvW3iU45Puz02ABD6RI8QDp&busi_data=eyJncm91cENvZGUiOiIzMTYzNzMzMjEiLCJ0b2tlbiI6IjlzeUlDOU92ampDRnl1SldnbEsreWxmTC9PaXVSeUdyaHdwWnRYclp0SWxBQlRISVpWVDJpVGxhdXI4QTAvZ0MiLCJ1aW4iOiIxOTM4NDAwMzgyIn0=&data=VXtvGEtS3etdEnmumWESKCfNKZF4r7aruQh-qQCM00AbjhT3dssHLjpInYrO8ZBaSZujot01ArCHwtfSjjl42JPdEPKGOb1fVc9fwL_bo44&svctype=5&tempid=h5_group_info';
+        }
+
         // 验证成功回调
         window.onCaptchaSuccess = function(token) {
-            const statusDiv = document.getElementById('status-message');
+            verified = true;
             statusDiv.innerHTML = '✅ 验证成功！正在跳转…';
             statusDiv.style.backgroundColor = '#4CAF50';
             statusDiv.style.color = 'white';
-            // 延迟 1 秒后跳转，让用户看到成功提示
-            setTimeout(function() {
-                window.location.href = 'https://qun.qq.com/universal-share/share?ac=1&authKey=b/1UhJPbytYZBerhzFQ2lnKy1wCuWRy1kICSyRYsiNvW3iU45Puz02ABD6RI8QDp&busi_data=eyJncm91cENvZGUiOiIzMTYzNzMzMjEiLCJ0b2tlbiI6IjlzeUlDOU92ampDRnl1SldnbEsreWxmTC9PaXVSeUdyaHdwWnRYclp0SWxBQlRISVpWVDJpVGxhdXI4QTAvZ0MiLCJ1aW4iOiIxOTM4NDAwMzgyIn0=&data=VXtvGEtS3etdEnmumWESKCfNKZF4r7aruQh-qQCM00AbjhT3dssHLjpInYrO8ZBaSZujot01ArCHwtfSjjl42JPdEPKGOb1fVc9fwL_bo44&svctype=5&tempid=h5_group_info';
-            }, 2000);
+            
+            // 启用手动跳转按钮
+            manualBtn.disabled = false;
+            
+            // 自动跳转（延迟1秒）
+            const autoRedirectTimer = setTimeout(function() {
+                redirectToBaidu();
+            }, 1000);
+            
+            // 如果用户手动点击，则清除自动跳转定时器，避免重复跳转
+            manualBtn.onclick = function() {
+                clearTimeout(autoRedirectTimer);
+                redirectToBaidu();
+            };
         };
 
         // 验证过期回调
         window.onCaptchaExpired = function() {
-            const statusDiv = document.getElementById('status-message');
+            verified = false;
             statusDiv.innerHTML = '⏰ 验证已过期，请重新验证。';
             statusDiv.style.backgroundColor = '#FF5252';
             statusDiv.style.color = 'white';
-            // 恢复提示样式
+            
+            // 禁用手动跳转按钮
+            manualBtn.disabled = true;
+            manualBtn.onclick = null;
+            
+            // 3秒后恢复提示样式
             setTimeout(() => {
                 statusDiv.style.backgroundColor = '';
                 statusDiv.style.color = '';
                 statusDiv.innerHTML = '等待验证…';
             }, 3000);
+        };
+
+        // Toast 提示函数
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastIcon = document.getElementById('toast-icon');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toastMessage.textContent = message;
+            toastIcon.textContent = type === 'success' ? '✓' : '✗';
+            
+            toast.classList.add('show');
+            toast.style.transform = 'translateX(-50%) translateY(0)';
+            toast.style.opacity = '1';
+            
+            setTimeout(() => {
+                toast.style.transform = 'translateX(-50%) translateY(100px)';
+                toast.style.opacity = '0';
+            }, 3000);
+        }
+
+        // 复制邮箱函数
+        function copyEmail() {
+            const email = '1938400382@qq.com';
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(email).then(() => {
+                    showToast('邮箱地址已复制，请粘贴到邮件客户端发送问题反馈', 'success');
+                }).catch(err => {
+                    console.error('复制失败:', err);
+                    fallbackCopyTextToClipboard(email);
+                });
+            } else {
+                fallbackCopyTextToClipboard(email);
+            }
+        }
+
+        // 传统复制方法备用
+        function fallbackCopyTextToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast('邮箱地址已复制，请粘贴到邮件客户端发送问题反馈', 'success');
+                } else {
+                    showToast('复制失败，请手动复制', 'error');
+                }
+            } catch (err) {
+                console.error('传统复制方法失败:', err);
+                showToast('复制失败，请手动复制', 'error');
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // 确保手动按钮在页面加载时禁用，且点击复制按钮不干扰验证状态
+        window.onload = function() {
+            manualBtn.disabled = true;
         };
     </script>
 
