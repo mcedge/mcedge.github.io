@@ -276,13 +276,13 @@
         // 验证成功回调
         window.onCaptchaSuccess = function(token) {
             const statusDiv = document.getElementById('status-message');
-            statusDiv.innerHTML = '✅ 验证成功！正在跳转至百度…';
+            statusDiv.innerHTML = '✅ 验证成功！正在跳转…';
             statusDiv.style.backgroundColor = '#4CAF50';
             statusDiv.style.color = 'white';
             // 延迟 1 秒后跳转，让用户看到成功提示
             setTimeout(function() {
                 window.location.href = 'https://qun.qq.com/universal-share/share?ac=1&authKey=b/1UhJPbytYZBerhzFQ2lnKy1wCuWRy1kICSyRYsiNvW3iU45Puz02ABD6RI8QDp&busi_data=eyJncm91cENvZGUiOiIzMTYzNzMzMjEiLCJ0b2tlbiI6IjlzeUlDOU92ampDRnl1SldnbEsreWxmTC9PaXVSeUdyaHdwWnRYclp0SWxBQlRISVpWVDJpVGxhdXI4QTAvZ0MiLCJ1aW4iOiIxOTM4NDAwMzgyIn0=&data=VXtvGEtS3etdEnmumWESKCfNKZF4r7aruQh-qQCM00AbjhT3dssHLjpInYrO8ZBaSZujot01ArCHwtfSjjl42JPdEPKGOb1fVc9fwL_bo44&svctype=5&tempid=h5_group_info';
-            }, 1000);
+            }, 2000);
         };
 
         // 验证过期回调
