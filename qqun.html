@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人机验证后自动跳转 - 我的世界Edge的网站</title>
+    <style>
+        /* ========== Material Design 3 核心变量定义 ========== */
+        :root {
+            --md-sys-color-primary: #2962FF;
+            --md-sys-color-on-primary: #FFFFFF;
+            --md-sys-color-primary-container: #DCE2FF;
+            --md-sys-color-on-primary-container: #001A43;
+
+            --md-sys-color-background: #F8FAFF;
+            --md-sys-color-on-background: #1B1B1F;
+            --md-sys-color-surface: #F8FAFF;
+            --md-sys-color-on-surface: #1B1B1F;
+            --md-sys-color-surface-variant: #E1E2EC;
+            --md-sys-color-on-surface-variant: #45464F;
+
+            --md-sys-color-outline: #757780;
+            --md-sys-color-shadow: #000000;
+
+            --md-sys-shape-corner-extra-large: 28px;
+            --md-sys-shape-corner-large: 16px;
+            --md-sys-shape-corner-medium: 12px;
+            --md-sys-shape-corner-small: 8px;
+
+            --md-sys-elevation-1: 0 1px 3px rgba(41, 98, 255, 0.12), 0 1px 2px rgba(41, 98, 255, 0.24);
+            --md-sys-elevation-2: 0 3px 6px rgba(41, 98, 255, 0.15), 0 3px 6px rgba(41, 98, 255, 0.25);
+            --md-sys-elevation-3: 0 10px 20px rgba(41, 98, 255, 0.15), 0 6px 6px rgba(41, 98, 255, 0.2);
+
+            --md-sys-typescale-font-family: 'Roboto', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --md-sys-color-primary: #B1C5FF;
+                --md-sys-color-on-primary: #002A71;
+                --md-sys-color-primary-container: #00439F;
+                --md-sys-color-on-primary-container: #DCE2FF;
+
+                --md-sys-color-background: #11131A;
+                --md-sys-color-on-background: #E2E2E6;
+                --md-sys-color-surface: #11131A;
+                --md-sys-color-on-surface: #E2E2E6;
+                --md-sys-color-surface-variant: #45464F;
+                --md-sys-color-on-surface-variant: #C5C6D0;
+
+                --md-sys-color-outline: #8F9099;
+                --md-sys-color-shadow: #000000;
+            }
+        }
+
+        /* 强制浅色主题 */
+        :root.light {
+            --md-sys-color-primary: #2962FF;
+            --md-sys-color-on-primary: #FFFFFF;
+            --md-sys-color-primary-container: #DCE2FF;
+            --md-sys-color-on-primary-container: #001A43;
+
+            --md-sys-color-background: #F8FAFF;
+            --md-sys-color-on-background: #1B1B1F;
+            --md-sys-color-surface: #F8FAFF;
+            --md-sys-color-on-surface: #1B1B1F;
+            --md-sys-color-surface-variant: #E1E2EC;
+            --md-sys-color-on-surface-variant: #45464F;
+
+            --md-sys-color-outline: #757780;
+            --md-sys-color-shadow: #000000;
+        }
+
+        /* 强制深色主题 */
+        :root.dark {
+            --md-sys-color-primary: #B1C5FF;
+            --md-sys-color-on-primary: #002A71;
+            --md-sys-color-primary-container: #00439F;
+            --md-sys-color-on-primary-container: #DCE2FF;
+
+            --md-sys-color-background: #11131A;
+            --md-sys-color-on-background: #E2E2E6;
+            --md-sys-color-surface: #11131A;
+            --md-sys-color-on-surface: #E2E2E6;
+            --md-sys-color-surface-variant: #45464F;
+            --md-sys-color-on-surface-variant: #C5C6D0;
+
+            --md-sys-color-outline: #8F9099;
+            --md-sys-color-shadow: #000000;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--md-sys-typescale-font-family);
+        }
+
+        body {
+            background-color: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-background);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 顶部栏 */
+        .app-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            padding: 16px 24px;
+            box-shadow: var(--md-sys-elevation-1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .app-bar-title {
+            font-size: 22px;
+            font-weight: 500;
+            letter-spacing: 0.15px;
+        }
+
+        .theme-toggle {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--md-sys-shape-corner-medium);
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            background-color: rgba(var(--md-sys-color-primary), 0.08);
+            color: var(--md-sys-color-primary);
+        }
+
+        /* 主内容区域：占满剩余空间，并让卡片居中 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 24px 48px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        /* 卡片 */
+        .card {
+            background-color: var(--md-sys-color-surface);
+            border-radius: var(--md-sys-shape-corner-large);
+            padding: 48px 32px;
+            box-shadow: var(--md-sys-elevation-2);
+            border: 1px solid transparent;
+            transition: box-shadow 0.2s, transform 0.2s;
+            text-align: center;
+        }
+
+        .card:hover {
+            box-shadow: var(--md-sys-elevation-3);
+            transform: translateY(-2px);
+        }
+
+        .card-title {
+            font-size: 28px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            color: var(--md-sys-color-on-surface);
+            letter-spacing: 0.15px;
+        }
+
+        .card-description {
+            font-size: 16px;
+            color: var(--md-sys-color-on-surface-variant);
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+
+        /* Turnstile 容器 */
+        .turnstile-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 24px 0;
+        }
+
+        /* 提示信息 */
+        .info-message {
+            font-size: 14px;
+            color: var(--md-sys-color-primary);
+            margin-top: 24px;
+            padding: 12px;
+            background-color: var(--md-sys-color-surface-variant);
+            border-radius: var(--md-sys-shape-corner-medium);
+            display: inline-block;
+        }
+
+        /* 页脚（固定在底部，水平居中） */
+        footer {
+            text-align: center;
+            padding: 24px 0;
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 14px;
+            border-top: 1px solid var(--md-sys-color-outline);
+            margin-top: auto;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 90px 16px 32px;
+            }
+            .card {
+                padding: 32px 20px;
+            }
+            .card-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="app-bar">
+        <div class="app-bar-title">人机验证跳转</div>
+        <button class="theme-toggle" id="themeToggle" aria-label="切换主题模式">🌓</button>
+    </header>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="card">
+                <h1 class="card-title">🔐 安全验证</h1>
+                <p class="card-description">请完成下方人机验证，验证通过后将自动跳转到百度首页。</p>
+                
+                <!-- Cloudflare Turnstile 验证组件 -->
+                <div class="turnstile-wrapper">
+                    <div 
+                        class="cf-turnstile" 
+                        data-sitekey="0x4AAAAAACgcVvdJ2uFV3HJi" 
+                        data-callback="onCaptchaSuccess"
+                        data-expired-callback="onCaptchaExpired"
+                        data-challenge-type="challenge"
+                    ></div>
+                </div>
+                
+                <div id="status-message" class="info-message">等待验证…</div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 我的世界Edge. 保留所有权利.</p>
+        <p style="margin-top: 8px; font-size: 13px;">采用 Material Design 3 · 验证通过后自动跳转</p>
+    </footer>
+
+    <!-- Cloudflare Turnstile 脚本 -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+    <!-- 自定义回调函数 -->
+    <script>
+        // 验证成功回调
+        window.onCaptchaSuccess = function(token) {
+            const statusDiv = document.getElementById('status-message');
+            statusDiv.innerHTML = '✅ 验证成功！正在跳转至百度…';
+            statusDiv.style.backgroundColor = '#4CAF50';
+            statusDiv.style.color = 'white';
+            // 延迟 1 秒后跳转，让用户看到成功提示
+            setTimeout(function() {
+                window.location.href = 'https://qun.qq.com/universal-share/share?ac=1&authKey=b/1UhJPbytYZBerhzFQ2lnKy1wCuWRy1kICSyRYsiNvW3iU45Puz02ABD6RI8QDp&busi_data=eyJncm91cENvZGUiOiIzMTYzNzMzMjEiLCJ0b2tlbiI6IjlzeUlDOU92ampDRnl1SldnbEsreWxmTC9PaXVSeUdyaHdwWnRYclp0SWxBQlRISVpWVDJpVGxhdXI4QTAvZ0MiLCJ1aW4iOiIxOTM4NDAwMzgyIn0=&data=VXtvGEtS3etdEnmumWESKCfNKZF4r7aruQh-qQCM00AbjhT3dssHLjpInYrO8ZBaSZujot01ArCHwtfSjjl42JPdEPKGOb1fVc9fwL_bo44&svctype=5&tempid=h5_group_info';
+            }, 1000);
+        };
+
+        // 验证过期回调
+        window.onCaptchaExpired = function() {
+            const statusDiv = document.getElementById('status-message');
+            statusDiv.innerHTML = '⏰ 验证已过期，请重新验证。';
+            statusDiv.style.backgroundColor = '#FF5252';
+            statusDiv.style.color = 'white';
+            // 恢复提示样式
+            setTimeout(() => {
+                statusDiv.style.backgroundColor = '';
+                statusDiv.style.color = '';
+                statusDiv.innerHTML = '等待验证…';
+            }, 3000);
+        };
+    </script>
+
+    <!-- 主题切换功能 -->
+    <script>
+        (function() {
+            const themeToggle = document.getElementById('themeToggle');
+            let currentTheme = 'auto';
+
+            function updateTheme() {
+                const root = document.documentElement;
+                root.classList.remove('light', 'dark');
+
+                if (currentTheme === 'light') {
+                    root.classList.add('light');
+                    themeToggle.innerHTML = '☀️';
+                    themeToggle.title = '浅色模式 - 点击切换到深色模式';
+                } else if (currentTheme === 'dark') {
+                    root.classList.add('dark');
+                    themeToggle.innerHTML = '🌙';
+                    themeToggle.title = '深色模式 - 点击切换到自动模式';
+                } else {
+                    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    themeToggle.innerHTML = '🌓';
+                    themeToggle.title = '自动模式（跟随系统） - 点击切换到浅色模式';
+                }
+            }
+
+            function toggleTheme() {
+                if (currentTheme === 'auto') currentTheme = 'light';
+                else if (currentTheme === 'light') currentTheme = 'dark';
+                else currentTheme = 'auto';
+                updateTheme();
+            }
+
+            themeToggle.addEventListener('click', toggleTheme);
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
+                if (currentTheme === 'auto') updateTheme();
+            });
+            currentTheme = 'auto';
+            updateTheme();
+        })();
+    </script>
+</body>
+</html>
