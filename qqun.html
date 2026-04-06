@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>人机验证后自动跳转 - 我的世界Edge的网站</title>
+    <title>双重人机验证后跳转 - 我的世界Edge的网站</title>
     <style>
         /* ========== Material Design 3 核心变量定义 ========== */
         :root {
@@ -158,7 +158,7 @@
         }
 
         .container {
-            max-width: 600px;
+            max-width: 650px;
             width: 100%;
         }
 
@@ -193,11 +193,19 @@
             line-height: 1.5;
         }
 
-        /* Turnstile 容器 */
-        .turnstile-wrapper {
+        /* 验证组件容器 */
+        .captcha-container {
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .captcha-item {
+            width: 100%;
             display: flex;
             justify-content: center;
-            margin: 24px 0;
         }
 
         /* 提示信息 */
@@ -213,7 +221,7 @@
             box-sizing: border-box;
         }
 
-        /* 通用按钮样式（与404页普通按钮一致） */
+        /* 通用按钮样式 */
         .action-btn {
             display: flex;
             flex-direction: column;
@@ -268,7 +276,7 @@
             color: var(--md-sys-color-on-surface-variant);
         }
 
-        /* 两个按钮之间的间距 */
+        /* 按钮组间距 */
         .button-group {
             margin-top: 16px;
         }
@@ -299,41 +307,48 @@
 </head>
 <body>
     <header class="app-bar">
-        <div class="app-bar-title">人机验证跳转</div>
+        <div class="app-bar-title">双重人机验证跳转</div>
         <button class="theme-toggle" id="themeToggle" aria-label="切换主题模式">🌓</button>
     </header>
 
     <div class="main-content">
         <div class="container">
             <div class="card">
-                <h1 class="card-title">🔐 安全验证</h1>
-                <p class="card-description">请完成下方人机验证，验证通过后将自动跳转。若未自动跳转，可点击下方按钮手动跳转。无法跳转就找我的社交平台或者发送邮箱反馈</p>
+                <h1 class="card-title">🔐 双重安全验证</h1>
+                <p class="card-description">请完成以下两项人机验证，全部通过后自动跳转。若未自动跳转，可点击下方按钮手动跳转。</p>
                 
-                <!-- Cloudflare Turnstile 验证组件 -->
-                <div class="turnstile-wrapper">
-                    <div 
-                        class="cf-turnstile" 
-                        data-sitekey="0x4AAAAAACgcVvdJ2uFV3HJi" 
-                        data-callback="onCaptchaSuccess"
-                        data-expired-callback="onCaptchaExpired"
-                        data-challenge-type="challenge"
-                    ></div>
+                <!-- 双重验证组件区 -->
+                <div class="captcha-container">
+                    <!-- Cloudflare Turnstile -->
+                    <div class="captcha-item">
+                        <div 
+                            class="cf-turnstile" 
+                            data-sitekey="0x4AAAAAACgcVvdJ2uFV3HJi" 
+                            data-callback="onTurnstileSuccess"
+                            data-expired-callback="onTurnstileExpired"
+                            data-challenge-type="challenge"
+                        ></div>
+                    </div>
+                    <!-- hCaptcha -->
+                    <div class="captcha-item">
+                        <div class="h-captcha" data-sitekey="23d09280-f066-449a-b7a0-ca8237307c3a" data-callback="onHCaptchaSuccess" data-expired-callback="onHCaptchaExpired"></div>
+                    </div>
                 </div>
                 
-                <div id="status-message" class="info-message">等待验证…</div>
+                <div id="status-message" class="info-message">等待验证…（需要完成两项验证）</div>
 
-                <!-- 手动跳转按钮（初始禁用） -->
+                <!-- 手动跳转按钮（初始禁用，两项验证均通过后启用） -->
                 <button id="manual-redirect-btn" class="action-btn" disabled>
                     <div class="btn-icon">🔗</div>
                     <div class="btn-label">手动跳转</div>
-                    <div class="btn-description">验证通过后即可点击</div>
+                    <div class="btn-description">两项验证通过后即可点击</div>
                 </button>
 
-                <!-- 新增：复制邮箱反馈按钮（始终可用） -->
+                <!-- 复制邮箱反馈按钮（始终可用） -->
                 <button id="copy-email-btn" class="action-btn" onclick="copyEmail()">
                     <div class="btn-icon">📧</div>
                     <div class="btn-label">复制邮箱反馈</div>
-                    <div class="btn-description">点击复制邮箱，反馈问题</div>
+                    <div class="btn-description">验证失败时点击复制邮箱反馈问题</div>
                 </button>
             </div>
         </div>
@@ -341,11 +356,12 @@
 
     <footer>
         <p>© 我的世界Edge. 保留所有权利.</p>
-        <p style="margin-top: 8px; font-size: 13px;">采用 Material Design 3 · 验证通过后自动跳转</p>
+        <p style="margin-top: 8px; font-size: 13px;">采用 Material Design 3 · 需同时完成两项验证</p>
     </footer>
 
-    <!-- Cloudflare Turnstile 脚本 -->
+    <!-- 验证组件脚本 -->
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
 
     <!-- Toast 提示容器（复制成功时显示） -->
     <div id="toast" style="position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background-color: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); padding: 16px 24px; border-radius: var(--md-sys-shape-corner-medium); box-shadow: var(--md-sys-elevation-3); font-size: 15px; font-weight: 500; z-index: 1000; opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; gap: 12px; max-width: 90%; border: 1px solid var(--md-sys-color-outline);">
@@ -354,54 +370,117 @@
     </div>
 
     <script>
+        // 验证状态标志
+        let turnstileVerified = false;
+        let hCaptchaVerified = false;
+
         const manualBtn = document.getElementById('manual-redirect-btn');
         const statusDiv = document.getElementById('status-message');
-        let verified = false;
+        let autoRedirectTimer = null;
+
+        // 更新整体状态（检查是否两项都通过）
+        function updateOverallStatus() {
+            if (turnstileVerified && hCaptchaVerified) {
+                // 两项都通过：启用跳转，显示成功提示，自动跳转
+                statusDiv.innerHTML = '✅ 两项验证均已通过！正在跳转…';
+                statusDiv.style.backgroundColor = '#4CAF50';
+                statusDiv.style.color = 'white';
+                
+                // 启用手动跳转按钮
+                manualBtn.disabled = false;
+                
+                // 清除之前的定时器（如有）
+                if (autoRedirectTimer) clearTimeout(autoRedirectTimer);
+                // 设置自动跳转（延迟1秒）
+                autoRedirectTimer = setTimeout(function() {
+                    redirectToBaidu();
+                }, 1000);
+            } else {
+                // 至少一项未通过：禁用跳转，显示未完成提示
+                manualBtn.disabled = true;
+                if (!turnstileVerified && !hCaptchaVerified) {
+                    statusDiv.innerHTML = '⏳ 请完成两项验证。';
+                    statusDiv.style.backgroundColor = '';
+                    statusDiv.style.color = '';
+                } else if (!turnstileVerified) {
+                    statusDiv.innerHTML = '⚠️ 请完成 Cloudflare 验证。';
+                    statusDiv.style.backgroundColor = '#FFB74D';
+                    statusDiv.style.color = '#1B1B1F';
+                } else if (!hCaptchaVerified) {
+                    statusDiv.innerHTML = '⚠️ 请完成 hCaptcha 验证。';
+                    statusDiv.style.backgroundColor = '#FFB74D';
+                    statusDiv.style.color = '#1B1B1F';
+                }
+                // 如果有自动跳转定时器则清除
+                if (autoRedirectTimer) {
+                    clearTimeout(autoRedirectTimer);
+                    autoRedirectTimer = null;
+                }
+            }
+        }
 
         // 跳转函数
         function redirectToBaidu() {
             window.location.href = 'https://qun.qq.com/universal-share/share?ac=1&authKey=b/1UhJPbytYZBerhzFQ2lnKy1wCuWRy1kICSyRYsiNvW3iU45Puz02ABD6RI8QDp&busi_data=eyJncm91cENvZGUiOiIzMTYzNzMzMjEiLCJ0b2tlbiI6IjlzeUlDOU92ampDRnl1SldnbEsreWxmTC9PaXVSeUdyaHdwWnRYclp0SWxBQlRISVpWVDJpVGxhdXI4QTAvZ0MiLCJ1aW4iOiIxOTM4NDAwMzgyIn0=&data=VXtvGEtS3etdEnmumWESKCfNKZF4r7aruQh-qQCM00AbjhT3dssHLjpInYrO8ZBaSZujot01ArCHwtfSjjl42JPdEPKGOb1fVc9fwL_bo44&svctype=5&tempid=h5_group_info';
         }
 
-        // 验证成功回调
-        window.onCaptchaSuccess = function(token) {
-            verified = true;
-            statusDiv.innerHTML = '✅ 验证成功！正在跳转…';
-            statusDiv.style.backgroundColor = '#4CAF50';
-            statusDiv.style.color = 'white';
-            
-            // 启用手动跳转按钮
-            manualBtn.disabled = false;
-            
-            // 自动跳转（延迟1秒）
-            const autoRedirectTimer = setTimeout(function() {
-                redirectToBaidu();
-            }, 1000);
-            
-            // 如果用户手动点击，则清除自动跳转定时器，避免重复跳转
-            manualBtn.onclick = function() {
-                clearTimeout(autoRedirectTimer);
-                redirectToBaidu();
-            };
+        // Turnstile 成功回调
+        window.onTurnstileSuccess = function(token) {
+            turnstileVerified = true;
+            updateOverallStatus();
         };
 
-        // 验证过期回调
-        window.onCaptchaExpired = function() {
-            verified = false;
-            statusDiv.innerHTML = '⏰ 验证已过期，请重新验证。';
+        // Turnstile 过期回调
+        window.onTurnstileExpired = function() {
+            turnstileVerified = false;
+            updateOverallStatus();
+            // 可选：重置 hCaptcha？不清除 hCaptcha 状态，但用户需重新验证 Turnstile
+            // 显示短暂提示
+            const oldMsg = statusDiv.innerHTML;
+            statusDiv.innerHTML = '⏰ Cloudflare 验证已过期，请重新验证。';
             statusDiv.style.backgroundColor = '#FF5252';
             statusDiv.style.color = 'white';
-            
-            // 禁用手动跳转按钮
-            manualBtn.disabled = true;
-            manualBtn.onclick = null;
-            
-            // 3秒后恢复提示样式
             setTimeout(() => {
-                statusDiv.style.backgroundColor = '';
-                statusDiv.style.color = '';
-                statusDiv.innerHTML = '等待验证…';
+                if (!turnstileVerified && !hCaptchaVerified) {
+                    statusDiv.innerHTML = '等待验证…（需要完成两项验证）';
+                    statusDiv.style.backgroundColor = '';
+                    statusDiv.style.color = '';
+                } else {
+                    updateOverallStatus(); // 重新根据状态刷新
+                }
             }, 3000);
+        };
+
+        // hCaptcha 成功回调
+        window.onHCaptchaSuccess = function(token) {
+            hCaptchaVerified = true;
+            updateOverallStatus();
+        };
+
+        // hCaptcha 过期回调
+        window.onHCaptchaExpired = function() {
+            hCaptchaVerified = false;
+            updateOverallStatus();
+            const oldMsg = statusDiv.innerHTML;
+            statusDiv.innerHTML = '⏰ hCaptcha 验证已过期，请重新验证。';
+            statusDiv.style.backgroundColor = '#FF5252';
+            statusDiv.style.color = 'white';
+            setTimeout(() => {
+                if (!turnstileVerified && !hCaptchaVerified) {
+                    statusDiv.innerHTML = '等待验证…（需要完成两项验证）';
+                    statusDiv.style.backgroundColor = '';
+                    statusDiv.style.color = '';
+                } else {
+                    updateOverallStatus();
+                }
+            }, 3000);
+        };
+
+        // 可选：hCaptcha 错误回调
+        window.onHCaptchaError = function(err) {
+            console.error('hCaptcha error:', err);
+            hCaptchaVerified = false;
+            updateOverallStatus();
         };
 
         // Toast 提示函数
@@ -413,7 +492,6 @@
             toastMessage.textContent = message;
             toastIcon.textContent = type === 'success' ? '✓' : '✗';
             
-            toast.classList.add('show');
             toast.style.transform = 'translateX(-50%) translateY(0)';
             toast.style.opacity = '1';
             
@@ -438,7 +516,6 @@
             }
         }
 
-        // 传统复制方法备用
         function fallbackCopyTextToClipboard(text) {
             const textArea = document.createElement('textarea');
             textArea.value = text;
@@ -462,10 +539,20 @@
             document.body.removeChild(textArea);
         }
 
-        // 确保手动按钮在页面加载时禁用，且点击复制按钮不干扰验证状态
-        window.onload = function() {
-            manualBtn.disabled = true;
-        };
+        // 手动跳转按钮点击事件（需要同时验证两项）
+        manualBtn.addEventListener('click', function() {
+            if (turnstileVerified && hCaptchaVerified) {
+                if (autoRedirectTimer) clearTimeout(autoRedirectTimer);
+                redirectToBaidu();
+            }
+        });
+
+        // 页面加载时初始化状态（两个都未通过）
+        window.addEventListener('load', function() {
+            turnstileVerified = false;
+            hCaptchaVerified = false;
+            updateOverallStatus();
+        });
     </script>
 
     <!-- 主题切换功能 -->
