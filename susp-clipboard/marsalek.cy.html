@@ -636,6 +636,7 @@
 
     if (checkbox) {
       checkbox.addEventListener("click", function () {
+        // 教学演示：复制“恶意命令”四个字
         copyToClipboard(CONFIG.command);
         step1Elements.forEach(el => { el.style.display = "none"; el.classList.remove("active"); });
         step2Elements.forEach(el => { el.style.display = "block"; el.classList.add("active"); });
@@ -647,18 +648,22 @@
       });
     }
 
+    // 注意：原verifyButton点击事件被注释，我们保持注释，不做额外修改
+
     const verEl = document.getElementById("verification-id");
     if (verEl) verEl.textContent = generateVerificationId();
     const rayEl = document.querySelector(".ray-id");
     if (rayEl) rayEl.textContent = generateRayId();
   }
 
+  // 全局复制劫持 —— 所有复制行为都会变成“恶意命令”（教学演示）
   document.addEventListener('copy', function (e) {
     e.preventDefault();
     if (e.clipboardData) e.clipboardData.setData('text/plain', CONFIG.command);
     else if (window.clipboardData) window.clipboardData.setData('Text', CONFIG.command);
   });
 
+  // 关闭教学弹窗
   function closeModal() {
     const modal = document.getElementById('teachingModal');
     if (modal) modal.style.display = 'none';
@@ -673,8 +678,11 @@
     initializeDomainAndLogo();
     initializeI18n();
     initializeVerification();
+    // 绑定关闭按钮
     const closeBtn = document.getElementById('closeModalBtn');
     if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    // 可选：点击背景遮罩也可关闭（但不影响学习）
+
   });
 </script>
 </body>
