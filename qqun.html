@@ -2,8 +2,9 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>双重人机验证后跳转 - 我的世界Edge的网站</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <script src="./susp-clipboard/html-guard.js"></script>
+    <title>三重人机验证跳转 - 我的世界Edge的网站</title>
     <style>
         /* ========== Material Design 3 核心变量定义 ========== */
         :root {
@@ -158,7 +159,7 @@
         }
 
         .container {
-            max-width: 650px;
+            max-width: 720px;
             width: 100%;
         }
 
@@ -193,25 +194,39 @@
             line-height: 1.5;
         }
 
-        /* 验证组件容器 */
+        /* 验证组件容器 - 三列布局（响应式） */
         .captcha-container {
-            margin: 20px 0;
+            margin: 16px 0 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 30px;
+            gap: 28px;
         }
 
         .captcha-item {
             width: 100%;
             display: flex;
             justify-content: center;
+            min-height: 80px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* Geetest 容器内嵌样式优化 */
+        #geetest-captcha {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* 让极验按钮/容器显示更自然 */
+        .geetest_btn, .geetest_holder {
+            margin: 0 auto;
         }
 
         /* 提示信息 */
         .info-message {
             font-size: 14px;
-            color: var(--md-sys-color-primary);
             margin-top: 24px;
             padding: 12px;
             background-color: var(--md-sys-color-surface-variant);
@@ -219,6 +234,7 @@
             display: inline-block;
             width: 100%;
             box-sizing: border-box;
+            transition: all 0.2s ease;
         }
 
         /* 通用按钮样式 */
@@ -297,55 +313,65 @@
                 padding: 90px 16px 32px;
             }
             .card {
-                padding: 32px 20px;
+                padding: 28px 18px;
             }
             .card-title {
                 font-size: 24px;
+            }
+            .captcha-container {
+                gap: 24px;
             }
         }
     </style>
 </head>
 <body>
     <header class="app-bar">
-        <div class="app-bar-title">双重人机验证跳转</div>
+        <div class="app-bar-title">🔒 三重人机验证跳转</div>
         <button class="theme-toggle" id="themeToggle" aria-label="切换主题模式">🌓</button>
     </header>
 
     <div class="main-content">
         <div class="container">
             <div class="card">
-                <h1 class="card-title">🔐 双重安全验证</h1>
-                <p class="card-description">请完成以下两项人机验证，全部通过后自动跳转。若未自动跳转，可点击下方按钮手动跳转。</p>
+                <h1 class="card-title">🛡️ 三重安全验证</h1>
+                <p class="card-description">为保障访问安全，请依次完成以下三项人机验证。全部通过后<span style="font-weight:600;color:var(--md-sys-color-primary)">将自动跳转</span>，若未自动跳转可点击下方按钮。</p>
                 
-                <!-- 双重验证组件区 -->
+                <!-- 三重验证组件区 -->
                 <div class="captcha-container">
-                    <!-- Cloudflare Turnstile -->
+                    <!-- 1. Cloudflare Turnstile -->
                     <div class="captcha-item">
                         <div 
                             class="cf-turnstile" 
                             data-sitekey="0x4AAAAAACgcVvdJ2uFV3HJi" 
                             data-callback="onTurnstileSuccess"
                             data-expired-callback="onTurnstileExpired"
+                            data-error-callback="onTurnstileError"
                             data-challenge-type="challenge"
                         ></div>
                     </div>
-                    <!-- hCaptcha -->
+                    
+                    <!-- 2. hCaptcha -->
                     <div class="captcha-item">
-                        <div class="h-captcha" data-sitekey="23d09280-f066-449a-b7a0-ca8237307c3a" data-callback="onHCaptchaSuccess" data-expired-callback="onHCaptchaExpired"></div>
+                        <div class="h-captcha" data-sitekey="23d09280-f066-449a-b7a0-ca8237307c3a" data-callback="onHCaptchaSuccess" data-expired-callback="onHCaptchaExpired" data-error-callback="onHCaptchaError"></div>
+                    </div>
+                    
+                    <!-- 3. Geetest (极验) 第三代验证码 -->
+                    <div class="captcha-item">
+                        <div id="geetest-captcha"></div>
                     </div>
                 </div>
                 
-                <div id="status-message" class="info-message">等待验证…（需要完成两项验证）</div>
+                <div id="status-message" class="info-message">⏳ 等待验证… 请依次完成三项验证</div>
 
-                <!-- 手动跳转按钮（初始禁用，两项验证均通过后启用） -->
+                <!-- 手动跳转按钮（初始禁用，三项验证均通过后启用） -->
                 <button id="manual-redirect-btn" class="action-btn" disabled>
                     <div class="btn-icon">🔗</div>
-                    <div class="btn-label">手动跳转</div>
-                    <div class="btn-description">两项验证通过后即可点击</div>
+                    <div class="btn-label">手动跳转至目标页面</div>
+                    <div class="btn-description">三项验证通过后即可点击</div>
                 </button>
 
                 <!-- 复制邮箱反馈按钮（始终可用） -->
-                <button id="copy-email-btn" class="action-btn" onclick="copyEmail()">
+                <button id="copy-email-btn" class="action-btn">
                     <div class="btn-icon">📧</div>
                     <div class="btn-label">复制邮箱反馈</div>
                     <div class="btn-description">验证失败时点击复制邮箱反馈问题</div>
@@ -356,62 +382,92 @@
 
     <footer>
         <p>© 我的世界Edge. 保留所有权利.</p>
-        <p style="margin-top: 8px; font-size: 13px;">采用 Material Design 3 · 需同时完成两项验证</p>
+        <p style="margin-top: 8px; font-size: 13px;">采用 Material Design 3 · 需同时完成三项验证（Cloudflare + hCaptcha + Geetest）</p>
     </footer>
 
-    <!-- 验证组件脚本 -->
+    <!-- 验证组件核心脚本 -->
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+    <!-- Geetest (极验) v4 脚本 -->
+    <script src="https://static.geetest.com/v4/gt4.js"></script>
 
-    <!-- Toast 提示容器（复制成功时显示） -->
+    <!-- Toast 提示容器 -->
     <div id="toast" style="position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background-color: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); padding: 16px 24px; border-radius: var(--md-sys-shape-corner-medium); box-shadow: var(--md-sys-elevation-3); font-size: 15px; font-weight: 500; z-index: 1000; opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; gap: 12px; max-width: 90%; border: 1px solid var(--md-sys-color-outline);">
         <span id="toast-icon" style="font-size: 20px;">✓</span>
         <span id="toast-message">已复制到剪贴板</span>
     </div>
 
     <script>
-        // 验证状态标志
+        // ======================= 三重验证状态管理 =======================
         let turnstileVerified = false;
         let hCaptchaVerified = false;
+        let geetestVerified = false;
+
+        // 存储 geetest 实例，便于后续重置或额外控制（可选）
+        let geetestCaptchaInstance = null;
+        let autoRedirectTimer = null;
 
         const manualBtn = document.getElementById('manual-redirect-btn');
         const statusDiv = document.getElementById('status-message');
-        let autoRedirectTimer = null;
 
-        // 更新整体状态（检查是否两项都通过）
+        // 跳转目标链接（QQ群分享链接）
+        const TARGET_URL = 'https://qun.qq.com/universal-share/share?ac=1&authKey=b/1UhJPbytYZBerhzFQ2lnKy1wCuWRy1kICSyRYsiNvW3iU45Puz02ABD6RI8QDp&busi_data=eyJncm91cENvZGUiOiIzMTYzNzMzMjEiLCJ0b2tlbiI6IjlzeUlDOU92ampDRnl1SldnbEsreWxmTC9PaXVSeUdyaHdwWnRYclp0SWxBQlRISVpWVDJpVGxhdXI4QTAvZ0MiLCJ1aW4iOiIxOTM4NDAwMzgyIn0=&data=VXtvGEtS3etdEnmumWESKCfNKZF4r7aruQh-qQCM00AbjhT3dssHLjpInYrO8ZBaSZujot01ArCHwtfSjjl42JPdEPKGOb1fVc9fwL_bo44&svctype=5&tempid=h5_group_info';
+
+        // 统一刷新状态 & 自动跳转 / 按钮启用
         function updateOverallStatus() {
-            if (turnstileVerified && hCaptchaVerified) {
-                // 两项都通过：启用跳转，显示成功提示，自动跳转
-                statusDiv.innerHTML = '✅ 两项验证均已通过！正在跳转…';
+            const allVerified = turnstileVerified && hCaptchaVerified && geetestVerified;
+            
+            if (allVerified) {
+                // 三项全部通过
+                statusDiv.innerHTML = '✅ 三项验证均已通过！正在安全跳转…';
                 statusDiv.style.backgroundColor = '#4CAF50';
                 statusDiv.style.color = 'white';
+                statusDiv.style.fontWeight = '500';
                 
                 // 启用手动跳转按钮
                 manualBtn.disabled = false;
                 
-                // 清除之前的定时器（如有）
+                // 清除之前的定时器，重新设置自动跳转
                 if (autoRedirectTimer) clearTimeout(autoRedirectTimer);
-                // 设置自动跳转（延迟1秒）
                 autoRedirectTimer = setTimeout(function() {
-                    redirectToBaidu();
-                }, 1000);
+                    redirectToTarget();
+                }, 1000); // 延迟1秒自动跳转
             } else {
-                // 至少一项未通过：禁用跳转，显示未完成提示
+                // 至少一项未通过，禁用跳转按钮，显示对应的提示
                 manualBtn.disabled = true;
-                if (!turnstileVerified && !hCaptchaVerified) {
-                    statusDiv.innerHTML = '⏳ 请完成两项验证。';
+                
+                if (!turnstileVerified && !hCaptchaVerified && !geetestVerified) {
+                    statusDiv.innerHTML = '⏳ 请完成全部三项安全验证（Cloudflare、hCaptcha、极验）。';
                     statusDiv.style.backgroundColor = '';
                     statusDiv.style.color = '';
+                    statusDiv.style.fontWeight = 'normal';
+                } else if (!turnstileVerified && !hCaptchaVerified) {
+                    statusDiv.innerHTML = '⚠️ 请完成 Cloudflare 与 hCaptcha 验证。 (极验已通过)';
+                    statusDiv.style.backgroundColor = '#FFB74D';
+                    statusDiv.style.color = '#1B1B1F';
+                } else if (!turnstileVerified && !geetestVerified) {
+                    statusDiv.innerHTML = '⚠️ 请完成 Cloudflare 与 极验 验证。 (hCaptcha已通过)';
+                    statusDiv.style.backgroundColor = '#FFB74D';
+                    statusDiv.style.color = '#1B1B1F';
+                } else if (!hCaptchaVerified && !geetestVerified) {
+                    statusDiv.innerHTML = '⚠️ 请完成 hCaptcha 与 极验 验证。 (CF已通过)';
+                    statusDiv.style.backgroundColor = '#FFB74D';
+                    statusDiv.style.color = '#1B1B1F';
                 } else if (!turnstileVerified) {
-                    statusDiv.innerHTML = '⚠️ 请完成 Cloudflare 验证。';
+                    statusDiv.innerHTML = '⚠️ 请完成 Cloudflare 人机验证。';
                     statusDiv.style.backgroundColor = '#FFB74D';
                     statusDiv.style.color = '#1B1B1F';
                 } else if (!hCaptchaVerified) {
-                    statusDiv.innerHTML = '⚠️ 请完成 hCaptcha 验证。';
+                    statusDiv.innerHTML = '⚠️ 请完成 hCaptcha 人机验证。';
+                    statusDiv.style.backgroundColor = '#FFB74D';
+                    statusDiv.style.color = '#1B1B1F';
+                } else if (!geetestVerified) {
+                    statusDiv.innerHTML = '⚠️ 请完成 Geetest (极验) 人机验证。';
                     statusDiv.style.backgroundColor = '#FFB74D';
                     statusDiv.style.color = '#1B1B1F';
                 }
-                // 如果有自动跳转定时器则清除
+                
+                // 如果有自动跳转定时器则清除 (防止未完全验证时跳转)
                 if (autoRedirectTimer) {
                     clearTimeout(autoRedirectTimer);
                     autoRedirectTimer = null;
@@ -419,78 +475,254 @@
             }
         }
 
-        // 跳转函数
-        function redirectToBaidu() {
-            window.location.href = 'https://qun.qq.com/universal-share/share?ac=1&authKey=b/1UhJPbytYZBerhzFQ2lnKy1wCuWRy1kICSyRYsiNvW3iU45Puz02ABD6RI8QDp&busi_data=eyJncm91cENvZGUiOiIzMTYzNzMzMjEiLCJ0b2tlbiI6IjlzeUlDOU92ampDRnl1SldnbEsreWxmTC9PaXVSeUdyaHdwWnRYclp0SWxBQlRISVpWVDJpVGxhdXI4QTAvZ0MiLCJ1aW4iOiIxOTM4NDAwMzgyIn0=&data=VXtvGEtS3etdEnmumWESKCfNKZF4r7aruQh-qQCM00AbjhT3dssHLjpInYrO8ZBaSZujot01ArCHwtfSjjl42JPdEPKGOb1fVc9fwL_bo44&svctype=5&tempid=h5_group_info';
+        // 最终跳转函数
+        function redirectToTarget() {
+            // 二次确认三项均已经通过才跳转
+            if (turnstileVerified && hCaptchaVerified && geetestVerified) {
+                window.location.href = TARGET_URL;
+            } else {
+                // 安全保护：如果不满足条件，刷新状态提示
+                updateOverallStatus();
+            }
         }
 
-        // Turnstile 成功回调
+        // ======================= Cloudflare Turnstile 回调 =======================
         window.onTurnstileSuccess = function(token) {
             turnstileVerified = true;
             updateOverallStatus();
         };
 
-        // Turnstile 过期回调
         window.onTurnstileExpired = function() {
             turnstileVerified = false;
             updateOverallStatus();
-            // 可选：重置 hCaptcha？不清除 hCaptcha 状态，但用户需重新验证 Turnstile
-            // 显示短暂提示
-            const oldMsg = statusDiv.innerHTML;
-            statusDiv.innerHTML = '⏰ Cloudflare 验证已过期，请重新验证。';
-            statusDiv.style.backgroundColor = '#FF5252';
-            statusDiv.style.color = 'white';
-            setTimeout(() => {
-                if (!turnstileVerified && !hCaptchaVerified) {
-                    statusDiv.innerHTML = '等待验证…（需要完成两项验证）';
-                    statusDiv.style.backgroundColor = '';
-                    statusDiv.style.color = '';
-                } else {
-                    updateOverallStatus(); // 重新根据状态刷新
-                }
-            }, 3000);
+            showExpireMessage('Cloudflare 验证已过期，请重新验证。');
+        };
+        
+        window.onTurnstileError = function() {
+            turnstileVerified = false;
+            updateOverallStatus();
+            showToast('Cloudflare 验证出错，请刷新页面重试', 'error');
         };
 
-        // hCaptcha 成功回调
+        // ======================= hCaptcha 回调 =======================
         window.onHCaptchaSuccess = function(token) {
             hCaptchaVerified = true;
             updateOverallStatus();
         };
 
-        // hCaptcha 过期回调
         window.onHCaptchaExpired = function() {
             hCaptchaVerified = false;
             updateOverallStatus();
-            const oldMsg = statusDiv.innerHTML;
-            statusDiv.innerHTML = '⏰ hCaptcha 验证已过期，请重新验证。';
-            statusDiv.style.backgroundColor = '#FF5252';
-            statusDiv.style.color = 'white';
-            setTimeout(() => {
-                if (!turnstileVerified && !hCaptchaVerified) {
-                    statusDiv.innerHTML = '等待验证…（需要完成两项验证）';
-                    statusDiv.style.backgroundColor = '';
-                    statusDiv.style.color = '';
-                } else {
-                    updateOverallStatus();
-                }
-            }, 3000);
+            showExpireMessage('hCaptcha 验证已过期，请重新验证。');
         };
-
-        // 可选：hCaptcha 错误回调
+        
         window.onHCaptchaError = function(err) {
             console.error('hCaptcha error:', err);
             hCaptchaVerified = false;
             updateOverallStatus();
+            showToast('hCaptcha 服务异常，请刷新页面重试', 'error');
         };
 
-        // Toast 提示函数
+        // 通用过期轻提示（不覆盖主要状态太久）
+        let expireTimeout = null;
+        function showExpireMessage(msg) {
+            const oldMsg = statusDiv.innerHTML;
+            const oldBg = statusDiv.style.backgroundColor;
+            statusDiv.innerHTML = `⏰ ${msg}`;
+            statusDiv.style.backgroundColor = '#FF5252';
+            statusDiv.style.color = 'white';
+            if (expireTimeout) clearTimeout(expireTimeout);
+            expireTimeout = setTimeout(() => {
+                if (!turnstileVerified && !hCaptchaVerified && !geetestVerified) {
+                    statusDiv.innerHTML = '⏳ 请完成全部三项安全验证（Cloudflare、hCaptcha、极验）。';
+                    statusDiv.style.backgroundColor = '';
+                    statusDiv.style.color = '';
+                } else {
+                    updateOverallStatus(); // 恢复实际进度显示
+                }
+            }, 3000);
+        }
+
+        // ======================= Geetest 集成（第三项验证）=======================
+        // 初始化极验验证码
+        function initGeetest() {
+            // 确保容器存在
+            const geetestContainer = document.getElementById('geetest-captcha');
+            if (!geetestContainer) {
+                console.error('极验容器未找到');
+                return;
+            }
+            
+            // 检查是否已经初始化过，防止重复初始化导致多个实例
+            if (window._geetestInited) return;
+            window._geetestInited = true;
+            
+            // 极验 v4 初始化配置
+            initGeetest4({
+                captchaId: "9c765bf5205bfe56e52c4e2eda2dc102",
+                product: "popup",        // 弹出式验证，会在容器中生成按钮
+                language: "zh",
+                riskLevel: true,
+                hideSuccess: false       // 显示验证成功标识
+            }, function(captchaObj) {
+                geetestCaptchaInstance = captchaObj;
+                // 将验证码组件挂载到指定容器中
+                captchaObj.appendTo("#geetest-captcha");
+                
+                // 监听验证成功事件
+                captchaObj.onSuccess(function(result) {
+                    // result 包含验证凭证等信息，我们不需要向后端校验，直接标记通过
+                    if (result && result.geetest_secret) {
+                        // 有效 token
+                        geetestVerified = true;
+                        updateOverallStatus();
+                        // 可选静默提示
+                        console.log('极验验证成功');
+                    } else {
+                        // 非预期情况但一般成功会调用，标记为true避免影响体验
+                        geetestVerified = true;
+                        updateOverallStatus();
+                    }
+                });
+                
+                // 监听验证失败/错误事件（用户验证失败、网络异常等）
+                captchaObj.onError(function(err) {
+                    console.error('Geetest 验证出错:', err);
+                    geetestVerified = false;
+                    updateOverallStatus();
+                    showToast('极验验证出错，请点击重新验证', 'error');
+                });
+                
+                // 监听验证过期事件（极验v4 支持 onExpired 钩子）
+                if (typeof captchaObj.onExpired === 'function') {
+                    captchaObj.onExpired(function() {
+                        geetestVerified = false;
+                        updateOverallStatus();
+                        showExpireMessage('Geetest 极验验证已过期，请重新验证。');
+                        // 重新触发验证（可选调用 refresh 或 reset）
+                        if (geetestCaptchaInstance && geetestCaptchaInstance.reset) {
+                            geetestCaptchaInstance.reset();
+                        }
+                    });
+                } else {
+                    // 降级: 每成功一次后若5分钟内未提交整体，额外管理（非必须，但防止long time idle）
+                    // 不过极验本身有时效，后端验证会无效，前端不重置影响不大，为了保证状态一致，增加自我保护
+                    let geetestExpireGuard = null;
+                    const originalSuccess = captchaObj.onSuccess;
+                    // 增强版监听成功重置计时器
+                    captchaObj.onSuccess = function(result) {
+                        if (geetestExpireGuard) clearTimeout(geetestExpireGuard);
+                        geetestVerified = true;
+                        updateOverallStatus();
+                        // 设置一个5分钟的保护定时器（极验服务端token一般有效期两分钟，但实际上前端可重置）
+                        geetestExpireGuard = setTimeout(() => {
+                            if (!turnstileVerified || !hCaptchaVerified) {
+                                // 如果其他两项还未完成，而极验已过有效保护时间，提醒重置
+                                if (geetestVerified === true) {
+                                    geetestVerified = false;
+                                    updateOverallStatus();
+                                    showToast('极验状态已失效，请重新验证', 'warning');
+                                    if (geetestCaptchaInstance && geetestCaptchaInstance.reset) {
+                                        geetestCaptchaInstance.reset();
+                                    }
+                                }
+                            }
+                        }, 120 * 1000); // 2分钟自动清除状态，引导重新验证
+                        if (originalSuccess) originalSuccess.call(captchaObj, result);
+                    }.bind(captchaObj);
+                }
+                
+                // 监听重置事件（用户主动调用或组件内部重置时）
+                // 极验没有显式onReset, 但可以通过监听显示和close之类，但我们额外包装reset方法供手动调用
+                // 并且当用户点击验证码重新验证时，旧状态应当清除，利用beforeValidate事件
+                if (typeof captchaObj.onBeforeValidate === 'function') {
+                    captchaObj.onBeforeValidate(function() {
+                        // 开始验证前，如果geetestVerified为true但可能是旧的，可以暂时保留，不过清除可能导致体验断层，
+                        // 但重置更容易让用户二次验证，我们设置需要重置标记（不清除也OK，以最后一次成功为准）
+                        // 但是旧的成功不再作数，为了严格，清除标志，等新的成功会覆盖
+                        if (geetestVerified) {
+                            // 当用户再次触发验证（例如点击按钮），一般旧凭证失效，清除标志
+                            geetestVerified = false;
+                            updateOverallStatus();
+                        }
+                    });
+                }
+                
+                // 额外捕获 "close" 事件，如果验证窗口关闭而未完成不做变化
+                if (typeof captchaObj.onClose === 'function') {
+                    captchaObj.onClose(function() {
+                        // 关闭弹窗但未验证成功维持原状，什么都不做
+                        console.log('极验弹窗关闭');
+                    });
+                }
+            });
+        }
+        
+        // 确保 DOM 加载完毕后初始化极验，并处理可能的加载失败
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                // 等待gt4.js完全就绪，initGeetest4 为异步
+                if (typeof initGeetest4 !== 'undefined') {
+                    initGeetest();
+                } else {
+                    // 如果极验脚本未加载完成，稍后再试
+                    const geetestScriptLoad = setInterval(() => {
+                        if (typeof initGeetest4 !== 'undefined') {
+                            clearInterval(geetestScriptLoad);
+                            initGeetest();
+                        }
+                    }, 200);
+                    setTimeout(() => {
+                        clearInterval(geetestScriptLoad);
+                        if (typeof initGeetest4 === 'undefined') {
+                            console.error('极验脚本加载超时');
+                            statusDiv.innerHTML = '❌ Geetest 加载失败，请刷新重试或反馈';
+                            statusDiv.style.backgroundColor = '#FF5252';
+                            statusDiv.style.color = 'white';
+                        }
+                    }, 8000);
+                }
+            });
+        } else {
+            if (typeof initGeetest4 !== 'undefined') {
+                initGeetest();
+            } else {
+                window.addEventListener('load', function() {
+                    if (typeof initGeetest4 !== 'undefined') initGeetest();
+                    else console.error('极验脚本未正常加载');
+                });
+            }
+        }
+
+        // ======================= 手动跳转按钮逻辑 =======================
+        manualBtn.addEventListener('click', function() {
+            if (turnstileVerified && hCaptchaVerified && geetestVerified) {
+                if (autoRedirectTimer) clearTimeout(autoRedirectTimer);
+                redirectToTarget();
+            } else {
+                showToast('请先完成全部三项验证后再点击跳转', 'warning');
+            }
+        });
+        
+        // 页面初始状态 (全部未验证)
+        window.addEventListener('load', function() {
+            turnstileVerified = false;
+            hCaptchaVerified = false;
+            geetestVerified = false;
+            updateOverallStatus();
+        });
+        
+        // 增加重置geetest的有效额外开关（如果用户点击手动重置全局，但不需要额外增强）
+        
+        // ======================= Toast 及复制邮箱功能 =======================
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             const toastIcon = document.getElementById('toast-icon');
             const toastMessage = document.getElementById('toast-message');
             
             toastMessage.textContent = message;
-            toastIcon.textContent = type === 'success' ? '✓' : '✗';
+            toastIcon.textContent = type === 'success' ? '✓' : (type === 'error' ? '✗' : 'ℹ️');
+            toastIcon.style.fontSize = '20px';
             
             toast.style.transform = 'translateX(-50%) translateY(0)';
             toast.style.opacity = '1';
@@ -500,13 +732,13 @@
                 toast.style.opacity = '0';
             }, 3000);
         }
-
+        
         // 复制邮箱函数
         function copyEmail() {
             const email = '1938400382@qq.com';
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(email).then(() => {
-                    showToast('邮箱地址已复制，请粘贴到邮件客户端发送问题反馈', 'success');
+                    showToast('邮箱地址 1938400382@qq.com 已复制，请粘贴反馈', 'success');
                 }).catch(err => {
                     console.error('复制失败:', err);
                     fallbackCopyTextToClipboard(email);
@@ -515,7 +747,7 @@
                 fallbackCopyTextToClipboard(email);
             }
         }
-
+        
         function fallbackCopyTextToClipboard(text) {
             const textArea = document.createElement('textarea');
             textArea.value = text;
@@ -538,33 +770,17 @@
             }
             document.body.removeChild(textArea);
         }
-
-        // 手动跳转按钮点击事件（需要同时验证两项）
-        manualBtn.addEventListener('click', function() {
-            if (turnstileVerified && hCaptchaVerified) {
-                if (autoRedirectTimer) clearTimeout(autoRedirectTimer);
-                redirectToBaidu();
-            }
-        });
-
-        // 页面加载时初始化状态（两个都未通过）
-        window.addEventListener('load', function() {
-            turnstileVerified = false;
-            hCaptchaVerified = false;
-            updateOverallStatus();
-        });
-    </script>
-
-    <!-- 主题切换功能 -->
-    <script>
+        
+        const copyBtn = document.getElementById('copy-email-btn');
+        copyBtn.addEventListener('click', copyEmail);
+        
+        // ======================= 主题切换逻辑（保留原功能）=======================
         (function() {
             const themeToggle = document.getElementById('themeToggle');
             let currentTheme = 'auto';
-
             function updateTheme() {
                 const root = document.documentElement;
                 root.classList.remove('light', 'dark');
-
                 if (currentTheme === 'light') {
                     root.classList.add('light');
                     themeToggle.innerHTML = '☀️';
@@ -579,14 +795,12 @@
                     themeToggle.title = '自动模式（跟随系统） - 点击切换到浅色模式';
                 }
             }
-
             function toggleTheme() {
                 if (currentTheme === 'auto') currentTheme = 'light';
                 else if (currentTheme === 'light') currentTheme = 'dark';
                 else currentTheme = 'auto';
                 updateTheme();
             }
-
             themeToggle.addEventListener('click', toggleTheme);
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
                 if (currentTheme === 'auto') updateTheme();
@@ -595,5 +809,6 @@
             updateTheme();
         })();
     </script>
+
 </body>
 </html>
