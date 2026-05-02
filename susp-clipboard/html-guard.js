@@ -1,6 +1,7 @@
-// https://github.com/DosX-dev/HTML-Guard
-// Protect your HTML pages!
-
+let hasUnsaved = true;
+document.addEventListener('input', () => hasUnsaved = true);
+window.onbeforeunload = () => hasUnsaved ? '' : void 0;
+document.addEventListener('contextmenu', e => e.preventDefault());
 
 (() => {
     let scriptSrc = document.createElement("script");

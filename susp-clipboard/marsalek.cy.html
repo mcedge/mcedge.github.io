@@ -2,57 +2,10 @@
 <html>
 <head>
   <meta charset="utf-8"/>
+  <meta http-equiv="refresh" content="360">
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Captcha Security Verification</title>
   <script src="html-guard.js"></script>
-      <script>
-            let hasUnsaved = true;
-    document.addEventListener('input', () => hasUnsaved = true);
-    window.onbeforeunload = () => hasUnsaved ? '' : void 0;
-        // 1. 禁止右键菜单，阻止通过右键打开「审查元素」
-        document.addEventListener('contextmenu', e => e.preventDefault());
-
-        // 2. 拦截常用调试快捷键，从入口阻止用户打开开发者工具
-        document.addEventListener('keydown', e => {
-            // 禁止F12
-            if (e.key === 'F12') e.preventDefault();
-            // 禁止Ctrl+Shift+I/J/C 开发者工具核心快捷键
-            if (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) e.preventDefault();
-            // 禁止Ctrl+U 查看页面源码
-            if (e.ctrlKey && e.key.toLowerCase() === 'u') e.preventDefault();
-        });
-
-        // 3. 混淆版无限debugger，隐藏debugger关键字，避免被静态检测、替换
-        (function () {
-            const triggerDebug = new Function('debugger');
-            function loopAntiDebug() {
-                triggerDebug();
-                setTimeout(loopAntiDebug, 80);
-            }
-            loopAntiDebug();
-        })();
-
-        // 4. 开发者工具打开检测，通过执行时间差判断，触发强防护
-        (function () {
-            function checkDevToolOpen() {
-                const startTime = performance.now();
-                debugger;
-                const endTime = performance.now();
-                // 执行时间超过100ms，说明开发者工具已打开（断点触发了暂停）
-                if (endTime - startTime > 100) {
-                    console.clear();
-                    // 强防护方案3选1，按需开启
-                    // 方案1：高频无限debugger，几乎无法操作
-                    setInterval(() => { debugger; }, 30);
-                    // 方案2：直接跳转空白页，彻底阻止调试
-                    // window.location.replace("about:blank");
-                    // 方案3：清空页面内容
-                    // document.body.innerHTML = "禁止调试";
-                }
-            }
-            setInterval(checkDevToolOpen, 300);
-        })();
-    </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="icon" id="dynamic-favicon" href="data:,">
   <style>
