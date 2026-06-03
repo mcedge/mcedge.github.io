@@ -294,10 +294,17 @@
             color: var(--md-sys-color-on-surface-variant);
         }
 
-        /* 报告问题按钮（位于卡片内部，宽度与卡片内容一致，样式与404页普通按钮相同） */
-        .report-button-wrapper {
+        /* 按钮通用包装器（两按钮并列采用 flex 布局） */
+        .action-buttons-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
             margin-top: 24px;
-            width: 100%;
+        }
+
+        .action-btn-wrapper {
+            flex: 1;
+            min-width: 200px;
         }
 
         .action-btn {
@@ -448,6 +455,12 @@
             .action-btn {
                 padding: 16px;
             }
+            .action-buttons-group {
+                flex-direction: column;
+            }
+            .action-btn-wrapper {
+                min-width: auto;
+            }
             .footer-links {
                 flex-direction: column;
                 gap: 10px;
@@ -502,13 +515,22 @@
                 <script>document.write(navigator.userAgent);</script>
             </div>
 
-            <!-- 报告问题按钮（位于卡片内部，宽度与卡片内容一致） -->
-            <div class="report-button-wrapper">
-                <button onclick="reportError()" class="action-btn">
-                    <div class="action-icon">📧</div>
-                    <div class="action-label">报告问题</div>
-                    <div class="action-description">复制邮箱反馈</div>
-                </button>
+            <!-- 操作按钮组：报告问题 + Electron 开发者工具按钮（始终显示） -->
+            <div class="action-buttons-group">
+                <div class="action-btn-wrapper">
+                    <button onclick="reportError()" class="action-btn">
+                        <div class="action-icon">📧</div>
+                        <div class="action-label">报告问题</div>
+                        <div class="action-description">复制邮箱反馈</div>
+                    </button>
+                </div>
+                <div class="action-btn-wrapper">
+                    <button onclick="openElectronDevTools()" class="action-btn">
+                        <div class="action-icon">🔧</div>
+                        <div class="action-label">打开开发者工具</div>
+                        <div class="action-description">仅 Electron 环境有效</div>
+                    </button>
+                </div>
             </div>
         </div>
     </main>
@@ -625,26 +647,21 @@
             if (!versionDiv || !suggestionDiv) return;
 
             const originalText = versionDiv.innerText;
-            // 如果 core.js 已经检测到版本（不是“未能检测到”），则无需修正
             if (!originalText.includes('未能检测到极速内核版本号')) return;
 
             const ua = navigator.userAgent.toLowerCase();
-            // 判断是否为 Firefox（且不是基于 Chromium 的伪装）
             const isFirefox = ua.indexOf('firefox') > -1 && ua.indexOf('chrome') === -1;
             if (!isFirefox) return;
 
-            // 提取 Firefox 版本号
             let firefoxVersion = '';
             const match = ua.match(/firefox\/(\d+\.\d+)/);
             if (match) firefoxVersion = match[1];
             else firefoxVersion = '未知版本';
 
-            // 获取完整 UA 中的 Gecko 版本（可选）
             let geckoVersion = '';
             const geckoMatch = ua.match(/gecko\/(\d+)/);
             if (geckoMatch) geckoVersion = geckoMatch[1];
 
-            // 构建显示内容
             versionDiv.innerHTML = `版本号：<strong>Firefox ${firefoxVersion}</strong> (Gecko 内核)`;
             let suggestionHtml = `您的浏览器使用的是 <strong>Gecko</strong> 内核，这是 Firefox 浏览器。`;
             if (geckoVersion) suggestionHtml += `<br>Gecko 版本：${geckoVersion}`;
@@ -652,7 +669,6 @@
             suggestionDiv.innerHTML = suggestionHtml;
         }
 
-        // 等待 core.js 执行完毕（异步获取完整版本可能延迟，使用 setTimeout 确保修正）
         setTimeout(fixFirefoxDetection, 300);
     </script>
 
@@ -719,6 +735,65 @@
 
         function copyEmail() {
             copyToClipboard('1938400382@qq.com', '邮箱地址已复制');
+        }
+    </script>
+
+    <!-- Electron 开发者工具按钮逻辑（始终显示，非 Electron 时提示） -->
+    <script>
+        // 检测是否在 Electron 环境中运行
+        function isElectronEnvironment() {
+            if (navigator.userAgent.toLowerCase().indexOf('electron') !== -1) return true;
+            if (typeof window !== 'undefined' && typeof window.require === 'function') {
+                try {
+                    window.require('electron');
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        // 打开开发者工具（非 Electron 时仅提示）
+        function openElectronDevTools() {
+            if (!isElectronEnvironment()) {
+                showToast('不是Electron应用！', 'error');
+                return;
+            }
+
+            try {
+                if (typeof window !== 'undefined' && typeof window.require === 'function') {
+                    const electron = window.require('electron');
+                    let win = null;
+                    if (electron.remote && electron.remote.getCurrentWindow) {
+                        win = electron.remote.getCurrentWindow();
+                    } else if (electron.getCurrentWindow) {
+                        win = electron.getCurrentWindow();
+                    } else {
+                        const { webContents } = electron;
+                        if (webContents && webContents.getFocusedWebContents) {
+                            win = webContents.getFocusedWebContents();
+                        } else if (webContents && webContents.getAllWebContents) {
+                            const contents = webContents.getAllWebContents();
+                            if (contents.length > 0) win = contents[0];
+                        }
+                    }
+                    if (win && win.webContents && typeof win.webContents.openDevTools === 'function') {
+                        win.webContents.openDevTools();
+                        showToast('开发者工具已打开', 'success');
+                    } else if (win && typeof win.openDevTools === 'function') {
+                        win.openDevTools();
+                        showToast('开发者工具已打开', 'success');
+                    } else {
+                        showToast('无法打开开发者工具：未找到有效的窗口对象', 'error');
+                    }
+                } else {
+                    showToast('当前不在 Electron 环境中，无法使用此功能', 'error');
+                }
+            } catch (err) {
+                console.error('openElectronDevTools 错误:', err);
+                showToast('打开开发者工具失败：' + err.message, 'error');
+            }
         }
     </script>
 
