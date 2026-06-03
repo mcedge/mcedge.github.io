@@ -106,7 +106,7 @@
             padding-top: 80px;
         }
 
-        /* 简化的应用栏：只保留标题和主题切换按钮 */
+        /* 简化的应用栏 */
         .app-bar {
             position: fixed;
             top: 0;
@@ -191,7 +191,7 @@
             object-fit: contain;
         }
 
-        /* 检测结果区域 - 强制覆盖 core.js 动态添加的样式 */
+        /* 检测结果区域 */
         #in {
             background-color: transparent !important;
             border-color: transparent !important;
@@ -262,7 +262,7 @@
             color: var(--md-sys-color-primary);
         }
 
-        /* 表格样式（保留兼容 core.js 动态表格） */
+        /* 表格样式 */
         .info-table {
             width: 100%;
             border-collapse: collapse;
@@ -294,17 +294,22 @@
             color: var(--md-sys-color-on-surface-variant);
         }
 
-        /* 按钮通用包装器（两按钮并列采用 flex 布局） */
-        .action-buttons-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
+        /* 弹性网格按钮组群，承载双按钮 */
+        .action-buttons-wrapper {
             margin-top: 24px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
-        .action-btn-wrapper {
-            flex: 1;
-            min-width: 200px;
+        @media (min-width: 576px) {
+            .action-buttons-wrapper {
+                flex-direction: row;
+            }
+            .action-buttons-wrapper .action-btn {
+                flex: 1;
+            }
         }
 
         .action-btn {
@@ -332,6 +337,15 @@
             box-shadow: var(--md-sys-elevation-2);
         }
 
+        /* 开发者工具特化科技绿动态反馈 */
+        #electronDevToolsBtn:hover {
+            border-color: #00e676; 
+        }
+        #electronDevToolsBtn:hover .action-icon {
+            background-color: rgba(0, 230, 118, 0.12);
+            color: #00c853;
+        }
+
         .action-icon {
             font-size: 32px;
             width: 64px;
@@ -343,6 +357,7 @@
             color: var(--md-sys-color-primary);
             border-radius: 50%;
             margin: 0 auto;
+            transition: all 0.25s ease;
         }
 
         .action-label {
@@ -355,7 +370,7 @@
             color: var(--md-sys-color-on-surface-variant);
         }
 
-        /* Toast 提示样式（与404一致） */
+        /* Toast 提示样式 */
         .toast {
             position: fixed;
             bottom: 24px;
@@ -455,12 +470,6 @@
             .action-btn {
                 padding: 16px;
             }
-            .action-buttons-group {
-                flex-direction: column;
-            }
-            .action-btn-wrapper {
-                min-width: auto;
-            }
             .footer-links {
                 flex-direction: column;
                 gap: 10px;
@@ -474,8 +483,7 @@
         }
     </style>
 </head>
-<body onload="whatBrowser(); detectOS();">
-    <!-- 简化的顶部栏：只保留标题和主题切换按钮 -->
+<body onload="whatBrowser(); detectOS(); checkAndInitElectron();">
     <header class="app-bar">
         <div class="app-bar-title">浏览器内核版本检测</div>
         <button class="theme-toggle" id="themeToggle" aria-label="切换主题模式">🌓</button>
@@ -487,7 +495,6 @@
                 <img src="./image/chromium.png" alt="Chromium 图标" onerror="this.style.display='none'; this.nextSibling?.style?.setProperty('display', 'inline');">
                 <span>内核版本信息</span>
             </h2>
-            <!-- 原本的 #in 容器，core.js 会操作它 -->
             <div id="in">
                 <div id="version">正在检测内核版本…</div>
                 <table id="tb" class="info-table" border="0" cellpadding="0" cellspacing="0">
@@ -499,7 +506,6 @@
                 </table>
             </div>
 
-            <!-- 操作系统信息区域 -->
             <div class="os-info" id="osInfo">
                 <h3>
                     <span>🖥️</span> 操作系统信息
@@ -509,28 +515,22 @@
                 </div>
             </div>
 
-            <!-- 完整 UA 显示区域 -->
             <div class="ua-box">
                 <strong>浏览器完整 UA（JavaScript 获取）</strong><br>
                 <script>document.write(navigator.userAgent);</script>
             </div>
 
-            <!-- 操作按钮组：报告问题 + Electron 开发者工具按钮（始终显示） -->
-            <div class="action-buttons-group">
-                <div class="action-btn-wrapper">
-                    <button onclick="reportError()" class="action-btn">
-                        <div class="action-icon">📧</div>
-                        <div class="action-label">报告问题</div>
-                        <div class="action-description">复制邮箱反馈</div>
-                    </button>
-                </div>
-                <div class="action-btn-wrapper">
-                    <button onclick="openElectronDevTools()" class="action-btn">
-                        <div class="action-icon">🔧</div>
-                        <div class="action-label">打开开发者工具</div>
-                        <div class="action-description">仅 Electron 环境有效</div>
-                    </button>
-                </div>
+            <div class="action-buttons-wrapper">
+                <button onclick="reportError()" class="action-btn">
+                    <div class="action-icon">📧</div>
+                    <div class="action-label">报告问题</div>
+                    <div class="action-description">复制邮箱反馈</div>
+                </button>
+                <button id="electronDevToolsBtn" onclick="openElectronDevTools()" class="action-btn" style="display: none;">
+                    <div class="action-icon">🛠️</div>
+                    <div class="action-label">开发者工具</div>
+                    <div class="action-description">打开 DevTools 调试</div>
+                </button>
             </div>
         </div>
     </main>
@@ -548,13 +548,11 @@
         </div>
     </footer>
 
-    <!-- Toast 提示容器 -->
     <div class="toast" id="toast">
         <div class="toast-icon" id="toast-icon">✓</div>
         <div id="toast-message">已复制到剪贴板</div>
     </div>
 
-    <!-- 操作系统检测脚本 -->
     <script>
         function detectOS() {
             const osDetailDiv = document.getElementById('osDetail');
@@ -639,7 +637,6 @@
         }
     </script>
 
-    <!-- Firefox 检测修正脚本（不修改 core.js，仅覆盖显示） -->
     <script>
         function fixFirefoxDetection() {
             const versionDiv = document.getElementById('version');
@@ -668,11 +665,70 @@
             suggestionHtml += `<br><br>Firefox 版本发布信息请参考 <a href="https://www.mozilla.org/firefox/releases/" target="_blank" rel="noopener noreferrer">Mozilla 官方发布说明</a>。`;
             suggestionDiv.innerHTML = suggestionHtml;
         }
-
         setTimeout(fixFirefoxDetection, 300);
     </script>
 
-    <!-- Toast & 复制功能脚本 -->
+    <script>
+        function checkAndInitElectron() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            const isElectron = userAgent.indexOf('electron') > -1 || 
+                               (window.process && window.process.versions && window.process.versions.electron);
+
+            if (isElectron) {
+                const devToolsBtn = document.getElementById('electronDevToolsBtn');
+                if (devToolsBtn) {
+                    devToolsBtn.style.display = 'flex'; 
+                }
+            }
+        }
+
+        function openElectronDevTools() {
+            try {
+                if (window.require) {
+                    // 【旧版特性 1】：针对真正老版本的 Electron (内置有 remote 模块)
+                    try {
+                        const electron = window.require('electron');
+                        if (electron && electron.remote) {
+                            electron.remote.getCurrentWindow().webContents.toggleDevTools();
+                            showToast('已直接弹出开发者工具', 'success');
+                            return;
+                        }
+                    } catch (e) {
+                        console.log('原声 remote 降级...');
+                    }
+
+                    // 【旧版特性 2】：针对引入了外部远端库的架构 (@electron/remote)
+                    try {
+                        const remote = window.require('@electron/remote');
+                        if (remote) {
+                            remote.getCurrentWindow().webContents.toggleDevTools();
+                            showToast('已通过 remote 弹出开发者工具', 'success');
+                            return;
+                        }
+                    } catch (e) {
+                        console.log('@electron/remote 降级...');
+                    }
+
+                    // 【旧版特性 3】：如果客户端禁用了前端直接控制，则采用安全进程通信发送信号
+                    try {
+                        const { ipcRenderer } = window.require('electron');
+                        if (ipcRenderer) {
+                            ipcRenderer.send('electron-toggle-devtools');
+                            showToast('已请求打开开发者工具', 'success');
+                            return;
+                        }
+                    } catch (error) {
+                        console.log('ipcRenderer 降级...');
+                    }
+                }
+                showToast('未检测到兼容的旧版 Node 环境', 'error');
+            } catch (error) {
+                console.error('无法唤起 DevTools:', error);
+                showToast('唤起失败，请检查控制台', 'error');
+            }
+        }
+    </script>
+
     <script>
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
@@ -738,66 +794,6 @@
         }
     </script>
 
-    <!-- Electron 开发者工具按钮逻辑（始终显示，非 Electron 时提示） -->
-    <script>
-        // 检测是否在 Electron 环境中运行
-        function isElectronEnvironment() {
-            if (navigator.userAgent.toLowerCase().indexOf('electron') !== -1) return true;
-            if (typeof window !== 'undefined' && typeof window.require === 'function') {
-                try {
-                    window.require('electron');
-                    return true;
-                } catch (e) {
-                    return false;
-                }
-            }
-            return false;
-        }
-
-        // 打开开发者工具（非 Electron 时仅提示）
-        function openElectronDevTools() {
-            if (!isElectronEnvironment()) {
-                showToast('不是Electron应用！', 'error');
-                return;
-            }
-
-            try {
-                if (typeof window !== 'undefined' && typeof window.require === 'function') {
-                    const electron = window.require('electron');
-                    let win = null;
-                    if (electron.remote && electron.remote.getCurrentWindow) {
-                        win = electron.remote.getCurrentWindow();
-                    } else if (electron.getCurrentWindow) {
-                        win = electron.getCurrentWindow();
-                    } else {
-                        const { webContents } = electron;
-                        if (webContents && webContents.getFocusedWebContents) {
-                            win = webContents.getFocusedWebContents();
-                        } else if (webContents && webContents.getAllWebContents) {
-                            const contents = webContents.getAllWebContents();
-                            if (contents.length > 0) win = contents[0];
-                        }
-                    }
-                    if (win && win.webContents && typeof win.webContents.openDevTools === 'function') {
-                        win.webContents.openDevTools();
-                        showToast('开发者工具已打开', 'success');
-                    } else if (win && typeof win.openDevTools === 'function') {
-                        win.openDevTools();
-                        showToast('开发者工具已打开', 'success');
-                    } else {
-                        showToast('无法打开开发者工具：未找到有效的窗口对象', 'error');
-                    }
-                } else {
-                    showToast('当前不在 Electron 环境中，无法使用此功能', 'error');
-                }
-            } catch (err) {
-                console.error('openElectronDevTools 错误:', err);
-                showToast('打开开发者工具失败：' + err.message, 'error');
-            }
-        }
-    </script>
-
-    <!-- 主题切换功能 -->
     <script>
         (function() {
             const themeToggle = document.getElementById('themeToggle');
