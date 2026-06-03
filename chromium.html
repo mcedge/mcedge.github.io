@@ -294,7 +294,7 @@
             color: var(--md-sys-color-on-surface-variant);
         }
 
-        /* 弹性网格按钮组群，承载双按钮 */
+        /* 弹性网格按钮组群，承载双按钮（永不隐藏，始终呈现 flex 网格） */
         .action-buttons-wrapper {
             margin-top: 24px;
             width: 100%;
@@ -483,7 +483,7 @@
         }
     </style>
 </head>
-<body onload="whatBrowser(); detectOS(); checkAndInitElectron();">
+<body onload="whatBrowser(); detectOS();">
     <header class="app-bar">
         <div class="app-bar-title">浏览器内核版本检测</div>
         <button class="theme-toggle" id="themeToggle" aria-label="切换主题模式">🌓</button>
@@ -526,7 +526,8 @@
                     <div class="action-label">报告问题</div>
                     <div class="action-description">复制邮箱反馈</div>
                 </button>
-                <button id="electronDevToolsBtn" onclick="openElectronDevTools()" class="action-btn" style="display: none;">
+                
+                <button id="electronDevToolsBtn" onclick="openElectronDevTools()" class="action-btn">
                     <div class="action-icon">🛠️</div>
                     <div class="action-label">开发者工具</div>
                     <div class="action-description">打开 DevTools 调试</div>
@@ -669,19 +670,6 @@
     </script>
 
     <script>
-        function checkAndInitElectron() {
-            const userAgent = navigator.userAgent.toLowerCase();
-            const isElectron = userAgent.indexOf('electron') > -1 || 
-                               (window.process && window.process.versions && window.process.versions.electron);
-
-            if (isElectron) {
-                const devToolsBtn = document.getElementById('electronDevToolsBtn');
-                if (devToolsBtn) {
-                    devToolsBtn.style.display = 'flex'; 
-                }
-            }
-        }
-
         function openElectronDevTools() {
             try {
                 if (window.require) {
@@ -694,7 +682,7 @@
                             return;
                         }
                     } catch (e) {
-                        console.log('原声 remote 降级...');
+                        console.log('原生 remote 降级...');
                     }
 
                     // 【旧版特性 2】：针对引入了外部远端库的架构 (@electron/remote)
@@ -709,18 +697,19 @@
                         console.log('@electron/remote 降级...');
                     }
 
-                    // 【旧版特性 3】：如果客户端禁用了前端直接控制，则采用安全进程通信发送信号
+                    // 【旧版特性 3】：如果客户端禁用了前端直接控制，则采用安全进程通信向 main.js 发送信号
                     try {
                         const { ipcRenderer } = window.require('electron');
                         if (ipcRenderer) {
                             ipcRenderer.send('electron-toggle-devtools');
-                            showToast('已请求打开开发者工具', 'success');
+                            showToast('已向主进程发出打开请求', 'success');
                             return;
                         }
                     } catch (error) {
                         console.log('ipcRenderer 降级...');
                     }
                 }
+                // 在普通非 Electron 浏览器中点击，会弹出这行降级提示
                 showToast('未检测到兼容的旧版 Node 环境', 'error');
             } catch (error) {
                 console.error('无法唤起 DevTools:', error);
