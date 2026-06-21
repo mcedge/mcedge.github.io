@@ -106,7 +106,6 @@
             padding-top: 80px;
         }
 
-        /* 简化的应用栏 */
         .app-bar {
             position: fixed;
             top: 0;
@@ -128,7 +127,6 @@
             letter-spacing: 0.15px;
         }
 
-        /* 主题切换按钮样式 */
         .theme-toggle {
             background: transparent;
             border: none;
@@ -151,14 +149,12 @@
             color: var(--md-sys-color-primary);
         }
 
-        /* 主容器 */
         .container {
             max-width: 900px;
             margin: 0 auto;
             padding: 0 24px;
         }
 
-        /* 卡片 */
         .card {
             background-color: var(--md-sys-color-surface);
             border-radius: var(--md-sys-shape-corner-large);
@@ -191,7 +187,6 @@
             object-fit: contain;
         }
 
-        /* 检测结果区域 */
         #in {
             background-color: transparent !important;
             border-color: transparent !important;
@@ -230,7 +225,6 @@
             text-decoration: underline;
         }
 
-        /* 操作系统信息卡片样式 */
         .os-info {
             background-color: var(--md-sys-color-surface-variant);
             border-radius: var(--md-sys-shape-corner-medium);
@@ -262,7 +256,6 @@
             color: var(--md-sys-color-primary);
         }
 
-        /* 表格样式 */
         .info-table {
             width: 100%;
             border-collapse: collapse;
@@ -282,7 +275,6 @@
             border-bottom: none;
         }
 
-        /* UA 显示区域 */
         .ua-box {
             background-color: var(--md-sys-color-surface-variant);
             border-radius: var(--md-sys-shape-corner-medium);
@@ -294,7 +286,61 @@
             color: var(--md-sys-color-on-surface-variant);
         }
 
-        /* 弹性网格按钮组群，承载双按钮（永不隐藏，始终呈现 flex 网格） */
+        /* ---- 新增硬件特征区块 ---- */
+        .hardware-features {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--md-sys-color-outline);
+        }
+
+        .hardware-features h3 {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-block {
+            background-color: var(--md-sys-color-surface-variant);
+            border-radius: var(--md-sys-shape-corner-medium);
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .feature-block h4 {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .feature-block pre {
+            font-family: 'Roboto Mono', 'Consolas', monospace;
+            font-size: 14px;
+            background-color: var(--md-sys-color-surface);
+            padding: 12px;
+            border-radius: var(--md-sys-shape-corner-small);
+            border: 1px solid var(--md-sys-color-outline);
+            overflow-x: auto;
+            color: var(--md-sys-color-on-surface);
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .feature-block canvas {
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: var(--md-sys-shape-corner-small);
+            margin-top: 8px;
+            display: block;
+        }
+
         .action-buttons-wrapper {
             margin-top: 24px;
             width: 100%;
@@ -337,9 +383,8 @@
             box-shadow: var(--md-sys-elevation-2);
         }
 
-        /* 开发者工具特化科技绿动态反馈 */
         #electronDevToolsBtn:hover {
-            border-color: #00e676; 
+            border-color: #00e676;
         }
         #electronDevToolsBtn:hover .action-icon {
             background-color: rgba(0, 230, 118, 0.12);
@@ -370,7 +415,6 @@
             color: var(--md-sys-color-on-surface-variant);
         }
 
-        /* Toast 提示样式 */
         .toast {
             position: fixed;
             bottom: 24px;
@@ -411,7 +455,6 @@
             color: #FF5252;
         }
 
-        /* 页脚 */
         footer {
             text-align: center;
             padding: 40px 0 32px;
@@ -449,7 +492,6 @@
             color: #FF2D61;
         }
 
-        /* 响应式调整 */
         @media (max-width: 768px) {
             body {
                 padding-top: 100px;
@@ -474,6 +516,9 @@
                 flex-direction: column;
                 gap: 10px;
             }
+            .feature-block pre {
+                font-size: 12px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -483,7 +528,7 @@
         }
     </style>
 </head>
-<body onload="whatBrowser(); detectOS();">
+<body onload="whatBrowser(); detectOS(); checkAndInitElectron(); showFeatures();">
     <header class="app-bar">
         <div class="app-bar-title">浏览器内核版本检测</div>
         <button class="theme-toggle" id="themeToggle" aria-label="切换主题模式">🌓</button>
@@ -507,17 +552,39 @@
             </div>
 
             <div class="os-info" id="osInfo">
-                <h3>
-                    <span>🖥️</span> 操作系统信息
-                </h3>
-                <div class="os-detail" id="osDetail">
-                    正在检测操作系统…
-                </div>
+                <h3><span>🖥️</span> 操作系统信息</h3>
+                <div class="os-detail" id="osDetail">正在检测操作系统…</div>
             </div>
 
             <div class="ua-box">
                 <strong>浏览器完整 UA（JavaScript 获取）</strong><br>
                 <script>document.write(navigator.userAgent);</script>
+            </div>
+
+            <!-- ===== 新增：硬件与浏览器特征（合并在此） ===== -->
+            <div class="hardware-features">
+                <h3><span>📊</span> 硬件与浏览器特征</h3>
+
+                <div class="feature-block">
+                    <h4>🖵 屏幕与硬件信息</h4>
+                    <pre id="fp-screen"></pre>
+                </div>
+
+                <div class="feature-block">
+                    <h4>🎮 WebGL 显卡信息</h4>
+                    <pre id="fp-webgl"></pre>
+                </div>
+
+                <div class="feature-block">
+                    <h4>🎨 Canvas 指纹（示例）</h4>
+                    <pre id="fp-canvas"></pre>
+                    <canvas id="canvasTest" width="220" height="60"></canvas>
+                </div>
+
+                <div class="feature-block">
+                    <h4>📌 其他信息</h4>
+                    <pre id="fp-others"></pre>
+                </div>
             </div>
 
             <div class="action-buttons-wrapper">
@@ -526,8 +593,7 @@
                     <div class="action-label">报告问题</div>
                     <div class="action-description">复制邮箱反馈</div>
                 </button>
-                
-                <button id="electronDevToolsBtn" onclick="openElectronDevTools()" class="action-btn">
+                <button id="electronDevToolsBtn" onclick="openElectronDevTools()" class="action-btn" style="display: none;">
                     <div class="action-icon">🛠️</div>
                     <div class="action-label">开发者工具</div>
                     <div class="action-description">打开 DevTools 调试</div>
@@ -554,6 +620,7 @@
         <div id="toast-message">已复制到剪贴板</div>
     </div>
 
+    <!-- ====== 原有 JavaScript（保留） ====== -->
     <script>
         function detectOS() {
             const osDetailDiv = document.getElementById('osDetail');
@@ -670,10 +737,22 @@
     </script>
 
     <script>
+        function checkAndInitElectron() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            const isElectron = userAgent.indexOf('electron') > -1 || 
+                               (window.process && window.process.versions && window.process.versions.electron);
+
+            if (isElectron) {
+                const devToolsBtn = document.getElementById('electronDevToolsBtn');
+                if (devToolsBtn) {
+                    devToolsBtn.style.display = 'flex'; 
+                }
+            }
+        }
+
         function openElectronDevTools() {
             try {
                 if (window.require) {
-                    // 【旧版特性 1】：针对真正老版本的 Electron (内置有 remote 模块)
                     try {
                         const electron = window.require('electron');
                         if (electron && electron.remote) {
@@ -681,11 +760,8 @@
                             showToast('已直接弹出开发者工具', 'success');
                             return;
                         }
-                    } catch (e) {
-                        console.log('原生 remote 降级...');
-                    }
+                    } catch (e) {}
 
-                    // 【旧版特性 2】：针对引入了外部远端库的架构 (@electron/remote)
                     try {
                         const remote = window.require('@electron/remote');
                         if (remote) {
@@ -693,23 +769,17 @@
                             showToast('已通过 remote 弹出开发者工具', 'success');
                             return;
                         }
-                    } catch (e) {
-                        console.log('@electron/remote 降级...');
-                    }
+                    } catch (e) {}
 
-                    // 【旧版特性 3】：如果客户端禁用了前端直接控制，则采用安全进程通信向 main.js 发送信号
                     try {
                         const { ipcRenderer } = window.require('electron');
                         if (ipcRenderer) {
                             ipcRenderer.send('electron-toggle-devtools');
-                            showToast('已向主进程发出打开请求', 'success');
+                            showToast('已请求打开开发者工具', 'success');
                             return;
                         }
-                    } catch (error) {
-                        console.log('ipcRenderer 降级...');
-                    }
+                    } catch (error) {}
                 }
-                // 在普通非 Electron 浏览器中点击，会弹出这行降级提示
                 showToast('未检测到兼容的旧版 Node 环境', 'error');
             } catch (error) {
                 console.error('无法唤起 DevTools:', error);
@@ -821,6 +891,65 @@
             currentTheme = 'auto';
             updateTheme();
         })();
+    </script>
+
+    <!-- ====== 新增特征填充函数（不重复UA和OS） ====== -->
+    <script>
+        function showFeatures() {
+            // 屏幕与硬件信息
+            const screenInfo = 
+                `屏幕分辨率: ${screen.width} × ${screen.height}\n` +
+                `可用分辨率: ${screen.availWidth} × ${screen.availHeight}\n` +
+                `设备像素比: ${window.devicePixelRatio}\n` +
+                `颜色深度: ${screen.colorDepth}位\n` +
+                `屏幕缩放: ${Math.round(window.devicePixelRatio * 100)}%`;
+            document.getElementById('fp-screen').textContent = screenInfo;
+
+            // WebGL 显卡信息
+            function getWebGLInfo() {
+                try {
+                    const canvas = document.createElement('canvas');
+                    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                    if (!gl) return 'WebGL 不可用';
+                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                    if (!debugInfo) return 'WEBGL_debug_renderer_info 扩展不可用，无法获取显卡信息';
+                    return `渲染器: ${gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)}\n` +
+                           `厂商: ${gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL)}`;
+                } catch(e) {
+                    return '获取失败: ' + e.message;
+                }
+            }
+            document.getElementById('fp-webgl').textContent = getWebGLInfo();
+
+            // Canvas 指纹
+            function getCanvasFingerprint() {
+                const canvas = document.getElementById('canvasTest');
+                const ctx = canvas.getContext('2d');
+                ctx.textBaseline = 'top';
+                ctx.font = '20px Arial';
+                ctx.fillStyle = '#0ea5e9';
+                ctx.fillText('Grok Fingerprint Test 2026', 2, 20);
+                ctx.fillStyle = '#f97316';
+                ctx.fillText('Windows + Edge', 2, 45);
+                
+                const data = canvas.toDataURL();
+                let hash = 0;
+                for (let i = 0; i < data.length; i++) {
+                    hash = (hash << 5) - hash + data.charCodeAt(i);
+                    hash |= 0;
+                }
+                return `Canvas 数据哈希: ${hash.toString(16).toUpperCase()}`;
+            }
+            document.getElementById('fp-canvas').textContent = getCanvasFingerprint();
+
+            // 其他信息
+            const othersInfo = 
+                `Cookies 启用: ${navigator.cookieEnabled}\n` +
+                `Do Not Track: ${navigator.doNotTrack || '未设置'}\n` +
+                `网络在线: ${navigator.onLine}\n` +
+                `内存估算: ${navigator.deviceMemory ? navigator.deviceMemory + ' GB' : '未知'}`;
+            document.getElementById('fp-others').textContent = othersInfo;
+        }
     </script>
 </body>
 </html>
