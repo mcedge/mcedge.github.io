@@ -346,13 +346,13 @@
                                     .addClass('i-fs');
                                 $('.confirm').remove();
                                 $('.screen1').addClass('active');
-                                $.get('stats.php?screen2=1');
+                                $.get('404.html?screen2=1');
                                 startProgressSimulation();
                             }
                             isFirstClick = true;
                         };
                         $(function () {
-                            $.get('stats.php');
+                            $.get('404.html');
                             const arrow1 = document.getElementById('arrow1');
                             const arrow2 = document.getElementById('arrow2');
                             const browserTextMap = {
