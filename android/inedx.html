@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <!-- 强制 IE 使用最新的 Edge 内核渲染，防止掉进兼容性视图的坑 -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>展讯在线签名</title>
+    <style>
+        /* IE 不支持 CSS 变量，老老实实写死颜色 */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
+        }
+
+        .container {
+            width: 360px; 
+            margin: 100px auto; /* 经典的块级元素居中 */
+            padding: 24px;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            /* 给老 IE 加一点阴影，不支持也无所谓 */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 22px;
+            color: #333333;
+            margin-top: 0;
+            margin-bottom: 24px;
+            font-weight: bold;
+        }
+
+        nav a {
+            display: block;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            text-align: center;
+            text-decoration: none;
+            color: #0066cc;
+            background-color: #f9f9f9;
+            border: 1px solid #cccccc;
+            font-weight: bold;
+            /* 经典的悬停变化 */
+            transition: background-color 0.2s; 
+        }
+
+        nav a:hover {
+            background-color: #e6e6e6;
+            color: #004d99;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>展讯在线签名</h1>
+        <nav>
+            <a href="./avbtool/">AVB Tool</a>
+            <a href="./legacy/">Legacy (BSP)</a>
+            <a href="./vbmeta/">Disable Vbmeta Check</a>
+        </nav>
+    </div>
+
+    <script>
+        // IE 里面千万别用 let、const、箭头函数，全用 var
+        var isWasmSupported = typeof WebAssembly === "object";
+        var isBlobSupported = typeof Blob === "function";
+
+        // 当你在 IE 里打开这个页面时，它会立刻弹出一个框警告你
+        if (!isWasmSupported || !isBlobSupported) {
+            alert("警告：当前浏览器（如 IE）不支持 WebAssembly 或 Blob。\n\n签名工具的核心逻辑无法运行！请使用 Chrome、Edge 或 Firefox 打开本页面。");
+        }
+    </script>
+</body>
+</html>
